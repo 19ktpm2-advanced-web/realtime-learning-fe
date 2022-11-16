@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Input, Spin } from "antd";
 import styles from "./styles.module.scss";
 import React from "react";
-import constants from "../../constants";
+import config from "../../config";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "helpers/validate";
 import { useMutation } from "react-query";
@@ -30,9 +30,9 @@ function Register() {
     const { fullName, email, password } = data;
     console.log(fullName, email, password);
     return fetch(
-      `${constants.apiConfig.DOMAIN_NAME}${constants.apiConfig.ENDPOINT.register}`,
+      `${config.apiConfig.DOMAIN_NAME}${config.apiConfig.ENDPOINT.register}`,
       {
-        method: constants.apiConfig.methods.post,
+        method: config.apiConfig.methods.post,
         headers: {
           "Content-type": "application/json"
         },

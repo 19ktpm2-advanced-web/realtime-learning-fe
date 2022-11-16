@@ -1,4 +1,4 @@
-const constants = {
+export const config = {
   apiConfig: {
     methods: {
       get: "GET",
@@ -15,4 +15,3 @@ const constants = {
     refreshTokenMaxAge: 10000
   }
 };
-export default constants;

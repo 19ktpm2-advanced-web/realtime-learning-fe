@@ -1,8 +1,8 @@
 import { Button } from "antd";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import * as constants from "../../constants";
-import { axiosPrivate } from "../../common/axiosPrivate";
+import axiosPrivate from "../../service/axiosPrivate";
+import { config } from "../../config";
 import "./index.css";
 
 function Home() {
@@ -12,7 +12,7 @@ function Home() {
     queryKey: "users",
     queryFn: async () => {
       const response = await axiosPrivate.get(
-        `${constants.apiConfig.ENDPOINT.profile}`
+        `${config.apiConfig.ENDPOINT.profile}`
       );
       console.log("Response", response);
       return response?.data || {};

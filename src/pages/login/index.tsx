@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Input, Spin } from "antd";
 import React from "react";
-import constants from "../../constants";
+import config from "../../config";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "helpers/validate";
 import { failureModal, successModal } from "modals";
@@ -31,9 +31,9 @@ function Login() {
       password
     });
     return fetch(
-      `${constants.apiConfig.DOMAIN_NAME}${constants.apiConfig.ENDPOINT.login}`,
+      `${config.apiConfig.DOMAIN_NAME}${config.apiConfig.ENDPOINT.login}`,
       {
-        method: constants.apiConfig.methods.post,
+        method: config.apiConfig.methods.post,
         headers: {
           "Content-type": "application/json"
         },
