@@ -2,7 +2,7 @@ import { Form, Input, Radio, DatePicker, Tabs, Upload, Button } from "antd";
 import UploadAvatar from "../../components/upload-avatar";
 import "./index.css";
 
-const Profile = () => {
+function Profile() {
   const onChange = (key: string) => {
     console.log(key);
   };
@@ -51,7 +51,7 @@ const Profile = () => {
                 </Form.Item>
               </Form>
             </>
-          ),
+          )
         },
         {
           label: `Security`,
@@ -80,11 +80,11 @@ const Profile = () => {
                 </Form.Item>
               </Form>
             </>
-          ),
-        },
+          )
+        }
       ]}
     />
   );
-};
+}
 
 export default Profile;

@@ -15,6 +15,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "helpers/validate";
 import { useMutation } from "react-query";
 import { failureModal, successModal } from "modals";
+import "./index.css";
+
 function Register() {
   const navigate = useNavigate();
   const {

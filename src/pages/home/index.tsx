@@ -1,9 +1,10 @@
 import { Button } from "antd";
-import * as React from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import * as constants from "../../constants";
 import { axiosPrivate } from "../../common/axiosPrivate";
+import "./index.css";
+
 function Home() {
   const navigate = useNavigate();
 

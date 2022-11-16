@@ -7,13 +7,14 @@ import {
   MailOutlined
 } from "@ant-design/icons";
 import { Input, Spin } from "antd";
-import styles from "./styles.module.scss";
 import React from "react";
 import constants from "../../constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "helpers/validate";
 import { failureModal, successModal } from "modals";
 import { useMutation } from "react-query";
+import "./index.css";
+
 function Login() {
   const navigate = useNavigate();
   const {
