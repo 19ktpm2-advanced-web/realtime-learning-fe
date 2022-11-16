@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FieldErrorsImpl } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { MailOutlined } from "@ant-design/icons";
 import { Input, Spin } from "antd";
@@ -18,13 +18,7 @@ type LoginFormValues = {
 type Error = {
   message: string;
 };
-type ErrorValidate = {
-  message: string;
-};
-type ErrorSchema = {
-  email: ErrorValidate;
-  password: ErrorValidate;
-};
+type ErrorSchema = Record<string, string>;
 function Login() {
   const navigate = useNavigate();
   const {
@@ -34,7 +28,7 @@ function Login() {
   } = useForm({
     resolver: yupResolver(loginSchema)
   });
-  const errorSchema = errors as ErrorSchema;
+  const errorSchema = errors as Partial<FieldErrorsImpl<ErrorSchema>>;
   const mutation = useMutation((data: LoginFormValues) => {
     const { email, password } = data;
     return fetch(
@@ -114,7 +108,7 @@ function Login() {
             />
           )}
         />
-        <span className={styles.message}>{errorSchema?.password?.message}</span>
+        <span className={styles.message}>{errorSchema?.email?.message}</span>
       </div>
       <div className={styles.btnWrapper}>
         <Spin spinning={mutation.isLoading}>

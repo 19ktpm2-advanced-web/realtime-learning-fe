@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FieldErrorsImpl } from "react-hook-form";
 import { UserOutlined, MailOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Spin } from "antd";
@@ -19,14 +19,7 @@ type RegisterFormValues = {
 type Error = {
   message: string;
 };
-type ErrorValidate = {
-  message: string;
-};
-type ErrorSchema = {
-  email: ErrorValidate;
-  password: ErrorValidate;
-  fullName: ErrorValidate;
-};
+type ErrorSchema = Record<string, string>;
 function Register() {
   const navigate = useNavigate();
   const {
@@ -36,7 +29,7 @@ function Register() {
   } = useForm({
     resolver: yupResolver(registerSchema)
   });
-  const errorSchema = errors as ErrorSchema;
+  const errorSchema = errors as Partial<FieldErrorsImpl<ErrorSchema>>;
   const mutation = useMutation((data: RegisterFormValues) => {
     const { fullName, email, password } = data;
     return fetch(
