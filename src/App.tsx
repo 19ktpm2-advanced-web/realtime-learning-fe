@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import "antd/dist/antd.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Register from "components/Register";

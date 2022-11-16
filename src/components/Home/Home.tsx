@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { Button } from "antd";
-import React from "react";
+import * as React from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import constants from "../../constants";
+import * as constants from "../../constants";
 import { axiosPrivate } from "../../common/axiosPrivate";
 function Home() {
   const navigate = useNavigate();
