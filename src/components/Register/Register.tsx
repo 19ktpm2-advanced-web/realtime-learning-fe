@@ -1,20 +1,32 @@
-// @ts-nocheck
 import { useForm, Controller } from "react-hook-form";
-import {
-  UserOutlined,
-  EyeTwoTone,
-  EyeInvisibleOutlined,
-  MailOutlined
-} from "@ant-design/icons";
+import { UserOutlined, MailOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Spin } from "antd";
-import styles from "./styles.module.scss";
 import React from "react";
-import constants from "../../constants";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { registerSchema } from "helpers/validate";
 import { useMutation } from "react-query";
-import { failureModal, successModal } from "modals";
+import constants from "../../constants";
+import styles from "./styles.module.scss";
+import { failureModal, successModal } from "../../modals";
+import { registerSchema } from "../../helpers/validate";
+import EyeIcon from "../../icons/EyeIcon";
+
+type RegisterFormValues = {
+  fullName: string;
+  email: string;
+  password: string;
+};
+type Error = {
+  message: string;
+};
+type ErrorValidate = {
+  message: string;
+};
+type ErrorSchema = {
+  email: ErrorValidate;
+  password: ErrorValidate;
+  fullName: ErrorValidate;
+};
 function Register() {
   const navigate = useNavigate();
   const {
@@ -24,9 +36,9 @@ function Register() {
   } = useForm({
     resolver: yupResolver(registerSchema)
   });
-  const mutation = useMutation((data) => {
+  const errorSchema = errors as ErrorSchema;
+  const mutation = useMutation((data: RegisterFormValues) => {
     const { fullName, email, password } = data;
-    console.log(fullName, email, password);
     return fetch(
       `${constants.apiConfig.DOMAIN_NAME}${constants.apiConfig.ENDPOINT.register}`,
       {
@@ -40,23 +52,25 @@ function Register() {
       return response.json();
     });
   });
-  const onSubmit = (data) => {
+  const onSubmit = (data: RegisterFormValues) => {
     mutation.mutate(data, {
-      onSuccess: (data) => {
-        console.log("registration ", data);
-        if (data?.code === 200 && data?.data?.session) {
-          localStorage.setItem("session", JSON.stringify(data?.data?.session));
+      onSuccess: (successResult) => {
+        if (successResult?.code === 200 && successResult?.data?.session) {
+          localStorage.setItem(
+            "session",
+            JSON.stringify(successResult?.data?.session ?? "")
+          );
           successModal(
             "Register successfully",
-            `Welcome ${data?.data?.fullName}`
+            `Welcome ${successResult?.data?.fullName}`
           );
           navigate("/");
         } else {
-          failureModal("Register failed", data.message);
+          failureModal("Register failed", successResult.message);
         }
       },
-      onError: (error) => {
-        failureModal("Register failed", error.message);
+      onError: (error: Error) => {
+        failureModal("Register failed", error?.message);
       }
     });
   };
@@ -67,51 +81,63 @@ function Register() {
         <Controller
           name="email"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange, onBlur, value, name, ref } }) => (
             <Input
-              {...field}
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
               className={styles.input}
               placeholder="Enter your email"
               size="large"
               prefix={<MailOutlined />}
-            ></Input>
+            />
           )}
         />
-        <span className={styles.message}>{errors?.email?.message}</span>
+        <span className={styles.message}>
+          {errorSchema?.email?.message?.toString() ?? ""}
+        </span>
       </div>
       <div className={styles.inputWrapper}>
         <Controller
           name="fullName"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange, onBlur, value, name, ref } }) => (
             <Input
-              {...field}
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
               className={styles.input}
               placeholder="Enter your name"
               size="large"
               prefix={<UserOutlined />}
-            ></Input>
+            />
           )}
         />
-        <span className={styles.message}>{errors?.fullName?.message}</span>
+        <span className={styles.message}>{errorSchema?.fullName?.message}</span>
       </div>
       <div className={styles.inputWrapper}>
         <Controller
           name="password"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange, onBlur, value, name, ref } }) => (
             <Input.Password
               className={styles.input}
-              {...field}
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
               placeholder="Enter password"
               size="large"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
+              iconRender={EyeIcon}
             />
           )}
         />
-        <span className={styles.message}>{errors?.password?.message}</span>
+        <span className={styles.message}>{errorSchema?.password?.message}</span>
       </div>
       <div className={styles.btnWrapper}>
         <Spin spinning={mutation.isLoading}>

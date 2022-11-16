@@ -1,19 +1,30 @@
-// @ts-nocheck
 import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  EyeTwoTone,
-  EyeInvisibleOutlined,
-  MailOutlined
-} from "@ant-design/icons";
+import { MailOutlined } from "@ant-design/icons";
 import { Input, Spin } from "antd";
-import styles from "./styles.module.scss";
 import React from "react";
-import constants from "../../constants";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { loginSchema } from "helpers/validate";
-import { failureModal, successModal } from "modals";
 import { useMutation } from "react-query";
+import constants from "../../constants";
+import styles from "./styles.module.scss";
+import EyeIcon from "../../icons/EyeIcon";
+import { loginSchema } from "../../helpers/validate";
+import { failureModal, successModal } from "../../modals";
+
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
+type Error = {
+  message: string;
+};
+type ErrorValidate = {
+  message: string;
+};
+type ErrorSchema = {
+  email: ErrorValidate;
+  password: ErrorValidate;
+};
 function Login() {
   const navigate = useNavigate();
   const {
@@ -23,12 +34,9 @@ function Login() {
   } = useForm({
     resolver: yupResolver(loginSchema)
   });
-  const mutation = useMutation((data) => {
+  const errorSchema = errors as ErrorSchema;
+  const mutation = useMutation((data: LoginFormValues) => {
     const { email, password } = data;
-    console.log("Data", {
-      email,
-      password
-    });
     return fetch(
       `${constants.apiConfig.DOMAIN_NAME}${constants.apiConfig.ENDPOINT.login}`,
       {
@@ -42,20 +50,25 @@ function Login() {
       return response.json();
     });
   });
-  const onSubmit = (data) => {
+  const onSubmit = (data: LoginFormValues) => {
     mutation.mutate(data, {
-      onSuccess: (data) => {
-        console.log(data);
-        if (data?.code === 200 && data?.data?.session) {
-          localStorage.setItem("session", JSON.stringify(data?.data?.session));
-          successModal("Login successfully", `Welcome ${data?.data?.fullName}`);
+      onSuccess: (successResult) => {
+        if (successResult?.code === 200 && successResult?.data?.session) {
+          localStorage.setItem(
+            "session",
+            JSON.stringify(successResult?.data?.session)
+          );
+          successModal(
+            "Login successfully",
+            `Welcome ${successResult?.data?.fullName}`
+          );
           navigate("/");
         } else {
-          failureModal("Login failed", data.message);
+          failureModal("Login failed", successResult.message);
         }
       },
-      onError: (error) => {
-        failureModal("Login failed", error.message);
+      onError: (error: Error) => {
+        failureModal("Login failed", error?.message);
       }
     });
   };
@@ -67,35 +80,41 @@ function Login() {
         <Controller
           name="email"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange, onBlur, value, name, ref } }) => (
             <Input
-              {...field}
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
               className={styles.input}
               placeholder="Enter your email"
               size="large"
               prefix={<MailOutlined />}
-            ></Input>
+            />
           )}
         />
-        <span className={styles.message}>{errors?.email?.message}</span>
+        <span className={styles.message}>{errorSchema?.email?.message}</span>
       </div>
       <div className={styles.inputWrapper}>
         <Controller
           name="password"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange, onBlur, value, name, ref } }) => (
             <Input.Password
               className={styles.input}
-              {...field}
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
               placeholder="Enter password"
               size="large"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
+              iconRender={EyeIcon}
             />
           )}
         />
-        <span className={styles.message}>{errors?.password?.message}</span>
+        <span className={styles.message}>{errorSchema?.password?.message}</span>
       </div>
       <div className={styles.btnWrapper}>
         <Spin spinning={mutation.isLoading}>

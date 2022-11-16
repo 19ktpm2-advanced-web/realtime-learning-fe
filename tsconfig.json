@@ -14,7 +14,10 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "esModuleInterop": true 
+    "esModuleInterop": true,
+    "target": "es5",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",
@@ -25,10 +28,6 @@
     "jest",
     "src/setupTests.ts"
   ],
-  "types": [
-    "typePatches"
-  ],
-  "references": [
-    {"path": "src", "prepend": true}
-  ]
+  "types": ["typePatches"],
+  "include": ["src/**/*"]
 }

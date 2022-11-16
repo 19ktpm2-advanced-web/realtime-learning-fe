@@ -35,14 +35,10 @@
     "build": "tsc",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint-staged": {
-      "src/**/*.{js,ts,jsx,tsx}": [
-        "eslint --config ./.eslintrc.json --ext js --ext ts --ext jsx --ext tsx"
-      ]
-    },
+    "_lint": "eslint --config ./.eslintrc.json --ext js --ext jsx --ext tsx --ext ts",
     "lint": "npm run _lint -- ./src/",
     "lint:fix": "npm run _lint -- --fix ./src/",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,scss,md,json}' --config ./.prettierrc",
+    "format": "prettier --write ./**/*.{js,jsx,ts,tsx,css,scss,md,json} --config ./.prettierrc",
     "prepare": "husky install"
   },
   "eslintConfig": {
@@ -75,6 +71,7 @@
     "@typescript-eslint/parser": "^5.43.0",
     "eslint": "^8.2.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",

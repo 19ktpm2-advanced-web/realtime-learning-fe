@@ -2,8 +2,9 @@ import { Button } from "antd";
 import * as React from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import * as constants from "../../constants";
+import constants from "../../constants";
 import { axiosPrivate } from "../../common/axiosPrivate";
+
 function Home() {
   const navigate = useNavigate();
 
@@ -13,18 +14,14 @@ function Home() {
       const response = await axiosPrivate.get(
         `${constants.apiConfig.ENDPOINT.profile}`
       );
-      console.log("Response", response);
       return response?.data || {};
     },
     onSuccess: (data) => {
-      if (data?.code === 200) {
-        console.log(data);
-      } else {
+      if (data?.code !== 200) {
         navigate("/login");
       }
     },
-    onError: (error) => {
-      console.log("Error", error);
+    onError: () => {
       navigate("/login");
     }
   });

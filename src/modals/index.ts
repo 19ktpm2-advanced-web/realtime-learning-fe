@@ -1,10 +1,10 @@
-// @ts-ignore
 import { Modal } from "antd";
+
 const timeOut = 8;
 const options = {
   bodyStyle: {
     maxHeight: "400px",
-    overflowY: "auto"
+    OverflowY: "auto"
   },
   centered: true,
   maskClosable: true,
@@ -12,7 +12,6 @@ const options = {
   closable: true
 };
 const failureModal = (title = "Error!", message = "Something went wrong") => {
-  // @ts-ignore
   const modal = Modal.error({
     ...options,
     title,
@@ -24,7 +23,6 @@ const failureModal = (title = "Error!", message = "Something went wrong") => {
   }, timeOut * 1000);
 };
 const successModal = (title = "Success!", message = "Successfully") => {
-  // @ts-ignore
   const modal = Modal.success({
     ...options,
     title,
