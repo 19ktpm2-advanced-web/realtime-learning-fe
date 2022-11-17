@@ -1,11 +1,11 @@
+import React, { useState } from "react";
 import { Upload } from "antd";
-import { useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import "./index.css";
 
-const UploadAvatar = () => {
+function UploadAvatar() {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
+  const [imageUrl] = useState();
 
   const beforeUpload = (file: any) => {
     console.log(file);
@@ -14,10 +14,9 @@ const UploadAvatar = () => {
     console.log(info);
     if (info.file.status === "uploading") {
       setLoading(true);
-      return;
     }
-    if (info.file.status === "done") {
-    }
+    // if (info.file.status === "done") {
+    // }
   };
   const uploadButton = (
     <div>
@@ -57,6 +56,6 @@ const UploadAvatar = () => {
       )}
     </Upload>
   );
-};
+}
 
 export default UploadAvatar;

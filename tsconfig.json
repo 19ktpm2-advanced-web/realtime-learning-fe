@@ -14,7 +14,8 @@
     "strictNullChecks": true,
     "esModuleInterop": true,
     "target": "es5",
-    "jsx": "react",
+    "baseUrl": "src",
+    "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true
   },
   "exclude": [

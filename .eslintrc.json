@@ -17,7 +17,12 @@
   "settings": {
     "typescript": "true",
     "node": "true",
-    "import/parser": "babel-eslint"
+    "import/parser": "babel-eslint",
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".scss", ".css"]
+      }
+    }
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -40,6 +45,16 @@
         "tsx": "never"
       }
     ],
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "function-declaration"
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      { "vars": "local", "args": "after-used", "ignoreRestSiblings": false }
+    ]
   }
 }
