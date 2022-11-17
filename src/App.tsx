@@ -1,19 +1,39 @@
-import 'antd/dist/antd.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Register from './components/Register'
-import Login from './components/Login'
-import Home from './components/Home'
+import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import './index.css'
+import Login from './pages/login'
+import Register from './pages/register'
+import Home from './pages/home'
+import ErrorPage from './pages/error'
+import Profile from './pages/profile'
+
+const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <Home />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: '/login',
+        element: <Login />,
+    },
+    {
+        path: '/register',
+        element: <Register />,
+    },
+    {
+        path: '/profile',
+        element: <Profile />,
+    },
+])
+const queryClient = new QueryClient()
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/" element={<Home />} />
-                <Route path="*" element={<Navigate replace to="/" />} />
-            </Routes>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+        </QueryClientProvider>
     )
 }
 

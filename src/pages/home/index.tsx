@@ -1,9 +1,9 @@
+import React from 'react'
 import { Button } from 'antd'
-import * as React from 'react'
 import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import constants from '../../constants'
-import axiosPrivate from '../../common/axiosPrivate'
+import axiosPrivate from '../../services/axiosPrivate'
 
 function Home() {
     const navigate = useNavigate()
