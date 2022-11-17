@@ -1,32 +1,24 @@
 {
-  "compilerOptions": {
-    "outDir": "build/dist",
-    "module": "commonjs",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
-    "allowJs": true,
-    "noEmit": true,
-    "moduleResolution": "node",
-    "rootDir": "src",
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "esModuleInterop": true,
-    "target": "es5",
-    "baseUrl": "src",
-    "jsx": "react-jsx",
-    "allowSyntheticDefaultImports": true
-  },
-  "exclude": [
-    "node_modules",
-    "build",
-    "scripts",
-    "acceptance-tests",
-    "webpack",
-    "jest",
-    "src/setupTests.ts"
-  ],
-  "types": ["typePatches"],
-  "include": ["src/**/*", "./declaration.d.ts"]
+    "compilerOptions": {
+        "outDir": "build/dist",
+        "module": "commonjs",
+        "lib": ["es6", "dom"],
+        "sourceMap": true,
+        "allowJs": true,
+        "noEmit": true,
+        "moduleResolution": "node",
+        "rootDir": "src",
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "target": "es5",
+        "baseUrl": "src",
+        "jsx": "react-jsx",
+        "allowSyntheticDefaultImports": true
+    },
+    "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack", "jest", "src/setupTests.ts"],
+    "types": ["typePatches"],
+    "include": ["src/**/*", "./declaration.d.ts", "./eslintrc.js"]
 }
