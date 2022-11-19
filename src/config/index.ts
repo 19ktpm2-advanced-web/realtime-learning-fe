@@ -1,17 +1,18 @@
+/* eslint-disable */
 export const config = {
-  apiConfig: {
-    methods: {
-      get: "GET",
-      post: "POST"
+    apiConfig: {
+        methods: {
+            get: 'GET',
+            post: 'POST',
+        },
+        DOMAIN_NAME: 'http://localhost:3300',
+        // DOMAIN_NAME: 'http://localhost:4001',
+        ENDPOINT: {
+            register: '/auth/register',
+            login: '/auth/login',
+            profile: '/user/profile',
+            refreshToken: '/auth/refresh-token',
+        },
+        refreshTokenMaxAge: 10000,
     },
-    DOMAIN_NAME: "https://authentication-alpha.vercel.app",
-    // DOMAIN_NAME: 'http://localhost:4001',
-    ENDPOINT: {
-      register: "/users/register",
-      login: "/users/login",
-      profile: "/users/profile",
-      refreshToken: "/users/refresh-token"
-    },
-    refreshTokenMaxAge: 10000
-  }
-};
+}

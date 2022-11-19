@@ -41,7 +41,7 @@
         "lint": "npm run _lint -- ./src/",
         "lint:fix": "npm run _lint -- --fix ./src/",
         "format": "prettier --write ./**/*.{js,jsx,ts,tsx,css,scss,md,json} --config ./.prettierrc",
-        "prepare": "husky install"
+        "prepare": "npx husky install"
     },
     "eslintConfig": {
         "extends": [

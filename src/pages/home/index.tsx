@@ -1,55 +1,59 @@
-import { Button } from "antd";
-import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import axiosPrivate from "../../service/axiosPrivate";
-import { config } from "../../config";
-import "./index.css";
+import { Button } from 'antd'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-function Home() {
-  const navigate = useNavigate();
+export default function Home() {
+    const navigate = useNavigate()
+    useEffect(() => {
+        if (!localStorage.getItem('session')) navigate('/login')
+    }, [localStorage.getItem('session')])
 
-  const queries = useQuery({
-    queryKey: "users",
-    queryFn: async () => {
-      const response = await axiosPrivate.get(
-        `${config.apiConfig.ENDPOINT.profile}`
-      );
-      console.log("Response", response);
-      return response?.data || {};
-    },
-    onSuccess: (data) => {
-      if (data?.code === 200) {
-        console.log(data);
-      } else {
-        navigate("/login");
-      }
-    },
-    onError: (error) => {
-      console.log("Error", error);
-      navigate("/login");
-    }
-  });
-
-  return (
-    <div>
-      <h1>Home</h1>
-      {queries.isLoading && <p>Loading...</p>}
-      {queries.isError && <p>Error</p>}
-      {queries?.data?.data && (
-        <div>
-          <p>Full name: {queries.data?.data?.fullName}</p>
-          <p>Email: {queries.data?.data?.email}</p>
-          <Button
-            onClick={() => {
-              localStorage.removeItem("session");
-              navigate("/login");
+    return (
+        <div
+            id="home"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
             }}
-          >
-            Logout
-          </Button>
+        >
+            <h1>Welcome to home page!</h1>
+            <Button
+                style={{
+                    backgroundColor: '#1046c7',
+                    color: 'white',
+                    padding: '16px 20px',
+                    margin: '8px 0',
+                    border: 'none',
+                    cursor: 'pointer',
+                    opacity: 0.9,
+                }}
+                onClick={() => {
+                    navigate('/profile')
+                }}
+            >
+                Profile
+            </Button>
+            <Button
+                style={{
+                    backgroundColor: '#1046c7',
+                    color: 'white',
+                    padding: '16px 20px',
+                    margin: '8px 0',
+                    border: 'none',
+                    cursor: 'pointer',
+                    opacity: 0.9,
+                }}
+                className="logout-btn"
+                onClick={() => {
+                    localStorage.removeItem('session')
+                    navigate('/login')
+                }}
+            >
+                Log out
+            </Button>
         </div>
-      )}
-    </div>
-  );
+    )
 }
-export default Home;
