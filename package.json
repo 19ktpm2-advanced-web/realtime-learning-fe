@@ -34,7 +34,7 @@
         "styleguide:build": "styleguidist build",
         "analyze": "source-map-explorer 'build/static/js/*.js'",
         "start": "react-scripts start",
-        "build": "tsc",
+        "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "_lint": "eslint --config ./.eslintrc.js --ext js --ext jsx --ext tsx --ext ts",
