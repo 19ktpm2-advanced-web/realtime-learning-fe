@@ -1,12 +1,35 @@
 import { Button } from 'antd'
+import { failureModal } from 'components/modals'
 import { useEffect } from 'react'
+import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
+import instance from 'service/axiosPrivate'
 
 export default function Home() {
     const navigate = useNavigate()
     useEffect(() => {
         if (!localStorage.getItem('session')) navigate('/login')
     }, [localStorage.getItem('session')])
+
+    const { mutate } = useMutation((logOutData) => {
+        return instance.post('/auth/log-out', logOutData)
+    })
+
+    const handleLogOut = (data: any) => {
+        mutate(data, {
+            onSuccess: (res) => {
+                if (res.status === 200) {
+                    localStorage.removeItem('session')
+                    navigate('/login')
+                } else {
+                    failureModal('Log out failed', res.data.message)
+                }
+            },
+            onError: (error: any) => {
+                failureModal('Log out failed', error.response && error.response.data)
+            },
+        })
+    }
 
     return (
         <div
@@ -48,8 +71,8 @@ export default function Home() {
                 }}
                 className="logout-btn"
                 onClick={() => {
-                    localStorage.removeItem('session')
-                    navigate('/login')
+                    const currentSession = JSON.parse(localStorage.getItem('session') || '')
+                    handleLogOut({ refreshToken: currentSession?.refreshToken })
                 }}
             >
                 Log out
