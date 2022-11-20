@@ -1,27 +1,22 @@
+/* eslint-disable */
 import { Form, Input, Radio, DatePicker, Tabs, Button } from 'antd'
 import { useEffect } from 'react'
 import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
-import { useForm, Controller } from 'react-hook-form'
 import instance from 'service/axiosPrivate'
 import UploadAvatar from '../../components/upload-avatar'
 import './index.css'
 
 function Profile() {
     const navigate = useNavigate()
-
-    const {
-        control,
-        // formState: { errors },
-        setValue,
-    } = useForm({
-        // resolver: yupResolver(registerValidationSchema),
-    })
+    const [form] = Form.useForm()
 
     useQuery(['profile'], async () => {
         const res = await instance.get('/user/profile')
-        setValue('email', res.data.email)
-        setValue('fullName', res.data.fullName)
+        form.setFieldsValue({
+            email: res.data.email,
+            fullName: res.data.fullName,
+        })
         return res.data
     })
 
@@ -33,8 +28,13 @@ function Profile() {
         console.log(key)
     }
 
+    const onFinish = (values: any) => {
+        console.log('Success:', values)
+    }
+
     return (
         <Tabs
+            centered
             defaultActiveKey="1"
             onChange={onChange}
             items={[
@@ -42,26 +42,29 @@ function Profile() {
                     label: 'Profile',
                     key: '1',
                     children: (
-                        <Form labelCol={{ span: 4 }} wrapperCol={{ span: 10 }} layout="horizontal" className="form-wrapper">
+                        <Form
+                            form={form}
+                            onFinish={onFinish}
+                            labelCol={{ span: 4 }}
+                            wrapperCol={{ span: 10 }}
+                            layout="horizontal"
+                            className="form-wrapper"
+                        >
                             <Form.Item label="Avatar" valuePropName="avatar">
                                 <UploadAvatar />
                             </Form.Item>
-                            <Form.Item label="Email">
-                                <Controller
-                                    name="email"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} placeholder="Ex: abc@gmail.com" />}
-                                />
+                            <Form.Item label="Email" name="email">
+                                <Input placeholder="Ex: abc@gmail.com" disabled />
                             </Form.Item>
-                            <Form.Item label="Full name">
-                                <Controller
-                                    name="fullName"
-                                    control={control}
-                                    render={({ field }) => <Input {...field} placeholder="Ex: John Smith" />}
-                                />
+                            <Form.Item label="Full name" name="fullName">
+                                <Input placeholder="Ex: John Smith" />
                             </Form.Item>
-                            <Form.Item label="Phone number">
-                                <Input maxLength={10} placeholder="Ex: 0123456789" />
+                            <Form.Item
+                                label="Phone number"
+                                name="phoneNumber"
+                                rules={[{ len: 10, message: 'Phone number must include 10 numbers' }]}
+                            >
+                                <Input placeholder="Ex: 0123456789" />
                             </Form.Item>
                             <Form.Item label="Gender">
                                 <Radio.Group>
