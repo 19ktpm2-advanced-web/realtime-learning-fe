@@ -20,7 +20,6 @@ instance.interceptors.request.use(
                 authorization: `Bearer ${session?.accessToken}`,
             }
         }
-        console.log(config)
 
         return config
     },
