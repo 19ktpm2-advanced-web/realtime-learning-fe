@@ -1,14 +1,26 @@
+/* eslint-disable */
 import { Button } from 'antd'
 import { failureModal } from 'components/modals'
 import { useEffect } from 'react'
 import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 
 export default function Home() {
     const navigate = useNavigate()
+
+    // Get invitationId from loader if any
+    const loader = useLoaderData()
+
+    // Get invitationId if redirect from login
+    const { state } = useLocation()
+
     useEffect(() => {
-        if (!localStorage.getItem('session')) navigate('/login')
+        if (!localStorage.getItem('session')) {
+            navigate('/login', {
+                state: { invitationId: loader },
+            })
+        }
     }, [localStorage.getItem('session')])
 
     const { mutate } = useMutation((logOutData) => {
