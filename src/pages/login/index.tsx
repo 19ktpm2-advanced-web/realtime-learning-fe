@@ -10,6 +10,7 @@ import { failureModal, successModal } from '../../components/modals'
 import './index.css'
 import loginValidationSchema from './validation/login.schema'
 import instance from 'service/axiosPublic'
+import { useEffect } from 'react'
 
 function Login() {
     const navigate = useNavigate()
@@ -21,6 +22,17 @@ function Login() {
         resolver: yupResolver(loginValidationSchema),
     })
 
+    useEffect(() => {
+        // gogoole is global var
+        google.accounts.id.initialize({
+            client_id: '965958523455-e4kagn05kspaneb4bjli6fnbufhf8fe5.apps.googleusercontent.com',
+            callback: handleCallbackResponse,
+        })
+        google.accounts.id.renderButton(document.getElementById('GoogleSignInDiv'), { theme: 'outline', size: 'large' })
+    }, [])
+    function handleCallbackResponse(response) {
+        console.log(response)
+    }
     const onSubmit = (value) => {
         mutate(value, {
             onSuccess: (res) => {
@@ -43,47 +55,52 @@ function Login() {
     })
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="formWrapper">
-            <p className="title">Welcome To Authentication App</p>
-            <div className="inputWrapper">
-                <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                        <Input {...field} className="input" placeholder="Enter your email" size="large" prefix={<MailOutlined />} />
-                    )}
-                />
-                <span className="message">{errors?.email?.message}</span>
-            </div>
-            <div className="inputWrapper">
-                <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => (
-                        <Input.Password
-                            className="input"
-                            {...field}
-                            placeholder="Enter password"
-                            size="large"
-                            // eslint-disable-next-line no-use-before-define
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                        />
-                    )}
-                />
-                <span className="message">{errors?.password?.message}</span>
-            </div>
-            <div className="btnWrapper">
-                <Spin spinning={isLoading}>
-                    <button type="submit" className="button">
-                        Login
-                    </button>
-                </Spin>
-                {/* eslint-disable-next-line no-use-before-define */}
-                <Link to="/register" type="submit" className="button">
-                    Register
-                </Link>
-            </div>
-        </form>
+        <div>
+            <form onSubmit={handleSubmit(onSubmit)} className="formWrapper">
+                <p className="title">Welcome To Authentication App</p>
+                <div className="inputWrapper">
+                    <Controller
+                        name="email"
+                        control={control}
+                        render={({ field }) => (
+                            <Input {...field} className="input" placeholder="Enter your email" size="large" prefix={<MailOutlined />} />
+                        )}
+                    />
+                    <span className="message">{errors?.email?.message}</span>
+                </div>
+                <div className="inputWrapper">
+                    <Controller
+                        name="password"
+                        control={control}
+                        render={({ field }) => (
+                            <Input.Password
+                                className="input"
+                                {...field}
+                                placeholder="Enter password"
+                                size="large"
+                                // eslint-disable-next-line no-use-before-define
+                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                        )}
+                    />
+                    <span className="message">{errors?.password?.message}</span>
+                </div>
+                <div className="btnWrapper">
+                    <Spin spinning={isLoading}>
+                        <button type="submit" className="button">
+                            Login
+                        </button>
+                    </Spin>
+                    {/* eslint-disable-next-line no-use-before-define */}
+                    <Link to="/register" type="submit" className="button">
+                        Register
+                    </Link>
+                </div>
+                <br />
+                <h3>--- or login with -- </h3>
+                <div id="GoogleSignInDiv"></div>
+            </form>
+        </div>
     )
 }
 export default Login
