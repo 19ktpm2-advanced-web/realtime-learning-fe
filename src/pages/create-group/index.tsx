@@ -26,7 +26,7 @@ function CreateGroup() {
                 setLoading(false)
                 if (res?.status === 200) {
                     successModal('Successful', 'Create group successfully')
-                    navigate('/group')
+                    navigate('/my-group')
                 } else {
                     failureModal('Failed', res.statusText)
                 }

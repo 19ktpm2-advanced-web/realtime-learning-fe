@@ -1,0 +1,12 @@
+.navBtn:focus {
+    background-color: transparent;
+}
+.navBtn.active {
+    border-bottom: 3px solid #135baa;
+    border-image-slice: 1;
+}
+.navBtn {
+    border: none;
+    background: transparent;
+    font-weight: 600;
+}

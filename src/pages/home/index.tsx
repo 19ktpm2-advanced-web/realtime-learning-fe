@@ -47,7 +47,6 @@ export default function Home() {
                 style={{
                     backgroundColor: '#1046c7',
                     color: 'white',
-                    padding: '16px 20px',
                     margin: '8px 0',
                     border: 'none',
                     cursor: 'pointer',
@@ -63,7 +62,22 @@ export default function Home() {
                 style={{
                     backgroundColor: '#1046c7',
                     color: 'white',
-                    padding: '16px 20px',
+                    margin: '8px 0',
+                    border: 'none',
+                    cursor: 'pointer',
+                    opacity: 0.9,
+                }}
+                className="logout-btn"
+                onClick={() => {
+                    navigate('/my-group')
+                }}
+            >
+                My Groups
+            </Button>
+            <Button
+                style={{
+                    backgroundColor: '#1046c7',
+                    color: 'white',
                     margin: '8px 0',
                     border: 'none',
                     cursor: 'pointer',

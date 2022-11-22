@@ -1,10 +1,12 @@
+import { IUser } from '../user/IUser.interface'
+
 export interface IGroup {
     id: string
     name: string
     description?: string
-    background?: string
+    background: string
     avatar?: string
-    members?: any
-    owner?: any
-    coOwners?: any
+    members?: IUser[]
+    owner?: IUser
+    coOwners?: IUser[]
 }
