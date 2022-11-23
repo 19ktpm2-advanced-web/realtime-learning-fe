@@ -1,27 +1,40 @@
 /* eslint-disable */
 import { Button } from 'antd'
 import { failureModal } from 'components/modals'
-import { useEffect } from 'react'
-import { useMutation } from 'react-query'
+import { useEffect, useState } from 'react'
+import { useMutation, useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
+import InvitationModal from './invitation.modal'
 
 export default function Home() {
     const navigate = useNavigate()
-
     // Get invitationId from loader if any
     const loader = useLoaderData()
-
     // Get invitationId if redirect from login
     const { state } = useLocation()
+    const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false)
+    const [invitation, setInvitation] = useState()
+    const invitationId = (state && state.invitationId) || loader
 
     useEffect(() => {
         if (!localStorage.getItem('session')) {
             navigate('/login', {
-                state: { invitationId: loader },
+                state: { invitationId },
             })
         }
     }, [localStorage.getItem('session')])
+
+    useEffect(() => {
+        if (isInvitationModalOpen) {
+            instance.get(`/invitation/${invitationId}`).then((res) => {
+                if (res?.status === 200) {
+                    setInvitation(res.data)
+                    setIsInvitationModalOpen(true)
+                } else throw new Error('Not found')
+            })
+        }
+    }, [])
 
     const { mutate } = useMutation((logOutData) => {
         return instance.post('/auth/log-out', logOutData)
@@ -89,6 +102,13 @@ export default function Home() {
             >
                 Log out
             </Button>
+
+            <InvitationModal
+                isModalOpen={isInvitationModalOpen}
+                handleOk={() => setIsInvitationModalOpen(false)}
+                handleCancel={() => setIsInvitationModalOpen(false)}
+                data={invitation}
+            />
         </div>
     )
 }
