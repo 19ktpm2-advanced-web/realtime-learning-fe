@@ -1,5 +1,5 @@
 import { Avatar, List } from 'antd'
-import { IUser } from 'interfaces/user/IUser.interface'
+import { IUser } from 'interfaces/user/user.interface'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import instance from 'service/axiosPrivate'

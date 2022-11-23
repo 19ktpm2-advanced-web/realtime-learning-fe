@@ -1,6 +1,6 @@
 import { Empty } from 'antd'
 import GroupItem from 'components/groupItem'
-import { IGroup } from 'interfaces/group/IGroup.interface'
+import { IGroup } from 'interfaces/group/group.interface'
 import styles from './styles.module.css'
 
 const GroupList = ({ groupList }: { groupList: IGroup[] }) => {

@@ -2,7 +2,7 @@
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons'
 import { Avatar, Card } from 'antd'
 import { failureModal } from 'components/modals'
-import { IGroup } from 'interfaces/group/IGroup.interface'
+import { IGroup } from 'interfaces/group/group.interface'
 import { useNavigate } from 'react-router-dom'
 import styles from './styles.module.css'
 

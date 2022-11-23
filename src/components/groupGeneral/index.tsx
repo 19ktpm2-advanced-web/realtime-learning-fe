@@ -1,5 +1,5 @@
 import { Image } from 'antd'
-import { IGroup } from 'interfaces/group/IGroup.interface'
+import { IGroup } from 'interfaces/group/group.interface'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import instance from 'service/axiosPrivate'

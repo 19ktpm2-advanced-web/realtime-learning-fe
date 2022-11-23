@@ -1,4 +1,4 @@
-import { IUser } from '../user/IUser.interface'
+import { IUser } from '../user/user.interface'
 
 export interface IGroup {
     id: string
