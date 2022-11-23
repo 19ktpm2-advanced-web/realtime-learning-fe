@@ -31,7 +31,23 @@ function Login() {
         google.accounts.id.renderButton(document.getElementById('GoogleSignInDiv'), { theme: 'outline', size: 'large' })
     }, [])
     function handleCallbackResponse(response) {
-        console.log(response)
+        googleMutate.mutate(
+            { token: response.credential },
+            {
+                onSuccess: (res) => {
+                    if (res.status === 200) {
+                        const user = res.data
+                        localStorage.setItem('session', JSON.stringify(user.session))
+                        successModal('Login successfully', `Welcome ${user.fullName}`)
+                        navigate('/')
+                    } else failureModal('Login failed', res.message)
+                },
+                onError: (error) => {
+                    if (error.response && error.response.status === 401) failureModal('Login failed', 'Wrong email or password')
+                    else failureModal('Login failed', error.response && error.response.data)
+                },
+            },
+        )
     }
     const onSubmit = (value) => {
         mutate(value, {
@@ -51,7 +67,10 @@ function Login() {
     }
 
     const { mutate, isLoading } = useMutation((loginFormData) => {
-        return instance.post('/auth/login', loginFormData)
+        return instance.post('http://localhost:3300/auth/login', loginFormData)
+    })
+    const googleMutate = useMutation((credential) => {
+        return instance.post('http://localhost:3300/auth/login-by-google', credential)
     })
 
     return (
@@ -97,8 +116,9 @@ function Login() {
                     </Link>
                 </div>
                 <br />
-                <h3>--- or login with -- </h3>
+                <div>or login with </div>
                 <div id="GoogleSignInDiv"></div>
+                <br />
             </form>
         </div>
     )
