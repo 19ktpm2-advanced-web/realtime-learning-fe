@@ -44,7 +44,7 @@ function InvitationModal({
             open={isModalOpen}
             okText="Accept"
             onOk={() => {
-                handleAcceptInvitation({ invitationId: data?._id })
+                handleAcceptInvitation({ invitationId: data?.id })
             }}
             onCancel={handleCancel}
             width={300}
