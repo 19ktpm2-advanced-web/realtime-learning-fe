@@ -1,3 +1,4 @@
+import { Divider } from 'antd'
 import GroupList from 'components/groupList'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useState } from 'react'
@@ -12,7 +13,7 @@ function JoinGroup() {
     })
     return (
         <div>
-            <h1>Join Group</h1>
+            <Divider orientation="left">Joined Groups</Divider>
             <GroupList groupList={groupList} />
         </div>
     )
