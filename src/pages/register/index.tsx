@@ -27,7 +27,7 @@ function Register() {
         return instance.post('/auth/register', registerFormData)
     })
     const googleMutate = useMutation((credential) => {
-        return instance.post('http://localhost:3300/auth/register-by-google', credential)
+        return instance.post('/auth/register-by-google', credential)
     })
 
     const onSubmit = (data) => {

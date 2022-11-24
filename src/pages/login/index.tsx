@@ -67,10 +67,10 @@ function Login() {
     }
 
     const { mutate, isLoading } = useMutation((loginFormData) => {
-        return instance.post('http://localhost:3300/auth/login', loginFormData)
+        return instance.post('/auth/login', loginFormData)
     })
     const googleMutate = useMutation((credential) => {
-        return instance.post('http://localhost:3300/auth/login-by-google', credential)
+        return instance.post('/auth/login-by-google', credential)
     })
 
     return (
