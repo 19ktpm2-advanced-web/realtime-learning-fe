@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import { useForm, Controller } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { EyeTwoTone, EyeInvisibleOutlined, MailOutlined } from '@ant-design/icons'
 import { Input, Spin } from 'antd'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -13,6 +13,7 @@ import instance from 'service/axiosPublic'
 
 function Login() {
     const navigate = useNavigate()
+    const { state } = useLocation()
     const {
         handleSubmit,
         control,
@@ -27,12 +28,14 @@ function Login() {
                 if (res.status === 200) {
                     const user = res.data
                     localStorage.setItem('session', JSON.stringify(user.session))
-                    successModal('Login successfully', `Welcome ${user.fullName}`)
-                    navigate('/')
+                    navigate('/', {
+                        state,
+                    })
                 } else failureModal('Login failed', res.message)
             },
             onError: (error) => {
-                if (error.response && error.response.status === 401) failureModal('Login failed', 'Wrong email or password')
+                if (error.response && error.response.status === 401)
+                    failureModal('Login failed', 'Wrong email or password')
                 else failureModal('Login failed', error.response && error.response.data)
             },
         })
@@ -50,7 +53,13 @@ function Login() {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} className="input" placeholder="Enter your email" size="large" prefix={<MailOutlined />} />
+                        <Input
+                            {...field}
+                            className="input"
+                            placeholder="Enter your email"
+                            size="large"
+                            prefix={<MailOutlined />}
+                        />
                     )}
                 />
                 <span className="message">{errors?.email?.message}</span>
@@ -66,7 +75,9 @@ function Login() {
                             placeholder="Enter password"
                             size="large"
                             // eslint-disable-next-line no-use-before-define
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            iconRender={(visible) =>
+                                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                            }
                         />
                     )}
                 />
@@ -79,7 +90,7 @@ function Login() {
                     </button>
                 </Spin>
                 {/* eslint-disable-next-line no-use-before-define */}
-                <Link to="/register" type="submit" className="button">
+                <Link to="/register" state={state} type="submit" className="button">
                     Register
                 </Link>
             </div>

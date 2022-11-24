@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
@@ -15,6 +16,14 @@ const router = createBrowserRouter([
         path: '/',
         element: <Home />,
         errorElement: <ErrorPage />,
+    },
+    {
+        id: 'invitation',
+        path: '/invitation/:invitationId',
+        element: <Home />,
+        loader: ({ params }) => {
+            return params.invitationId
+        },
     },
     {
         path: '/login',
