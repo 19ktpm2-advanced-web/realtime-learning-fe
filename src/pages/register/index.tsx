@@ -29,33 +29,7 @@ function Register() {
     const googleMutate = useMutation((credential) => {
         return instance.post('http://localhost:3300/auth/register-by-google', credential)
     })
-    useEffect(() => {
-        // gogoole is global var
-        google.accounts.id.initialize({
-            client_id: '965958523455-e4kagn05kspaneb4bjli6fnbufhf8fe5.apps.googleusercontent.com',
-            callback: handleCallbackResponse,
-        })
-        google.accounts.id.renderButton(document.getElementById('GoogleSignInDiv'), { theme: 'outline', size: 'large' })
-    }, [])
 
-    function handleCallbackResponse(response) {
-        googleMutate.mutate(
-            { token: response.credential },
-            {
-                onSuccess: (data) => {
-                    if (data?.status === 200) {
-                        successModal('Register successfully', `Welcome ${data?.data?.fullName}`)
-                        navigate('/login')
-                    } else {
-                        failureModal('Register failed', data.message)
-                    }
-                },
-                onError: (error) => {
-                    failureModal('Register failed', error.response && error.response.data)
-                },
-            },
-        )
-    }
     const onSubmit = (data) => {
         mutate(data, {
             onSuccess: (data) => {
@@ -120,10 +94,6 @@ function Register() {
                     Login
                 </Link>
             </div>
-            <br />
-            <div>or login with </div>
-            <div id="GoogleSignInDiv"></div>
-            <br />
         </form>
     )
 }
