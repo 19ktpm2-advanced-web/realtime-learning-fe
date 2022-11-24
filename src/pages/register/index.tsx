@@ -11,6 +11,7 @@ import { failureModal, successModal } from '../../components/modals'
 import './index.css'
 import instance from 'service/axiosPublic'
 import registerValidationSchema from './validation/register.schema'
+import { useEffect } from 'react'
 
 function Register() {
     const navigate = useNavigate()
@@ -24,6 +25,9 @@ function Register() {
 
     const { mutate, isLoading } = useMutation((registerFormData) => {
         return instance.post('/auth/register', registerFormData)
+    })
+    const googleMutate = useMutation((credential) => {
+        return instance.post('/auth/register-by-google', credential)
     })
 
     const onSubmit = (data) => {
