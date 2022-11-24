@@ -110,6 +110,22 @@ export default function Home() {
                 }}
                 className="logout-btn"
                 onClick={() => {
+                    navigate('/join-group')
+                }}
+            >
+                Join Groups
+            </Button>
+            <Button
+                style={{
+                    backgroundColor: '#1046c7',
+                    color: 'white',
+                    margin: '8px 0',
+                    border: 'none',
+                    cursor: 'pointer',
+                    opacity: 0.9,
+                }}
+                className="logout-btn"
+                onClick={() => {
                     const currentSession = JSON.parse(localStorage.getItem('session') || '')
                     handleLogOut({ refreshToken: currentSession?.refreshToken })
                 }}
