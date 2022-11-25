@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Form, Input, Radio, DatePicker, Tabs, Button } from 'antd'
+import NavBar from 'components/navBar'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -47,79 +48,82 @@ function Profile() {
     }
 
     return (
-        <Tabs
-            centered
-            defaultActiveKey="1"
-            items={[
-                {
-                    label: 'Profile',
-                    key: '1',
-                    children: (
-                        <Form
-                            form={form}
-                            onFinish={handleSubmit}
-                            labelCol={{ span: 4 }}
-                            wrapperCol={{ span: 10 }}
-                            layout="horizontal"
-                            className="form-wrapper"
-                        >
-                            <Form.Item label="Avatar" name="avatar">
-                                <UploadAvatar formRef={form} />
-                            </Form.Item>
-                            <Form.Item label="Email" name="email">
-                                <Input placeholder="Ex: abc@gmail.com" disabled />
-                            </Form.Item>
-                            <Form.Item label="Full name" name="fullName">
-                                <Input placeholder="Ex: John Smith" />
-                            </Form.Item>
-                            <Form.Item
-                                label="Phone number"
-                                name="phoneNumber"
-                                rules={[{ len: 10, message: 'Phone number must include 10 numbers' }]}
+        <div>
+            <NavBar />
+            <Tabs
+                centered
+                defaultActiveKey="1"
+                items={[
+                    {
+                        label: 'Profile',
+                        key: '1',
+                        children: (
+                            <Form
+                                form={form}
+                                onFinish={handleSubmit}
+                                labelCol={{ span: 4 }}
+                                wrapperCol={{ span: 10 }}
+                                layout="horizontal"
+                                className="form-wrapper"
                             >
-                                <Input placeholder="Ex: 0123456789" />
-                            </Form.Item>
-                            <Form.Item label="Gender" name="gender">
-                                <Radio.Group>
-                                    <Radio value="male"> Male </Radio>
-                                    <Radio value="female"> Female </Radio>
-                                </Radio.Group>
-                            </Form.Item>
-                            <Form.Item label="Date of birth" name="dateOfBirth">
-                                <DatePicker />
-                            </Form.Item>
-                            <Form.Item wrapperCol={{ span: 10, offset: 4 }}>
-                                <Button type="primary" htmlType="submit">
-                                    Save Changes
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    ),
-                },
-                {
-                    label: 'Security',
-                    key: '2',
-                    children: (
-                        <Form labelCol={{ span: 4 }} wrapperCol={{ span: 10 }} layout="horizontal" className="form-wrapper">
-                            <Form.Item label="Current password">
-                                <Input.Password />
-                            </Form.Item>
-                            <Form.Item label="New password">
-                                <Input.Password />
-                            </Form.Item>
-                            <Form.Item label="Re-enter new password">
-                                <Input.Password />
-                            </Form.Item>
-                            <Form.Item wrapperCol={{ span: 10, offset: 4 }}>
-                                <Button type="primary" htmlType="submit">
-                                    Change Password
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    ),
-                },
-            ]}
-        />
+                                <Form.Item label="Avatar" name="avatar">
+                                    <UploadAvatar formRef={form} />
+                                </Form.Item>
+                                <Form.Item label="Email" name="email">
+                                    <Input placeholder="Ex: abc@gmail.com" disabled />
+                                </Form.Item>
+                                <Form.Item label="Full name" name="fullName">
+                                    <Input placeholder="Ex: John Smith" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Phone number"
+                                    name="phoneNumber"
+                                    rules={[{ len: 10, message: 'Phone number must include 10 numbers' }]}
+                                >
+                                    <Input placeholder="Ex: 0123456789" />
+                                </Form.Item>
+                                <Form.Item label="Gender" name="gender">
+                                    <Radio.Group>
+                                        <Radio value="male"> Male </Radio>
+                                        <Radio value="female"> Female </Radio>
+                                    </Radio.Group>
+                                </Form.Item>
+                                <Form.Item label="Date of birth" name="dateOfBirth">
+                                    <DatePicker />
+                                </Form.Item>
+                                <Form.Item wrapperCol={{ span: 10, offset: 4 }}>
+                                    <Button type="primary" htmlType="submit">
+                                        Save Changes
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                        ),
+                    },
+                    {
+                        label: 'Security',
+                        key: '2',
+                        children: (
+                            <Form labelCol={{ span: 4 }} wrapperCol={{ span: 10 }} layout="horizontal" className="form-wrapper">
+                                <Form.Item label="Current password">
+                                    <Input.Password />
+                                </Form.Item>
+                                <Form.Item label="New password">
+                                    <Input.Password />
+                                </Form.Item>
+                                <Form.Item label="Re-enter new password">
+                                    <Input.Password />
+                                </Form.Item>
+                                <Form.Item wrapperCol={{ span: 10, offset: 4 }}>
+                                    <Button type="primary" htmlType="submit">
+                                        Change Password
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                        ),
+                    },
+                ]}
+            />
+        </div>
     )
 }
 

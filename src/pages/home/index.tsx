@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Button } from 'antd'
 import { failureModal } from 'components/modals'
+import NavBar from 'components/navBar'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
@@ -57,88 +58,90 @@ export default function Home() {
     }
 
     return (
-        <div
-            id="home"
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-            }}
-        >
-            <h1>Welcome to home page!</h1>
-            <Button
+        <div>
+            <NavBar />
+            <div
+                id="home"
                 style={{
-                    backgroundColor: '#1046c7',
-                    color: 'white',
-                    margin: '8px 0',
-                    border: 'none',
-                    cursor: 'pointer',
-                    opacity: 0.9,
-                }}
-                onClick={() => {
-                    navigate('/profile')
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                 }}
             >
-                Profile
-            </Button>
-            <Button
-                style={{
-                    backgroundColor: '#1046c7',
-                    color: 'white',
-                    margin: '8px 0',
-                    border: 'none',
-                    cursor: 'pointer',
-                    opacity: 0.9,
-                }}
-                className="logout-btn"
-                onClick={() => {
-                    navigate('/my-group')
-                }}
-            >
-                My Groups
-            </Button>
-            <Button
-                style={{
-                    backgroundColor: '#1046c7',
-                    color: 'white',
-                    margin: '8px 0',
-                    border: 'none',
-                    cursor: 'pointer',
-                    opacity: 0.9,
-                }}
-                className="logout-btn"
-                onClick={() => {
-                    navigate('/join-group')
-                }}
-            >
-                Join Groups
-            </Button>
-            <Button
-                style={{
-                    backgroundColor: '#1046c7',
-                    color: 'white',
-                    margin: '8px 0',
-                    border: 'none',
-                    cursor: 'pointer',
-                    opacity: 0.9,
-                }}
-                className="logout-btn"
-                onClick={() => {
-                    const currentSession = JSON.parse(localStorage.getItem('session') || '')
-                    handleLogOut({ refreshToken: currentSession?.refreshToken })
-                }}
-            >
-                Log out
-            </Button>
-
-            <InvitationModal
-                isModalOpen={isInvitationModalOpen}
-                handleOk={() => setIsInvitationModalOpen(false)}
-                handleCancel={() => setIsInvitationModalOpen(false)}
-                data={invitation}
-            />
+                <h1>Welcome to home page!</h1>
+                <Button
+                    style={{
+                        backgroundColor: '#1046c7',
+                        color: 'white',
+                        margin: '8px 0',
+                        border: 'none',
+                        cursor: 'pointer',
+                        opacity: 0.9,
+                    }}
+                    onClick={() => {
+                        navigate('/profile')
+                    }}
+                >
+                    Profile
+                </Button>
+                <Button
+                    style={{
+                        backgroundColor: '#1046c7',
+                        color: 'white',
+                        margin: '8px 0',
+                        border: 'none',
+                        cursor: 'pointer',
+                        opacity: 0.9,
+                    }}
+                    className="logout-btn"
+                    onClick={() => {
+                        navigate('/my-group')
+                    }}
+                >
+                    My Groups
+                </Button>
+                <Button
+                    style={{
+                        backgroundColor: '#1046c7',
+                        color: 'white',
+                        margin: '8px 0',
+                        border: 'none',
+                        cursor: 'pointer',
+                        opacity: 0.9,
+                    }}
+                    className="logout-btn"
+                    onClick={() => {
+                        navigate('/join-group')
+                    }}
+                >
+                    Join Groups
+                </Button>
+                <Button
+                    style={{
+                        backgroundColor: '#1046c7',
+                        color: 'white',
+                        margin: '8px 0',
+                        border: 'none',
+                        cursor: 'pointer',
+                        opacity: 0.9,
+                    }}
+                    className="logout-btn"
+                    onClick={() => {
+                        const currentSession = JSON.parse(localStorage.getItem('session') || '')
+                        handleLogOut({ refreshToken: currentSession?.refreshToken })
+                    }}
+                >
+                    Log out
+                </Button>
+                <InvitationModal
+                    isModalOpen={isInvitationModalOpen}
+                    handleOk={() => setIsInvitationModalOpen(false)}
+                    handleCancel={() => setIsInvitationModalOpen(false)}
+                    data={invitation}
+                />
+            </div>
         </div>
     )
 }
