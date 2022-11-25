@@ -11,6 +11,7 @@ export const config = {
             login: '/auth/login',
             profile: '/user/profile',
             refreshToken: '/auth/refresh-token',
+            loginByGoogle: '/auth/login-by-google',
         },
         refreshTokenMaxAge: 10000,
     },

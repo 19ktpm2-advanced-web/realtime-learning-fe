@@ -10,6 +10,7 @@ import { failureModal, successModal } from '../../components/modals'
 import './index.css'
 import loginValidationSchema from './validation/login.schema'
 import instance from 'service/axiosPublic'
+import { useEffect } from 'react'
 
 function Login() {
     const navigate = useNavigate()
@@ -40,9 +41,42 @@ function Login() {
             },
         })
     }
-
+    useEffect(() => {
+        // gogoole is global var
+        google.accounts.id.initialize({
+            client_id: process.env.REACT_APP_CLIENT_ID,
+            callback: handleCallbackResponse,
+        })
+        google.accounts.id.renderButton(document.getElementById('GoogleSignInDiv'), {
+            theme: 'outline',
+            size: 'large',
+        })
+    }, [])
+    function handleCallbackResponse(response) {
+        googleMutate.mutate(
+            { token: response.credential },
+            {
+                onSuccess: (res) => {
+                    if (res.status === 200) {
+                        const user = res.data
+                        localStorage.setItem('session', JSON.stringify(user.session))
+                        successModal('Login successfully', `Welcome ${user.fullName}`)
+                        navigate('/')
+                    } else failureModal('Login failed', res.message)
+                },
+                onError: (error) => {
+                    if (error.response && error.response.status === 401)
+                        failureModal('Login failed', 'Wrong email or password')
+                    else failureModal('Login failed', error.response && error.response.data)
+                },
+            },
+        )
+    }
     const { mutate, isLoading } = useMutation((loginFormData) => {
         return instance.post('/auth/login', loginFormData)
+    })
+    const googleMutate = useMutation((credential) => {
+        return instance.post('/auth/login-by-google', credential)
     })
 
     return (
@@ -94,6 +128,10 @@ function Login() {
                     Register
                 </Link>
             </div>
+            <br />
+            <div>or login with </div>
+            <br />
+            <div id="GoogleSignInDiv"></div>
         </form>
     )
 }
