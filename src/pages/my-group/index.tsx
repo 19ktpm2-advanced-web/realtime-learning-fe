@@ -6,6 +6,7 @@ import instance from 'service/axiosPrivate'
 import { useState } from 'react'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useQuery } from 'react-query'
+import NavBar from 'components/navBar'
 import styles from './styles.module.css'
 
 function MyGroup() {
@@ -20,6 +21,7 @@ function MyGroup() {
     })
     return (
         <div>
+            <NavBar />
             <div className={styles.header}>
                 <Button
                     onClick={handlerCreateNewGroupClick}
