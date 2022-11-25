@@ -10,6 +10,7 @@ import ErrorPage from './pages/error-page'
 import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
+import JoinGroup from './pages/join-group'
 
 const router = createBrowserRouter([
     {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
     {
         path: '/group/:groupId',
         element: <GroupDetail />,
+    },
+    {
+        path: '/join-group',
+        element: <JoinGroup />,
     },
 ])
 const queryClient = new QueryClient()
