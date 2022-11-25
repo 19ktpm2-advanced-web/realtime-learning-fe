@@ -15,7 +15,7 @@ import JoinGroup from './pages/join-group'
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <Home />,
+        element: <JoinGroup />,
         errorElement: <ErrorPage />,
     },
     {
