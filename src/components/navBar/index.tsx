@@ -2,7 +2,14 @@
 import 'antd/dist/antd.css'
 import './index.css'
 import { Menu } from 'antd'
-import { HomeOutlined, UsergroupAddOutlined, UserOutlined, PoweroffOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons'
+import {
+    HomeOutlined,
+    UsergroupAddOutlined,
+    UserOutlined,
+    PoweroffOutlined,
+    LoginOutlined,
+    LogoutOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from 'react-query'
 import instance from 'service/axiosPrivate'
@@ -44,19 +51,25 @@ const NavBar = () => {
             <Menu.Item key="/" icon={<HomeOutlined />}>
                 Home
             </Menu.Item>
-            <Menu.Item key="/profile" icon={<UserOutlined />}>
-                Profile
-            </Menu.Item>
             <Menu.Item key="/my-group" icon={<UsergroupAddOutlined />}>
                 My groups
             </Menu.Item>
 
-            {localStorage.getItem('session') ? (
+            <Menu.Item key="/profile" icon={<UserOutlined />} style={{ marginLeft: '79%' }}>
+                Profile
+            </Menu.Item>
+
+            {!localStorage.getItem('session') ? (
                 <Menu.Item key="/login" icon={<LoginOutlined />} style={{ marginLeft: 'auto' }}>
                     Sign in
                 </Menu.Item>
             ) : (
-                <Menu.Item key="/logout" icon={<LogoutOutlined />} danger style={{ marginLeft: 'auto' }}>
+                <Menu.Item
+                    key="/logout"
+                    icon={<LogoutOutlined />}
+                    danger
+                    style={{ marginLeft: 'auto' }}
+                >
                     Sign out
                 </Menu.Item>
             )}
