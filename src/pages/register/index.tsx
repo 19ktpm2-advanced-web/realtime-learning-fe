@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { useForm, Controller } from 'react-hook-form'
 import { UserOutlined, EyeTwoTone, EyeInvisibleOutlined, MailOutlined } from '@ant-design/icons'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Input, Spin } from 'antd'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from 'react-query'
@@ -14,6 +14,8 @@ import registerValidationSchema from './validation/register.schema'
 
 function Register() {
     const navigate = useNavigate()
+    const { state } = useLocation()
+
     const {
         handleSubmit,
         control,
@@ -31,7 +33,7 @@ function Register() {
             onSuccess: (data) => {
                 if (data?.status === 200) {
                     successModal('Register successfully', `Welcome ${data?.data?.fullName}`)
-                    navigate('/login')
+                    navigate('/login', { state })
                 } else {
                     failureModal('Register failed', data.message)
                 }
@@ -49,7 +51,13 @@ function Register() {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} className="input" placeholder="Enter your email" size="large" prefix={<MailOutlined />} />
+                        <Input
+                            {...field}
+                            className="input"
+                            placeholder="Enter your email"
+                            size="large"
+                            prefix={<MailOutlined />}
+                        />
                     )}
                 />
                 <span className="message">{errors?.email?.message}</span>
@@ -59,7 +67,13 @@ function Register() {
                     name="fullName"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} className="input" placeholder="Enter your name" size="large" prefix={<UserOutlined />} />
+                        <Input
+                            {...field}
+                            className="input"
+                            placeholder="Enter your name"
+                            size="large"
+                            prefix={<UserOutlined />}
+                        />
                     )}
                 />
                 <span className="message">{errors?.fullName?.message}</span>
@@ -74,7 +88,9 @@ function Register() {
                             {...field}
                             placeholder="Enter password"
                             size="large"
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            iconRender={(visible) =>
+                                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                            }
                         />
                     )}
                 />
@@ -86,7 +102,7 @@ function Register() {
                         Register
                     </button>
                 </Spin>
-                <Link to="/login" className="button">
+                <Link to="/login" state={state} className="button">
                     Login
                 </Link>
             </div>
