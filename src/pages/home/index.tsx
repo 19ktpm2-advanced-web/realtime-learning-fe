@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
+import { IInvitation } from '../../interfaces'
 import InvitationModal from './invitation.modal'
 
 export default function Home() {
@@ -14,7 +15,7 @@ export default function Home() {
     // Get invitationId if redirect from login
     const { state } = useLocation()
     const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false)
-    const [invitation, setInvitation] = useState()
+    const [invitation, setInvitation] = useState<IInvitation>()
     const invitationId = (state && state.invitationId) || loader
 
     useEffect(() => {
@@ -26,12 +27,21 @@ export default function Home() {
     }, [localStorage.getItem('session')])
 
     useEffect(() => {
-        if (isInvitationModalOpen) {
+        if (invitationId) {
             instance.get(`/invitation/${invitationId}`).then((res) => {
                 if (res?.status === 200) {
-                    setInvitation(res.data)
-                    setIsInvitationModalOpen(true)
-                } else throw new Error('Not found')
+                    const {
+                        invitation,
+                        isMemberOfGroup,
+                    }: {
+                        invitation: IInvitation
+                        isMemberOfGroup: boolean
+                    } = res.data
+                    if (invitation && !isMemberOfGroup) {
+                        setInvitation(invitation)
+                        setIsInvitationModalOpen(true)
+                    } else navigate(`/group/${invitation.group.id}`)
+                }
             })
         }
     }, [])

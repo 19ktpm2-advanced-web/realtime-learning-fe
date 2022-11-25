@@ -2,7 +2,7 @@ import { IGroup } from '../group'
 import { IUser } from '../user'
 
 export interface IInvitation {
-    id?: string
+    id: string
 
     inviter: IUser
 
