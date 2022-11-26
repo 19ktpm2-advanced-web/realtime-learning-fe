@@ -4,6 +4,7 @@ import { Avatar, Card } from 'antd'
 import DeleteModal from 'components/deleteModal'
 import InvitationCard from 'components/invitation-card'
 import { failureModal } from 'components/modals'
+import { Privilege } from 'enums'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -12,10 +13,22 @@ import styles from './styles.module.css'
 
 const { Meta } = Card
 
-const GroupItem = ({ data }: { data: IGroup }) => {
+const GroupItem = ({ data, permission }: { data: IGroup; permission: Privilege[] }) => {
     const [showCopyLinkModal, setShowCopyLinkModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const navigate = useNavigate()
+    const actions = []
+    if (permission?.includes(Privilege.EDITING)) {
+        actions.push(
+            <EditOutlined key="edit" onClick={() => navigate(`/groups/${data.id}/edit`)} />,
+        )
+    }
+    if (permission?.includes(Privilege.INVITING)) {
+        actions.push(<LinkOutlined key="link" onClick={() => setShowCopyLinkModal(true)} />)
+    }
+    if (permission?.includes(Privilege.DELETING)) {
+        actions.push(<DeleteOutlined key="delete" onClick={() => setShowDeleteModal(true)} />)
+    }
     const handleClick = () => {
         if (data.id) {
             navigate(`/group/${data.id}`)
@@ -37,14 +50,7 @@ const GroupItem = ({ data }: { data: IGroup }) => {
                         />
                     </div>
                 }
-                actions={[
-                    <EditOutlined key="edit" />,
-                    <LinkOutlined
-                        key="invite"
-                        onClick={() => setShowCopyLinkModal((showLink) => !showLink)}
-                    />,
-                    <DeleteOutlined key="delete" onClick={() => setShowDeleteModal(true)} />,
-                ]}
+                actions={actions}
             >
                 <Meta
                     avatar={<Avatar src={data.avatar} />}

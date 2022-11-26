@@ -50,7 +50,11 @@ function GroupGeneral({ groupId }: { groupId?: String }) {
 
     useQuery(['groupDetail'], async () => {
         const res = await instance.get(`/group/get/${groupId}`)
-        setGroup(res.data)
+        if (res.status === 200) {
+            setGroup(res.data.group)
+        } else {
+            failureModal('Failed to get group detail', res.statusText)
+        }
     })
     return (
         <div className={styles.wrapper}>
