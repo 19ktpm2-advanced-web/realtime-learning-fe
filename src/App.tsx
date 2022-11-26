@@ -60,7 +60,7 @@ const router = createBrowserRouter([
                 element: <GroupDetail />,
             },
             {
-                path: '/verify-email/:token',
+                path: '/verify-email/:emailToken',
                 element: <Activation />,
                 errorElement: <ErrorPage />,
             },

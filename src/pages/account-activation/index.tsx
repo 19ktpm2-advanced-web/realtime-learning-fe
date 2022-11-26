@@ -4,22 +4,35 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Result } from 'antd'
 import instance from 'service/axiosPrivate'
+import { failureModal, successModal } from 'components/modals'
 
 function Activation() {
     const navigate = useNavigate()
-    const { token } = useParams()
-    const [verified, setVerified] = useState(true)
+    const { emailToken } = useParams()
+    const [token, setToken] = useState(emailToken)
+    const [verified, setVerified] = useState(false)
 
     useEffect(() => {
         instance
-            .get(`auth/verify-email/${token}`)
+            .get(`auth/verify-email/${emailToken}`)
             .then((res) => {
                 setVerified(true)
             })
             .catch((err) => {
                 setVerified(false)
             })
-    })
+    }, [])
+    function handleResendVerificationMail() {
+        instance
+            .post(`auth/resend-verification-mail/`, { token: token })
+            .then((res) => {
+                setToken(res.data.emailToken)
+                successModal('Email sent', `Please check your inbox for lastest verification email`)
+            })
+            .catch((err) => {
+                failureModal('System error', err.response ? err.response.data : err.message)
+            })
+    }
 
     return (
         <div>
@@ -43,9 +56,10 @@ function Activation() {
                 <Result
                     status="warning"
                     title="There are some problems with your operation."
+                    subTitle="Please try again or click the button below to resend new verification mail"
                     extra={
-                        <Button type="primary" key="console">
-                            Go Console
+                        <Button type="primary" key="console" onClick={handleResendVerificationMail}>
+                            Resend
                         </Button>
                     }
                 />
