@@ -3,18 +3,44 @@ import { useState } from 'react'
 import { Form, Modal } from 'antd'
 import { Input, Tag } from 'antd'
 import './index.css'
+import { useMutation } from 'react-query'
+import instance from '../../service/axiosPrivate'
+import { failureModal, successModal } from '../modals'
+import { IGroup } from '../../interfaces'
+import { PlusOutlined } from '@ant-design/icons'
 
 function InviteByEmailModal({
     isModalOpen,
     handleOk,
     handleCancel,
+    group,
 }: {
     isModalOpen: boolean
     handleOk: () => void
     handleCancel: () => void
+    group: IGroup
 }) {
     const [tags, setTags] = useState<string[]>([])
     const [form] = Form.useForm()
+
+    const { mutate } = useMutation((createEmailInvitationsData) => {
+        return instance.post('/invitation/create-email-invitations', createEmailInvitationsData)
+    })
+
+    const handleEmailInvitations = (data: any) => {
+        mutate(data, {
+            onSuccess: (res) => {
+                if (res?.status === 200 && res.data.ok) {
+                    successModal('Invite successfully')
+                } else {
+                    failureModal('Failed to invite', res.statusText)
+                }
+            },
+            onError: (error: any) => {
+                failureModal('Failed to invite', error.response && error.response.data)
+            },
+        })
+    }
 
     const handleClose = (removedTag: string) => {
         const newTags = tags.filter((tag) => tag !== removedTag)
@@ -56,11 +82,18 @@ function InviteByEmailModal({
             okText="Invite"
             onOk={() => {
                 setTags([])
+                handleEmailInvitations({
+                    groupId: group.id,
+                    inviteeEmails: tags,
+                })
                 handleOk()
             }}
             onCancel={() => {
                 setTags([])
                 handleCancel()
+            }}
+            okButtonProps={{
+                disabled: tags.length === 0,
             }}
         >
             <div style={{ marginBottom: 16 }}>{tagChild}</div>
@@ -74,6 +107,7 @@ function InviteByEmailModal({
                         type="email"
                         onBlur={handleInputConfirm}
                         onPressEnter={handleInputConfirm}
+                        addonAfter={<PlusOutlined onClick={handleInputConfirm} />}
                     />
                 </Form.Item>
             </Form>

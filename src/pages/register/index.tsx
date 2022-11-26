@@ -32,7 +32,10 @@ function Register() {
         mutate(data, {
             onSuccess: (data) => {
                 if (data?.status === 200) {
-                    successModal('Register successfully', `Welcome ${data?.data?.fullName}`)
+                    successModal(
+                        'Register successfully',
+                        `We've sent you an verification email to ${data?.data?.email}. Please check to verify your account`,
+                    )
                     navigate('/login', { state })
                 } else {
                     failureModal('Register failed', data.message)
@@ -56,7 +59,7 @@ function Register() {
                             className="input"
                             placeholder="Enter your email"
                             size="large"
-                            prefix={<MailOutlined />}
+                            suffix={<MailOutlined />}
                         />
                     )}
                 />
@@ -72,7 +75,7 @@ function Register() {
                             className="input"
                             placeholder="Enter your name"
                             size="large"
-                            prefix={<UserOutlined />}
+                            suffix={<UserOutlined />}
                         />
                     )}
                 />

@@ -52,6 +52,8 @@ module.exports = {
         'no-use-before-define': 0,
         'import/no-extraneous-dependencies': 'off',
         'import/no-unresolved': 'off',
+        'import/export': 0,
+        'import/prefer-default-export': 'off',
         'default-param-last': 'off',
         // React
         'react/destructuring-assignment': 0,
