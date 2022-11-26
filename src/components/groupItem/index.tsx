@@ -69,6 +69,7 @@ const GroupItem = ({ data }: { data: IGroup }) => {
                             const result = await instance.delete(`/group/delete/${data.id}`)
                             console.log('result', result?.data)
                             setShowDeleteModal(false)
+                            window.location.reload()
                         }}
                     />
                 )
