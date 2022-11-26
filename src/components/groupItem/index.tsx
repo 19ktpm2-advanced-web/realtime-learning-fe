@@ -58,7 +58,7 @@ const GroupItem = ({ data }: { data: IGroup }) => {
             </Card>
             {
                 // <CopyLinkModal
-                showCopyLinkModal && <InvitationCard />
+                showCopyLinkModal && <InvitationCard group={data} />
             }
             {
                 // <DeleteModal

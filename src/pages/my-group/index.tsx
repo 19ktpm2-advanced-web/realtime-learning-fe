@@ -1,12 +1,11 @@
 import GroupList from 'components/groupList'
-import { Button, Divider } from 'antd'
+import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import { useState } from 'react'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useQuery } from 'react-query'
-import NavBar from '../../components/navbar/index'
 import styles from './styles.module.css'
 
 function MyGroup() {
@@ -20,8 +19,7 @@ function MyGroup() {
         setGroupList(res.data.groups)
     })
     return (
-        <div>
-            <NavBar />
+        <>
             <div className={styles.header}>
                 <Button
                     onClick={handlerCreateNewGroupClick}
@@ -34,16 +32,15 @@ function MyGroup() {
                         />
                     }
                     className={styles.createGroupBtn}
-                    size="large"
+                    size="small"
                 >
                     Create New Group
                 </Button>
             </div>
-            <Divider />
             <div className={styles.body}>
                 <GroupList groupList={groupList} />
             </div>
-        </div>
+        </>
     )
 }
 

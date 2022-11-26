@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Outlet, Router, RouterProvider, Routes } from 'react-router-dom'
 import './index.css'
 import CreateGroup from './pages/create-group'
 import Login from './pages/login'
@@ -11,22 +11,9 @@ import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
 import JoinGroup from './pages/join-group'
-import Activation from './pages/account-activation'
+import NavBar from './components/navBar'
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <JoinGroup />,
-        errorElement: <ErrorPage />,
-    },
-    {
-        id: 'invitation',
-        path: '/invitation/:invitationId',
-        element: <Home />,
-        loader: ({ params }) => {
-            return params.invitationId
-        },
-    },
     {
         path: '/login',
         element: <Login />,
@@ -36,29 +23,48 @@ const router = createBrowserRouter([
         element: <Register />,
     },
     {
-        path: '/profile',
-        element: <Profile />,
-    },
-    {
-        path: '/my-group',
-        element: <MyGroup />,
-    },
-    {
-        path: '/create-group',
-        element: <CreateGroup />,
-    },
-    {
-        path: '/group/:groupId',
-        element: <GroupDetail />,
-    },
-    {
-        path: '/verify-email/:token',
-        element: <Activation />,
+        element: (
+            <>
+                <NavBar />
+                <Outlet />
+            </>
+        ),
         errorElement: <ErrorPage />,
-    },
-    {
-        path: '/join-group',
-        element: <JoinGroup />,
+        children: [
+            {
+                path: '/',
+                element: <Home />,
+            },
+            {
+                id: 'invitation',
+                path: '/invitation/:invitationId',
+                element: <JoinGroup />,
+                loader: ({ params }) => {
+                    return params.invitationId
+                },
+            },
+            {
+                path: '/profile',
+                element: <Profile />,
+            },
+            {
+                path: '/my-group',
+                element: <MyGroup />,
+            },
+            {
+                path: '/create-group',
+                element: <CreateGroup />,
+            },
+            {
+                path: '/group/:groupId',
+                element: <GroupDetail />,
+            },
+            {
+                path: '/verify-email/:token',
+                element: <Activation />,
+                errorElement: <ErrorPage />,
+            },
+        ],
     },
 ])
 const queryClient = new QueryClient()

@@ -5,7 +5,7 @@ export const config = {
             get: 'GET',
             post: 'POST',
         },
-        DOMAIN_NAME: process.env.REACT_APP_BASE_URL,
+        DOMAIN_NAME: process.env.REACT_APP_API_BASE_URL,
         ENDPOINT: {
             register: '/auth/register',
             login: '/auth/login',

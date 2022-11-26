@@ -1,0 +1,5 @@
+@import '~antd/dist/antd.css';
+
+.right-align {
+    margin-left: auto;
+}

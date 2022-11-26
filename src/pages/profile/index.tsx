@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { Form, Input, Radio, DatePicker, Tabs, Button } from 'antd'
-import NavBar from '../../components/navbar/index'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -49,7 +48,6 @@ function Profile() {
 
     return (
         <div>
-            <NavBar />
             <Tabs
                 centered
                 defaultActiveKey="1"

@@ -92,7 +92,7 @@ function Login() {
                             className="input"
                             placeholder="Enter your email"
                             size="large"
-                            prefix={<MailOutlined />}
+                            suffix={<MailOutlined />}
                         />
                     )}
                 />

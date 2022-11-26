@@ -34,7 +34,7 @@ function Register() {
                 if (data?.status === 200) {
                     successModal(
                         'Register successfully',
-                        `To continue using app , please verify your email address`,
+                        `We've sent you an verification email to ${data?.data?.email}. Please check to verify your account`,
                     )
                     navigate('/login', { state })
                 } else {
@@ -59,7 +59,7 @@ function Register() {
                             className="input"
                             placeholder="Enter your email"
                             size="large"
-                            prefix={<MailOutlined />}
+                            suffix={<MailOutlined />}
                         />
                     )}
                 />
@@ -75,7 +75,7 @@ function Register() {
                             className="input"
                             placeholder="Enter your name"
                             size="large"
-                            prefix={<UserOutlined />}
+                            suffix={<UserOutlined />}
                         />
                     )}
                 />
