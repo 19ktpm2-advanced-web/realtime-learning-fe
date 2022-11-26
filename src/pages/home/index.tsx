@@ -1,12 +1,9 @@
 /* eslint-disable */
-import { Button } from 'antd'
-import { failureModal } from 'components/modals'
-import NavBar from 'components/navBar'
 import { useEffect, useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import { IInvitation } from '../../interfaces'
+import JoinGroup from '../join-group'
 import InvitationModal from './invitation.modal'
 
 export default function Home() {
@@ -47,111 +44,15 @@ export default function Home() {
         }
     }, [])
 
-    const { mutate } = useMutation((logOutData) => {
-        return instance.post('/auth/log-out', logOutData)
-    })
-
-    const handleLogOut = (data: any) => {
-        mutate(data, {
-            onSuccess: (res) => {
-                if (res.status === 200) {
-                    localStorage.removeItem('session')
-                    navigate('/login')
-                } else {
-                    failureModal('Log out failed', res.data.message)
-                }
-            },
-            onError: (error: any) => {
-                failureModal('Log out failed', error.response && error.response.data)
-            },
-        })
-    }
-
     return (
-        <div>
-            <NavBar />
-            <div
-                id="home"
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%',
-                }}
-            >
-                <h1>Welcome to home page!</h1>
-                <Button
-                    style={{
-                        backgroundColor: '#1046c7',
-                        color: 'white',
-                        margin: '8px 0',
-                        border: 'none',
-                        cursor: 'pointer',
-                        opacity: 0.9,
-                    }}
-                    onClick={() => {
-                        navigate('/profile')
-                    }}
-                >
-                    Profile
-                </Button>
-                <Button
-                    style={{
-                        backgroundColor: '#1046c7',
-                        color: 'white',
-                        margin: '8px 0',
-                        border: 'none',
-                        cursor: 'pointer',
-                        opacity: 0.9,
-                    }}
-                    className="logout-btn"
-                    onClick={() => {
-                        navigate('/my-group')
-                    }}
-                >
-                    My Groups
-                </Button>
-                <Button
-                    style={{
-                        backgroundColor: '#1046c7',
-                        color: 'white',
-                        margin: '8px 0',
-                        border: 'none',
-                        cursor: 'pointer',
-                        opacity: 0.9,
-                    }}
-                    className="logout-btn"
-                    onClick={() => {
-                        navigate('/join-group')
-                    }}
-                >
-                    Join Groups
-                </Button>
-                <Button
-                    style={{
-                        backgroundColor: '#1046c7',
-                        color: 'white',
-                        margin: '8px 0',
-                        border: 'none',
-                        cursor: 'pointer',
-                        opacity: 0.9,
-                    }}
-                    className="logout-btn"
-                    onClick={() => {
-                        const currentSession = JSON.parse(localStorage.getItem('session') || '')
-                        handleLogOut({ refreshToken: currentSession?.refreshToken })
-                    }}
-                >
-                    Log out
-                </Button>
-                <InvitationModal
-                    isModalOpen={isInvitationModalOpen}
-                    handleOk={() => setIsInvitationModalOpen(false)}
-                    handleCancel={() => setIsInvitationModalOpen(false)}
-                    data={invitation}
-                />
-            </div>
-        </div>
+        <>
+            <JoinGroup />
+            <InvitationModal
+                isModalOpen={isInvitationModalOpen}
+                handleOk={() => setIsInvitationModalOpen(false)}
+                handleCancel={() => setIsInvitationModalOpen(false)}
+                data={invitation}
+            />
+        </>
     )
 }

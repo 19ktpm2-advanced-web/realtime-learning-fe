@@ -11,7 +11,7 @@ const GroupList = ({ groupList }: { groupList: IGroup[] }) => {
                     return <GroupItem key={index} data={group} />
                 })
             ) : (
-                <Empty className={styles.empty} description="No group found" />
+                <Empty description="No group found" />
             )}
         </div>
     )

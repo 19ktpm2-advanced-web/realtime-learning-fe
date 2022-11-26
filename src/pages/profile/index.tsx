@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { Form, Input, Radio, DatePicker, Tabs, Button } from 'antd'
-import NavBar from 'components/navBar'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -49,7 +48,6 @@ function Profile() {
 
     return (
         <div>
-            <NavBar />
             <Tabs
                 centered
                 defaultActiveKey="1"
@@ -78,7 +76,12 @@ function Profile() {
                                 <Form.Item
                                     label="Phone number"
                                     name="phoneNumber"
-                                    rules={[{ len: 10, message: 'Phone number must include 10 numbers' }]}
+                                    rules={[
+                                        {
+                                            len: 10,
+                                            message: 'Phone number must include 10 numbers',
+                                        },
+                                    ]}
                                 >
                                     <Input placeholder="Ex: 0123456789" />
                                 </Form.Item>
@@ -103,7 +106,12 @@ function Profile() {
                         label: 'Security',
                         key: '2',
                         children: (
-                            <Form labelCol={{ span: 4 }} wrapperCol={{ span: 10 }} layout="horizontal" className="form-wrapper">
+                            <Form
+                                labelCol={{ span: 4 }}
+                                wrapperCol={{ span: 10 }}
+                                layout="horizontal"
+                                className="form-wrapper"
+                            >
                                 <Form.Item label="Current password">
                                     <Input.Password />
                                 </Form.Item>
