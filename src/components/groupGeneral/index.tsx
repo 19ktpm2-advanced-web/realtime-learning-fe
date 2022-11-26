@@ -1,6 +1,7 @@
 import { EditOutlined } from '@ant-design/icons'
 import { Avatar, Button, Image, Upload } from 'antd'
 import { failureModal } from 'components/modals'
+import { Privilege } from 'enums'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -9,6 +10,7 @@ import styles from './styles.module.css'
 
 function GroupGeneral({ groupId }: { groupId?: String }) {
     const [group, setGroup] = useState<IGroup>()
+    const [permission, setPermission] = useState<Privilege[]>([])
     const [loading, setLoading] = useState(false)
     const { mutate } = useMutation((uploadData: any) => {
         const formData = new FormData()
@@ -52,6 +54,7 @@ function GroupGeneral({ groupId }: { groupId?: String }) {
         const res = await instance.get(`/group/get/${groupId}`)
         if (res.status === 200) {
             setGroup(res.data.group)
+            setPermission(res.data.permission)
         } else {
             failureModal('Failed to get group detail', res.statusText)
         }
@@ -60,21 +63,23 @@ function GroupGeneral({ groupId }: { groupId?: String }) {
         <div className={styles.wrapper}>
             <div className={styles.bannerWrapper}>
                 <Image preview={false} className={styles.banner} src={group?.background} />
-                <span className={styles.editButtonWrapper}>
-                    <Upload
-                        listType="picture"
-                        showUploadList={false}
-                        customRequest={uploadBackgroundImg}
-                    >
-                        <Button
-                            loading={loading}
-                            className={styles.editBtn}
-                            icon={<EditOutlined />}
+                {permission.includes(Privilege.EDITING) && (
+                    <span className={styles.editButtonWrapper}>
+                        <Upload
+                            listType="picture"
+                            showUploadList={false}
+                            customRequest={uploadBackgroundImg}
                         >
-                            Edit
-                        </Button>
-                    </Upload>
-                </span>
+                            <Button
+                                loading={loading}
+                                className={styles.editBtn}
+                                icon={<EditOutlined />}
+                            >
+                                Edit
+                            </Button>
+                        </Upload>
+                    </span>
+                )}
                 <span className={styles.avatarWrapper}>
                     <Avatar className={styles.avatar} src={group?.avatar} />
                 </span>

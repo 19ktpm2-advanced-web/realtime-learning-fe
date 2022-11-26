@@ -6,3 +6,14 @@
     max-width: 62.5rem;
     margin-top: 1rem;
 }
+.controlWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+.controlButton {
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
