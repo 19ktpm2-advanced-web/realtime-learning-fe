@@ -10,10 +10,9 @@ import ErrorPage from './pages/error-page'
 import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
+import NavBar from './components/navbar'
 import JoinGroup from './pages/join-group'
-import NavBar from './components/navbar/index'
 import Activation from 'pages/account-activation'
-
 const router = createBrowserRouter([
     {
         path: '/login',
@@ -39,7 +38,7 @@ const router = createBrowserRouter([
             {
                 id: 'invitation',
                 path: '/invitation/:invitationId',
-                element: <JoinGroup />,
+                element: <Home />,
                 loader: ({ params }) => {
                     return params.invitationId
                 },
