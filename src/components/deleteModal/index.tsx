@@ -1,9 +1,18 @@
 import { Modal, Form, Button, Input } from 'antd'
 import { useState } from 'react'
 
-const DeleteModal = ({ name, onFinish }: { name: string; onFinish?: Function }) => {
+const DeleteModal = ({
+    name,
+    onFinish,
+    visible,
+    setVisible,
+}: {
+    name: string
+    onFinish?: Function
+    visible: boolean
+    setVisible: Function
+}) => {
     const pattern = `Delete/${name}`
-    const [showDeleteModal, setShowDeleteModal] = useState(true)
     const [disabled, setDisabled] = useState(true)
     const [loading, setLoading] = useState(false)
     const [deleteForm] = Form.useForm()
@@ -22,9 +31,9 @@ const DeleteModal = ({ name, onFinish }: { name: string; onFinish?: Function }) 
         <Modal
             title="Are you absolutely sure?"
             style={{ top: 20 }}
-            open={showDeleteModal}
+            open={visible}
             onOk={deleteForm.submit}
-            onCancel={() => setShowDeleteModal(false)}
+            onCancel={() => setVisible(false)}
         >
             <p>
                 Please type <strong>{pattern}</strong> to confirm.
