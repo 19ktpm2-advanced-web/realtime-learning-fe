@@ -11,7 +11,8 @@ import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
 import JoinGroup from './pages/join-group'
-import NavBar from './components/navBar'
+import NavBar from './components/navbar/index'
+import Activation from 'pages/account-activation'
 
 const router = createBrowserRouter([
     {
