@@ -6,7 +6,7 @@ import instance from 'service/axiosPrivate'
 import { useState } from 'react'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useQuery } from 'react-query'
-import NavBar from 'components/navBar'
+import NavBar from '../../components/navbar/index'
 import styles from './styles.module.css'
 
 function MyGroup() {

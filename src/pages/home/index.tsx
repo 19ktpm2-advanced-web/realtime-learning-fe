@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Button } from 'antd'
 import { failureModal } from 'components/modals'
-import NavBar from 'components/navBar'
+import NavBar from '../../components/navbar/index'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'

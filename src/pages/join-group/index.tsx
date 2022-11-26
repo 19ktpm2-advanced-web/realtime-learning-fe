@@ -1,11 +1,11 @@
 import { Divider } from 'antd'
 import GroupList from 'components/groupList'
-import NavBar from 'components/navBar'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import instance from 'service/axiosPrivate'
 import { useNavigate } from 'react-router-dom'
+import NavBar from '../../components/navbar/index'
 
 function JoinGroup() {
     const navigate = useNavigate()

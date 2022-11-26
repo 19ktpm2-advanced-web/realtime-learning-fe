@@ -32,7 +32,10 @@ function Register() {
         mutate(data, {
             onSuccess: (data) => {
                 if (data?.status === 200) {
-                    successModal('Register successfully', `Welcome ${data?.data?.fullName}`)
+                    successModal(
+                        'Register successfully',
+                        `To continue using app , please verify your email address`,
+                    )
                     navigate('/login', { state })
                 } else {
                     failureModal('Register failed', data.message)

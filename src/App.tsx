@@ -11,6 +11,7 @@ import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
 import JoinGroup from './pages/join-group'
+import Activation from './pages/account-activation'
 
 const router = createBrowserRouter([
     {
@@ -49,6 +50,11 @@ const router = createBrowserRouter([
     {
         path: '/group/:groupId',
         element: <GroupDetail />,
+    },
+    {
+        path: '/verify-email/:token',
+        element: <Activation />,
+        errorElement: <ErrorPage />,
     },
     {
         path: '/join-group',
