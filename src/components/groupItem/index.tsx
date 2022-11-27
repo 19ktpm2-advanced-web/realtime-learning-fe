@@ -2,6 +2,7 @@
 import { DeleteOutlined, EditOutlined, LinkOutlined } from '@ant-design/icons'
 import { Avatar, Card } from 'antd'
 import DeleteModal from 'components/deleteModal'
+import EditGroupModal from 'components/editModal'
 import InvitationCard from 'components/invitation-card'
 import { failureModal } from 'components/modals'
 import { Privilege } from 'enums'
@@ -16,15 +17,16 @@ const { Meta } = Card
 const GroupItem = ({ data, permission }: { data: IGroup; permission: Privilege[] }) => {
     const [showCopyLinkModal, setShowCopyLinkModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [showEditModal, setShowEditModal] = useState(false)
     const navigate = useNavigate()
     const actions = []
     if (permission?.includes(Privilege.EDITING)) {
-        actions.push(
-            <EditOutlined key="edit" onClick={() => navigate(`/groups/${data.id}/edit`)} />,
-        )
+        actions.push(<EditOutlined key="edit" onClick={() => setShowEditModal(true)} />)
     }
     if (permission?.includes(Privilege.INVITING)) {
-        actions.push(<LinkOutlined key="link" onClick={() => setShowCopyLinkModal(true)} />)
+        actions.push(
+            <LinkOutlined key="link" onClick={() => setShowCopyLinkModal((prev) => !prev)} />,
+        )
     }
     if (permission?.includes(Privilege.DELETING)) {
         actions.push(<DeleteOutlined key="delete" onClick={() => setShowDeleteModal(true)} />)
@@ -62,24 +64,23 @@ const GroupItem = ({ data, permission }: { data: IGroup; permission: Privilege[]
                     description={data.description}
                 />
             </Card>
+
+            <EditGroupModal visible={showEditModal} setVisible={setShowEditModal} group={data} />
             {
                 // <CopyLinkModal
                 showCopyLinkModal && <InvitationCard group={data} />
             }
-            {
-                // <DeleteModal
-                showDeleteModal && (
-                    <DeleteModal
-                        name={data.name}
-                        onFinish={async () => {
-                            const result = await instance.delete(`/group/delete/${data.id}`)
-                            console.log('result', result?.data)
-                            setShowDeleteModal(false)
-                            window.location.reload()
-                        }}
-                    />
-                )
-            }
+            <DeleteModal
+                visible={showDeleteModal}
+                setVisible={setShowDeleteModal}
+                name={data.name}
+                onFinish={async () => {
+                    const result = await instance.delete(`/group/delete/${data.id}`)
+                    console.log('result', result?.data)
+                    setShowDeleteModal(false)
+                    window.location.reload()
+                }}
+            />
         </div>
     )
 }
