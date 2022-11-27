@@ -12,12 +12,18 @@ import './index.css'
 import instance from 'service/axiosPublic'
 import registerValidationSchema from './validation/register.schema'
 import ResendMailSection from '../../components/resendMail'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function Register() {
     const navigate = useNavigate()
     const { state } = useLocation()
     const [responseEmail, setResponseEmail] = useState('')
+
+    useEffect(() => {
+        if (localStorage.getItem('session')) {
+            navigate('/')
+        }
+    }, [localStorage.getItem('session')])
 
     const {
         handleSubmit,

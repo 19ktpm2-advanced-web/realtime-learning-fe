@@ -22,6 +22,11 @@ const router = createBrowserRouter([
         element: <Register />,
     },
     {
+        path: '/verify-email/:emailToken',
+        element: <Activation />,
+        errorElement: <ErrorPage />,
+    },
+    {
         element: (
             <>
                 <NavBar />
@@ -57,11 +62,6 @@ const router = createBrowserRouter([
             {
                 path: '/group/:groupId',
                 element: <GroupDetail />,
-            },
-            {
-                path: '/verify-email/:emailToken',
-                element: <Activation />,
-                errorElement: <ErrorPage />,
             },
         ],
     },

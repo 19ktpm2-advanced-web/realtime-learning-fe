@@ -8,10 +8,7 @@ const ResendMailSection = (email: string) => {
             instance
                 .post('/auth/resend-mail/', email)
                 .then(() => {
-                    successModal(
-                        'Email sent',
-                        'Please check your inbox for lastest verification email',
-                    )
+                    successModal('Email sent', 'Please check your inbox for the verification email')
                 })
                 .catch((err) => {
                     failureModal('System error', err.response ? err.response.data : err.message)

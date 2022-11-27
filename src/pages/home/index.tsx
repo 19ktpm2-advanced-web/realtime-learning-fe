@@ -1,13 +1,16 @@
 /* eslint-disable */
+import dayjs from '../../utils/dayjs.util'
 import { useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
-import { IInvitation } from '../../interfaces'
+import { IInvitation, IUser } from '../../interfaces'
 import JoinGroup from '../join-group'
 import InvitationModal from './invitation.modal'
 
 export default function Home() {
     const navigate = useNavigate()
+    const [profile, setProfile] = useState<IUser>()
     // Get invitationId from loader if any
     const loader = useLoaderData()
     // Get invitationId if redirect from login
@@ -24,8 +27,19 @@ export default function Home() {
         }
     }, [localStorage.getItem('session')])
 
+    useQuery(['profile'], async () => {
+        const res = await instance.get('/user/profile')
+
+        const profile = {
+            ...res.data,
+            dateOfBirth: dayjs(res.data.dateOfBirth),
+        }
+        localStorage.setItem('profile', JSON.stringify(profile))
+        setProfile(profile)
+    })
+
     useEffect(() => {
-        if (invitationId) {
+        if (invitationId && profile) {
             instance.get(`/invitation/${invitationId}`).then((res) => {
                 if (res?.status === 200) {
                     const {
@@ -35,14 +49,19 @@ export default function Home() {
                         invitation: IInvitation
                         isMemberOfGroup: boolean
                     } = res.data
-                    if (invitation && !isMemberOfGroup) {
+
+                    if (
+                        invitation &&
+                        !isMemberOfGroup &&
+                        invitation.inviteeEmail === profile.email
+                    ) {
                         setInvitation(invitation)
                         setIsInvitationModalOpen(true)
                     } else navigate(`/group/${invitation.group.id}`)
                 }
             })
         }
-    }, [])
+    }, [profile])
 
     return (
         <>

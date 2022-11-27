@@ -108,7 +108,7 @@ function GroupMember({ groupId }: { groupId?: String }) {
                                     type="primary"
                                     className={styles.controlButton}
                                     onClick={() => {
-                                        grantRole(member._id)
+                                        grantRole(member.id)
                                     }}
                                 >
                                     Grant
@@ -120,7 +120,7 @@ function GroupMember({ groupId }: { groupId?: String }) {
                                     danger
                                     className={styles.controlButton}
                                     onClick={() => {
-                                        revokeRole(member._id)
+                                        revokeRole(member.id)
                                     }}
                                 >
                                     Revoke
@@ -132,7 +132,7 @@ function GroupMember({ groupId }: { groupId?: String }) {
                                     danger
                                     className={styles.controlButton}
                                     onClick={() => {
-                                        kickOut(member._id)
+                                        kickOut(member.id)
                                     }}
                                 >
                                     Kick Out
