@@ -46,6 +46,30 @@ function Profile() {
         })
     }
 
+    const { mutate: passwordMutate } = useMutation((updatePasswordData) => {
+        return instance.post('/user/update-password', updatePasswordData)
+    })
+
+    const handlePasswordSubmit = (data: any) => {
+        form.resetFields()
+        const transformedData: any = {
+            oldPassword: data.currentPassword,
+            newPassword: data.newPassword,
+        }
+        passwordMutate(transformedData, {
+            onSuccess: (res) => {
+                if (res?.status === 200) {
+                    successModal('Update password successfully')
+                } else {
+                    failureModal('Update password failed', res.statusText)
+                }
+            },
+            onError: (error: any) => {
+                failureModal('Update password failed', error.response && error.response.data)
+            },
+        })
+    }
+
     return (
         <div>
             <Tabs
@@ -67,10 +91,28 @@ function Profile() {
                                 <Form.Item label="Avatar" name="avatar">
                                     <UploadAvatar formRef={form} />
                                 </Form.Item>
-                                <Form.Item label="Email" name="email">
+                                <Form.Item
+                                    label="Email"
+                                    name="email"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'This field cannot be empty!',
+                                        },
+                                    ]}
+                                >
                                     <Input placeholder="Ex: abc@gmail.com" disabled />
                                 </Form.Item>
-                                <Form.Item label="Full name" name="fullName">
+                                <Form.Item
+                                    label="Full name"
+                                    name="fullName"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'This field cannot be empty!',
+                                        },
+                                    ]}
+                                >
                                     <Input placeholder="Ex: John Smith" />
                                 </Form.Item>
                                 <Form.Item
@@ -111,14 +153,64 @@ function Profile() {
                                 wrapperCol={{ span: 10 }}
                                 layout="horizontal"
                                 className="form-wrapper"
+                                onFinish={handlePasswordSubmit}
+                                initialValues={{
+                                    currentPassword: '',
+                                    newPassword: '',
+                                    confirmPassword: '',
+                                }}
+                                form={form}
                             >
-                                <Form.Item label="Current password">
+                                <Form.Item
+                                    label="Current password"
+                                    name="currentPassword"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please input your current password!',
+                                        },
+                                    ]}
+                                >
                                     <Input.Password />
                                 </Form.Item>
-                                <Form.Item label="New password">
+                                <Form.Item
+                                    label="New password"
+                                    name="newPassword"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please input your new password!',
+                                        },
+                                    ]}
+                                >
                                     <Input.Password />
                                 </Form.Item>
-                                <Form.Item label="Re-enter new password">
+                                <Form.Item
+                                    label="Confirm password"
+                                    name="confirmPassword"
+                                    dependencies={['newPassword']}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please confirm your password!',
+                                        },
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (
+                                                    !value ||
+                                                    getFieldValue('newPassword') === value
+                                                ) {
+                                                    return Promise.resolve()
+                                                }
+                                                return Promise.reject(
+                                                    new Error(
+                                                        'The confirm password that you entered do not match!',
+                                                    ),
+                                                )
+                                            },
+                                        }),
+                                    ]}
+                                >
                                     <Input.Password />
                                 </Form.Item>
                                 <Form.Item wrapperCol={{ span: 10, offset: 4 }}>
