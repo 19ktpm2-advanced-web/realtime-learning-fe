@@ -1,4 +1,4 @@
-import { IUser } from '../user/user.interface'
+import { IMember } from '../user/user.interface'
 
 export interface IGroup {
     id: string
@@ -6,7 +6,7 @@ export interface IGroup {
     description?: string
     background: string
     avatar?: string
-    members?: IUser[]
-    owner?: IUser
-    coOwners?: IUser[]
+    members: IMember[]
+    owner: IMember
+    coOwners: IMember[]
 }

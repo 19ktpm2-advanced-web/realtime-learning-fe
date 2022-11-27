@@ -2,14 +2,14 @@
 import './index.css'
 import { Menu } from 'antd'
 import { HomeOutlined, UsergroupAddOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from 'react-query'
 import instance from 'service/axiosPrivate'
 import { failureModal } from 'components/modals'
 
 const NavBar = () => {
     const navigate = useNavigate()
-
+    const location = useLocation()
     const { mutate } = useMutation((logOutData) => {
         return instance.post('/auth/log-out', logOutData)
     })
@@ -38,9 +38,8 @@ const NavBar = () => {
             navigate(key)
         }
     }
-
     return (
-        <Menu mode="horizontal" defaultSelectedKeys={['/']} onClick={handleClick}>
+        <Menu mode="horizontal" defaultSelectedKeys={[location.pathname]} onClick={handleClick}>
             <Menu.Item key="/" icon={<HomeOutlined />}>
                 Home
             </Menu.Item>
