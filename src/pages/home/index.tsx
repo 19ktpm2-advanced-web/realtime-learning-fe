@@ -50,14 +50,11 @@ export default function Home() {
                         isMemberOfGroup: boolean
                     } = res.data
 
-                    if (
-                        invitation &&
-                        !isMemberOfGroup &&
-                        invitation.inviteeEmail === profile.email
-                    ) {
+                    if (isMemberOfGroup) navigate(`/group/${invitation.group.id}`)
+                    else if (invitation && invitation.inviteeEmail === profile.email) {
                         setInvitation(invitation)
                         setIsInvitationModalOpen(true)
-                    } else navigate(`/group/${invitation.group.id}`)
+                    }
                 }
             })
         }
