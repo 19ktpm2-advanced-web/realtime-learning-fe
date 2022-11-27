@@ -103,8 +103,7 @@ function Register() {
                 />
                 <span className="message">{errors?.password?.message}</span>
             </div>
-            {/* {responseEmail?<ResendMailSection email={responseEmail}/>:''} */}
-            <ResendMailSection email={responseEmail} />
+            {responseEmail ? <ResendMailSection email={responseEmail} /> : ''}
             <div className="btnWrapper">
                 <Spin spinning={isLoading}>
                     <button type="submit" className="button">
