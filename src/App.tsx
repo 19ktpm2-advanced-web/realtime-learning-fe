@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { createBrowserRouter, Outlet, Router, RouterProvider, Routes } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import './index.css'
 import CreateGroup from './pages/create-group'
 import Login from './pages/login'
@@ -10,9 +10,8 @@ import ErrorPage from './pages/error-page'
 import Profile from './pages/profile'
 import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
-import NavBar from './components/navbar'
-import JoinGroup from './pages/join-group'
 import Activation from 'pages/account-activation'
+import NavBar from './components/navBar'
 const router = createBrowserRouter([
     {
         path: '/login',
