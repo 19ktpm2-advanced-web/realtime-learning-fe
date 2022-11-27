@@ -102,6 +102,9 @@ function Profile() {
                                     ]}
                                 >
                                     <Input placeholder="Ex: abc@gmail.com" disabled />
+                                    <Button type="primary" className="verify-email-btn">
+                                        Verify email
+                                    </Button>
                                 </Form.Item>
                                 <Form.Item
                                     label="Full name"
