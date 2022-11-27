@@ -6,5 +6,13 @@
 }
 
 .verify-email-btn {
-    margin-top: 5px;
+    padding: 0;
+}
+
+.loading-spin-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }

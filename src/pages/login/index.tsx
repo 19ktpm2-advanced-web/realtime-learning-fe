@@ -15,6 +15,13 @@ import { useEffect } from 'react'
 function Login() {
     const navigate = useNavigate()
     const { state } = useLocation()
+
+    useEffect(() => {
+        if (localStorage.getItem('session')) {
+            navigate('/')
+        }
+    }, [localStorage.getItem('session')])
+
     const {
         handleSubmit,
         control,
