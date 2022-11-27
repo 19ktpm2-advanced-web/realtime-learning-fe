@@ -11,10 +11,13 @@ import { failureModal, successModal } from '../../components/modals'
 import './index.css'
 import instance from 'service/axiosPublic'
 import registerValidationSchema from './validation/register.schema'
+import ResendMailSection from '../../components/resendMail'
+import { useState } from 'react'
 
 function Register() {
     const navigate = useNavigate()
     const { state } = useLocation()
+    const [responseEmail, setResponseEmail] = useState('')
 
     const {
         handleSubmit,
@@ -36,7 +39,8 @@ function Register() {
                         'Register successfully',
                         `We've sent you an verification email to ${data?.data?.email}. Please check to verify your account`,
                     )
-                    navigate('/login', { state })
+                    // navigate('/login', { state })
+                    setResponseEmail(data?.data?.email)
                 } else {
                     failureModal('Register failed', data.message)
                 }
@@ -99,6 +103,7 @@ function Register() {
                 />
                 <span className="message">{errors?.password?.message}</span>
             </div>
+            {responseEmail ? <ResendMailSection email={responseEmail} /> : ''}
             <div className="btnWrapper">
                 <Spin spinning={isLoading}>
                     <button type="submit" className="button">
