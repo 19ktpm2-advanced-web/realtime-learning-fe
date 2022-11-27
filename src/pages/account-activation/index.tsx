@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Result } from 'antd'
-import instance from 'service/axiosPrivate'
+import instance from 'service/axiosPublic'
 import { failureModal, successModal } from 'components/modals'
 
 function Activation() {
@@ -14,17 +14,17 @@ function Activation() {
 
     useEffect(() => {
         instance
-            .get(`auth/verify-email/${emailToken}`)
+            .get(`/auth/verify-email/${token}`)
             .then((res) => {
                 setVerified(true)
             })
             .catch((err) => {
                 setVerified(false)
             })
-    }, [])
+    }, [token])
     function handleResendVerificationMail() {
         instance
-            .post(`auth/resend-verification-mail/`, { token: token })
+            .post(`/auth/resend-verification-mail/`, { token: token })
             .then((res) => {
                 setToken(res.data.emailToken)
                 successModal('Email sent', `Please check your inbox for lastest verification email`)
