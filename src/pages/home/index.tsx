@@ -7,6 +7,7 @@ import instance from 'service/axiosPrivate'
 import { IInvitation, IUser } from '../../interfaces'
 import JoinGroup from '../join-group'
 import InvitationModal from './invitation.modal'
+import InvitationType from '../../enums/invitation.enum'
 
 export default function Home() {
     const navigate = useNavigate()
@@ -44,6 +45,7 @@ export default function Home() {
                 if (res?.status === 200) {
                     const {
                         invitation,
+
                         isMemberOfGroup,
                     }: {
                         invitation: IInvitation
@@ -51,7 +53,12 @@ export default function Home() {
                     } = res.data
 
                     if (isMemberOfGroup) navigate(`/group/${invitation.group.id}`)
-                    else if (invitation && invitation.inviteeEmail === profile.email) {
+                    else if (invitation) {
+                        if (
+                            invitation.type === InvitationType.EMAIL_INVITATION &&
+                            invitation.inviteeEmail !== profile.email
+                        )
+                            return
                         setInvitation(invitation)
                         setIsInvitationModalOpen(true)
                     }

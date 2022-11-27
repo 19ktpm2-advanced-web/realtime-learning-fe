@@ -1,3 +1,4 @@
+import InvitationType from '../../enums/invitation.enum'
 import { IGroup } from '../group'
 import { IUser } from '../user'
 
@@ -11,4 +12,6 @@ export interface IInvitation {
     group: IGroup
 
     invitationExpireAt: Date
+
+    type: InvitationType
 }
