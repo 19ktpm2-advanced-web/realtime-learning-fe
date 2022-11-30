@@ -1,0 +1,50 @@
+@import '~antd/dist/antd.css';
+
+p {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 80%;
+}
+
+.question-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.form {
+    width: 100%;
+}
+
+.radio-group {
+    width: 100%;
+}
+
+.space-radio-group {
+    width: 100%;
+}
+
+.radio-btn {
+    font-size: 18px !important;
+    font-weight: bold;
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 20px;
+}

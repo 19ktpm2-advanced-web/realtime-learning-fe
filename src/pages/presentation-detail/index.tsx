@@ -105,7 +105,6 @@ function PresentationDetail() {
                                         </span>{' '}
                                     </label>
                                     {options.map((option, index) => {
-                                        console.log(option, index)
                                         return (
                                             <div className={styles.optionItem} key={index}>
                                                 <Input
@@ -119,13 +118,9 @@ function PresentationDetail() {
                                                 <CloseOutlined
                                                     className={styles.deleteOption}
                                                     onClick={() => {
-                                                        console.log('before', options)
-                                                        console.log('index', index)
                                                         const newOptions = options.filter(
                                                             (item, i) => i !== index,
                                                         )
-                                                        console.log('newOptions', newOptions)
-
                                                         setOptions(newOptions)
                                                     }}
                                                 />

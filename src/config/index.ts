@@ -15,4 +15,8 @@ export const config = {
         },
         refreshTokenMaxAge: 10000,
     },
+    socket: {
+        SERVER_URL: process.env.REACT_APP_SERVER_SOCKET_URL,
+    },
+    BASE_URL: process.env.REACT_APP_BASE_URL,
 }
