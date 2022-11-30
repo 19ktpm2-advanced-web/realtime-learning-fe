@@ -1,0 +1,37 @@
+@import '~antd/dist/antd.css';
+
+p {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px;
+}
+
+.invitation-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.invitation-wrapper p {
+    font-weight: bold;
+}
+
+.question-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

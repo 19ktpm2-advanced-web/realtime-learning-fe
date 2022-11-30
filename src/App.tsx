@@ -12,6 +12,10 @@ import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
 import Activation from 'pages/account-activation'
 import NavBar from './components/navBar'
+import AnswerChart from './components/answer-chart'
+import Slide from './components/slide'
+import { socket, SocketContext } from './service'
+import AnswerForm from './pages/answer-form'
 const router = createBrowserRouter([
     {
         path: '/login',
@@ -25,6 +29,14 @@ const router = createBrowserRouter([
         path: '/verify-email/:emailToken',
         element: <Activation />,
         errorElement: <ErrorPage />,
+    },
+    {
+        path: '/answer-submit-test',
+        element: <AnswerForm />,
+    },
+    {
+        path: '/test-chart',
+        element: <Slide />,
     },
     {
         element: (
@@ -70,9 +82,11 @@ const queryClient = new QueryClient()
 
 function App() {
     return (
-        <QueryClientProvider client={queryClient} contextSharing>
-            <RouterProvider router={router} />
-        </QueryClientProvider>
+        <SocketContext.Provider value={socket}>
+            <QueryClientProvider client={queryClient} contextSharing>
+                <RouterProvider router={router} />
+            </QueryClientProvider>
+        </SocketContext.Provider>
     )
 }
 
