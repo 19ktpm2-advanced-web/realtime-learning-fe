@@ -1,0 +1,175 @@
+.container {
+    flex: 1 1 auto;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(231, 232, 235);
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: rgb(255, 255, 255);
+}
+
+.leftWrapper {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+}
+
+.titleWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+}
+
+.backBtn {
+    cursor: pointer;
+}
+
+.title {
+    display: block;
+    font-weight: 600;
+    font-size: 16px;
+    color: rgb(16, 24, 52);
+}
+
+.createdBy {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    color: rgb(16 24 52 / 50%);
+}
+
+.rightHeight {
+    justify-content: flex-end;
+    border-radius: 3px 0 0 3px;
+}
+
+.saveBtn {
+    font-weight: 600;
+    font-size: 16px;
+    border: hidden;
+    border-radius: 3px;
+    height: 100%;
+}
+
+.presentBtn {
+    font-weight: 600;
+    font-size: 16px;
+    margin-left: 8px;
+    border-radius: 3px;
+    height: 100%;
+}
+
+/* Nav bar */
+.navBar {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    border-top: 1px solid rgb(231, 232, 235);
+    border-bottom: 1px solid rgb(231, 232, 235);
+    padding: 8px;
+    background-color: rgb(255, 255, 255);
+}
+
+.newSlideBtn {
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 3px;
+    height: 100%;
+}
+
+/* CONTENT */
+.contentWrapper {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: space-between;
+}
+.slideList {
+    display: flex;
+    background-color: rgb(255, 255, 255);
+    flex-wrap: wrap;
+    overflow-y: auto;
+    width: 224px;
+}
+.slideSetting {
+    overflow: auto;
+    padding: 24px 16px 24px 32px;
+    background-color: rgb(255, 255, 255);
+    width: 460px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.settingHeader {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgb(231, 232, 235);
+}
+.settingLabel {
+    color: rgb(16, 24, 52);
+    word-wrap: break-word;
+    margin-bottom: 8px;
+}
+.selectType {
+    padding: 8px;
+}
+.settingContent {
+    display: flex;
+    flex-direction: column;
+}
+.tabWrapper {
+    justify-content: center;
+}
+.settingContentWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+.description {
+    color: rgb(25, 108, 255);
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+}
+.description:hover {
+    opacity: 0.6;
+}
+.inputQuestion {
+    border-color: rgb(183, 186, 194);
+    padding: 8px;
+}
+.optionItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.deleteOption {
+    cursor: pointer;
+    margin-left: 8px;
+}
+.inputOption {
+    border-color: rgb(183, 186, 194);
+    margin-bottom: 8px;
+}
+.addOptionBtn {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid rgb(183, 186, 194);
+    background-color: rgb(219, 220, 225);
+}

@@ -13,6 +13,7 @@ import GroupDetail from './pages/group-detail'
 import Activation from 'pages/account-activation'
 import NavBar from './components/navBar'
 import Presentation from 'pages/presentation'
+import PresentationDetail from 'pages/presentation-detail'
 const router = createBrowserRouter([
     {
         path: '/login',
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
             {
                 path: '/group/:groupId',
                 element: <GroupDetail />,
+            },
+            {
+                path: '/presentation/:id',
+                element: <PresentationDetail />,
             },
             {
                 path: '/presentation',

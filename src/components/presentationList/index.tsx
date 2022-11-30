@@ -1,7 +1,10 @@
+import { EllipsisOutlined } from '@ant-design/icons'
 import { Table } from 'antd'
+import { useNavigate } from 'react-router-dom'
 import { IPresentation } from '../../interfaces'
 
 const PresentationList = ({ presentations }: { presentations: IPresentation[] }) => {
+    const navigate = useNavigate()
     const columns = [
         {
             title: 'Name',
@@ -19,7 +22,25 @@ const PresentationList = ({ presentations }: { presentations: IPresentation[] })
             title: 'Inviting Code',
             dataIndex: 'inviteCode',
         },
+        {
+            title: '',
+            dataIndex: '',
+            render: () => <EllipsisOutlined />,
+        },
     ]
-    return <Table dataSource={presentations} columns={columns} />
+    return (
+        <Table
+            dataSource={presentations}
+            columns={columns}
+            onRow={(record) => {
+                return {
+                    onClick: () => {
+                        console.log(record)
+                        navigate(`/presentation/${record.id}`)
+                    },
+                }
+            }}
+        />
+    )
 }
 export default PresentationList

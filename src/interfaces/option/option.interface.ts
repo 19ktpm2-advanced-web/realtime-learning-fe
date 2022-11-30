@@ -1,5 +1,5 @@
 export interface IOption {
-    id: string
+    id?: string
     answer: string
     votes: Number
 }
