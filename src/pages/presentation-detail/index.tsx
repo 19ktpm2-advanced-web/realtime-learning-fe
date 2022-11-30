@@ -7,6 +7,7 @@ import {
     QuestionOutlined,
 } from '@ant-design/icons'
 import { Button, Divider, Input, Select, Tabs } from 'antd'
+import Slide from 'components/slide'
 import { IOption } from 'interfaces'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -52,8 +53,16 @@ function PresentationDetail() {
                 </Button>
             </div>
             <div className={styles.contentWrapper}>
-                <div className={styles.slideList} />
-                <div className={styles.slideContent} />
+                <div className={styles.slideList}>
+                    <div className={styles.slideItem}>
+                        <Slide />
+                    </div>
+                </div>
+                <div className={styles.slideContent}>
+                    <div className={styles.slidePreview}>
+                        <Slide />
+                    </div>
+                </div>
                 <div className={styles.slideSetting}>
                     <div className={styles.settingHeader}>
                         <label className={styles.settingLabel}> Slide Type </label>
@@ -85,11 +94,10 @@ function PresentationDetail() {
                                 </div>
                                 <div className={styles.settingContentWrapper}>
                                     <label className={styles.settingLabel}>
-                                        {' '}
-                                        Your Question{' '}
+                                        Your Question
                                         <span>
                                             <QuestionOutlined />
-                                        </span>{' '}
+                                        </span>
                                     </label>
                                     <Input
                                         placeholder="Question here ..."
@@ -98,11 +106,10 @@ function PresentationDetail() {
                                 </div>
                                 <div className={styles.settingContentWrapper}>
                                     <label className={styles.settingLabel}>
-                                        {' '}
-                                        Options{' '}
+                                        Options
                                         <span>
                                             <QuestionOutlined />
-                                        </span>{' '}
+                                        </span>
                                     </label>
                                     {options.map((option, index) => {
                                         return (
