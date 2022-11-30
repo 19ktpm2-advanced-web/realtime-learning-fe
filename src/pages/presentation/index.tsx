@@ -4,6 +4,7 @@ import { IPresentation } from 'interfaces'
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import presentationSample from 'sample/presentations'
+import styles from './styles.module.css'
 
 function Presentation() {
     const [presentations, setPresentations] = useState<IPresentation[]>([])
@@ -11,9 +12,17 @@ function Presentation() {
         setPresentations(presentationSample)
     }, [])
     return (
-        <div>
+        <div className={styles.container}>
             <div>My Presentations</div>
-            <Button icon={<PlusOutlined />}>New presentation</Button>
+            <div className={styles.headerWrapper}>
+                <Button
+                    className={styles.addNewPresentationBtn}
+                    icon={<PlusOutlined />}
+                    type="primary"
+                >
+                    New presentation
+                </Button>
+            </div>
             <PresentationList presentations={presentations} />
         </div>
     )
