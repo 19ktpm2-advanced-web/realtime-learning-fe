@@ -28,7 +28,14 @@ function PresentationDetail() {
             ;(async () => {
                 const result = await instance.get(`/presentation/get/${id}`)
                 if (result.status === 200) {
-                    setPresentation(result.data)
+                    setPresentation({
+                        ...result.data,
+                        slideList: result.data.slideList.map((slide: any) => ({
+                            ...slide,
+                            question: slide.text,
+                            id: slide._id,
+                        })),
+                    })
                     presentationForm.setFieldsValue(result.data)
                 }
             })()
@@ -43,19 +50,27 @@ function PresentationDetail() {
             setSlidePreview({ ...slidePreview, optionList: newOptions })
         }
     }
+    console.log('presentation', presentation)
     console.log('slidePreview', slidePreview)
 
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
-            text: '',
+            question: '',
             options: [],
         })
         if (result.status === 200) {
             if (presentation.slideList) {
                 setPresentation({
                     ...presentation,
-                    slideList: [...presentation.slideList, result.data],
+                    slideList: [
+                        ...presentation.slideList,
+                        {
+                            ...result.data,
+                            question: result.data.text,
+                            id: result.data._id,
+                        },
+                    ],
                 })
             } else {
                 setPresentation({
@@ -134,7 +149,9 @@ function PresentationDetail() {
                 <div className={styles.slideList}>
                     {presentation.slideList?.map((slide, index) => (
                         <div
-                            className={styles.slideItemWrapper}
+                            className={`${styles.slideItemWrapper} ${
+                                slidePreview.id === slide.id ? styles.active : ''
+                            }`}
                             key={index}
                             onClick={() => {
                                 setSlidePreview(slide)
@@ -152,7 +169,7 @@ function PresentationDetail() {
                 </div>
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
-                        {JSON.stringify(slidePreview) !== JSON.stringify({}) ? (
+                        {slidePreview.id ? (
                             <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
                         ) : (
                             <Empty description="No slide preview" />
@@ -181,7 +198,7 @@ function PresentationDetail() {
                                                 <QuestionOutlined />
                                             </span>
                                         </label>
-                                        <Form.Item name="text" className={styles.formItem}>
+                                        <Form.Item name="question" className={styles.formItem}>
                                             <Input
                                                 placeholder="Question here ..."
                                                 className={styles.inputQuestion}

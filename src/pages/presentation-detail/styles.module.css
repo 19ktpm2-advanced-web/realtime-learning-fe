@@ -42,6 +42,7 @@
     border-color: rgb(0 0 0 / 0%);
     min-width: 100%;
 }
+
 .titleInput:hover {
     border-color: rgb(25 108 255);
 }
@@ -105,6 +106,7 @@
     width: 100%;
     justify-content: space-between;
 }
+
 /* SLIDE LIST */
 .slideList {
     display: flex;
@@ -121,12 +123,18 @@
     /* overflow: hidden; */
     padding-bottom: 0;
 }
+
 .slideItemWrapper {
     display: flex;
     flex-direction: row;
     padding: 8px;
+}
+
+.slideItemWrapper.active {
+    /* background-color: rgb(25, 108, 255); */
     border-left: 4px solid rgb(25, 108, 255);
 }
+
 .slideIndex {
     display: flex;
     flex-direction: column;
@@ -135,6 +143,7 @@
     align-items: center;
     width: 32px;
 }
+
 .slideItem {
     background-color: rgb(255, 255, 255);
     font-size: 5px;
@@ -155,6 +164,7 @@
     font-weight: 600;
     line-height: 1.4;
 }
+
 .settingHeader {
     display: flex;
     width: 100%;
@@ -162,59 +172,72 @@
     margin-bottom: 16px;
     border-bottom: 1px solid rgb(231, 232, 235);
 }
+
 .settingLabel {
     color: rgb(16, 24, 52);
     word-wrap: break-word;
     margin-bottom: 8px;
 }
+
 .selectType {
     padding: 8px;
 }
+
 .settingContent {
     display: flex;
     flex-direction: column;
 }
+
 .tabWrapper {
     justify-content: center;
 }
+
 .settingContentWrapper {
     display: flex;
     flex-direction: column;
     margin-bottom: 16px;
 }
+
 .description {
     color: rgb(25, 108, 255);
     cursor: pointer;
     font-size: 14px;
     text-decoration: none;
 }
+
 .descriptionInput {
     display: block;
     color: rgb(16, 24, 52);
     border-color: rgb(0 0 0 / 0%);
     /* width: 50%; */
 }
+
 .description:hover {
     opacity: 0.6;
 }
+
 .inputQuestion {
     border-color: rgb(183, 186, 194);
     padding: 8px;
 }
+
 .optionItem {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 8px;
 }
+
 .deleteOption {
     cursor: pointer;
     margin-left: 8px;
 }
+
 .inputOption {
     border-color: rgb(183, 186, 194);
     margin-bottom: 8px;
 }
+
 .addOptionBtn {
     width: 100%;
     border-radius: 3px;
@@ -230,6 +253,7 @@
     flex-direction: column;
     width: 100%;
 }
+
 .slidePreview {
     width: 100%;
     height: 80%;

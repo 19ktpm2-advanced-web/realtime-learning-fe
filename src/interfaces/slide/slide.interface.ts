@@ -2,6 +2,6 @@ import { IOption } from '../option'
 
 export interface ISlide {
     id?: string
-    text?: string
+    question?: string
     optionList?: IOption[]
 }

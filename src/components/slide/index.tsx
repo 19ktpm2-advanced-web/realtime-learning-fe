@@ -14,7 +14,7 @@ function Slide({ slide, code }: { slide: ISlide; code: string }) {
                 </p>
             </div>
             <div className="question-wrapper">
-                <h2>{slide.text}</h2>
+                <h2>{slide.question}</h2>
             </div>
             <div className="chart-wrapper">
                 <AnswerChart options={slide?.optionList ?? []} />
