@@ -12,6 +12,8 @@ import MyGroup from './pages/my-group'
 import GroupDetail from './pages/group-detail'
 import Activation from 'pages/account-activation'
 import NavBar from './components/navBar'
+import Presentation from 'pages/presentation'
+import PresentationDetail from 'pages/presentation-detail'
 import AnswerChart from './components/answer-chart'
 import Slide from './components/slide'
 import { socket, SocketContext } from './service'
@@ -74,6 +76,14 @@ const router = createBrowserRouter([
             {
                 path: '/group/:groupId',
                 element: <GroupDetail />,
+            },
+            {
+                path: '/presentation/:id',
+                element: <PresentationDetail />,
+            },
+            {
+                path: '/presentation',
+                element: <Presentation />,
             },
         ],
     },

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import InvitationType from '../../enums/invitation.enum'
 import { IGroup } from '../group'
 import { IUser } from '../user'

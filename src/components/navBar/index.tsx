@@ -46,6 +46,7 @@ const NavBar = () => {
             <Menu.Item key="/my-group" icon={<UsergroupAddOutlined />}>
                 My groups
             </Menu.Item>
+            <Menu.Item key="/presentation">My presentations</Menu.Item>
             <Menu.Item key="/profile" icon={<UserOutlined />} className="right-align">
                 Account
             </Menu.Item>

@@ -1,3 +1,6 @@
 export * from './invitation'
 export * from './group'
 export * from './user'
+export * from './presentation'
+export * from './option'
+export * from './slide'
