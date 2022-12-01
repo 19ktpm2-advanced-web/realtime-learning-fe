@@ -38,12 +38,16 @@ function AnswerChart() {
 
     return (
         <ResponsiveContainer width="80%" height="100%">
-            <BarChart data={data} margin={{ top: 20 }}>
+            <BarChart
+                data={data}
+                margin={{ top: 20 }}
+                // className="bar-chart"
+            >
                 <Bar dataKey="answer" fill="#82ca9d">
                     <LabelList
                         dataKey="answer"
                         position="top"
-                        style={{ fontSize: '20px', fontWeight: 'bold' }}
+                        style={{ fontSize: '1.5em', fontWeight: 'bold' }}
                     />
                 </Bar>
                 <XAxis dataKey="option" />

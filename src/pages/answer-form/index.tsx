@@ -2,7 +2,7 @@
 import { Button, Card, Form, Radio, Space } from 'antd'
 import AnswerChart from '../../components/answer-chart'
 
-import './index.css'
+import styles from './styles.module.css'
 
 function AnswerForm() {
     const [form] = Form.useForm()
@@ -34,12 +34,12 @@ function AnswerForm() {
     }
 
     return (
-        <div className="container">
-            <div className="answer-chart">
+        <div className={styles.container}>
+            <div className={styles['answer-chart']}>
                 <AnswerChart />
             </div>
-            <div className="form-wrapper">
-                <div className="question-wrapper">
+            <div className={styles['form-wrapper']}>
+                <div className={styles['question-wrapper']}>
                     <h2>
                         Are you OK? Lorem ipsum, dolor sit amet consectetur adipisicing elit.
                         Assumenda est, illo nemo laborum dolorem alias enim unde perferendis. Magni
@@ -47,7 +47,12 @@ function AnswerForm() {
                         quibusdam!
                     </h2>
                 </div>
-                <Form layout="horizontal" onFinish={handleSubmit} className="form" form={form}>
+                <Form
+                    layout="horizontal"
+                    onFinish={handleSubmit}
+                    className={styles['form']}
+                    form={form}
+                >
                     <Form.Item
                         name="answer"
                         rules={[
@@ -57,20 +62,20 @@ function AnswerForm() {
                             },
                         ]}
                     >
-                        <Radio.Group className="radio-group">
-                            <Space direction="vertical" className="space-radio-group">
+                        <Radio.Group className={styles['radio-group']}>
+                            <Space direction="vertical" className={styles['space-radio-group']}>
                                 <Card>
-                                    <Radio className="radio-btn" value={1}>
+                                    <Radio className={styles['radio-btn']} value={1}>
                                         Option A
                                     </Radio>
                                 </Card>
                                 <Card>
-                                    <Radio className="radio-btn" value={2}>
+                                    <Radio className={styles['radio-btn']} value={2}>
                                         Option B
                                     </Radio>
                                 </Card>
                                 <Card>
-                                    <Radio className="radio-btn" value={3}>
+                                    <Radio className={styles['radio-btn']} value={3}>
                                         Option C
                                     </Radio>
                                 </Card>
@@ -79,7 +84,7 @@ function AnswerForm() {
 
                         <Form.Item>
                             <Button
-                                className="submit-btn"
+                                className={styles['submit-btn']}
                                 type="primary"
                                 htmlType="submit"
                                 size="large"

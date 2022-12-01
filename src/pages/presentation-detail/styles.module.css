@@ -29,15 +29,21 @@
     display: flex;
     flex-direction: column;
     margin-left: 8px;
+    width: 480px;
 }
 
 .backBtn {
     cursor: pointer;
 }
 
-.title {
+.titleInput {
     display: block;
     color: rgb(16, 24, 52);
+    border-color: rgb(0 0 0 / 0%);
+    min-width: 100%;
+}
+.titleInput:hover {
+    border-color: rgb(25 108 255);
 }
 
 .createdBy {
@@ -48,6 +54,7 @@
     text-overflow: ellipsis;
     word-wrap: break-word;
     color: rgb(16 24 52 / 50%);
+    margin-left: 12px;
 }
 
 .rightHeight {
@@ -105,22 +112,42 @@
     overflow-y: auto;
     flex-flow: column nowrap;
     align-content: center;
+    justify-content: flex-start;
     list-style: none;
-    width: 100%;
+    width: 40%;
     min-height: 100%;
     overflow: hidden;
     padding-bottom: 0;
 }
+.slideItemWrapper {
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+    border-left: 4px solid rgb(25, 108, 255);
+}
+.slideIndex {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px;
+    align-items: center;
+    width: 32px;
+}
 .slideItem {
     background-color: rgb(255, 255, 255);
-    height: 20%;
+    font-size: 5px;
+    height: 200px;
+    min-height: 0px;
+    width: 100%;
+    /* margin: 8px; */
+    border: 1px solid rgb(231, 232, 235);
 }
 
 .slideSetting {
     overflow: auto;
     padding: 24px 16px 24px 32px;
     background-color: rgb(255, 255, 255);
-    width: 460px;
+    width: 50%;
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
@@ -196,7 +223,8 @@
 }
 .slidePreview {
     width: 100%;
-    height: 500px;
+    height: 80%;
+    font-size: 10px;
     justify-self: center;
     background-color: rgb(255, 255, 255);
 }

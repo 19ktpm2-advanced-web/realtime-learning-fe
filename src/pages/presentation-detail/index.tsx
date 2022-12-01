@@ -3,6 +3,7 @@ import {
     CaretRightFilled,
     CheckOutlined,
     CloseOutlined,
+    HolderOutlined,
     PlusOutlined,
     QuestionOutlined,
 } from '@ant-design/icons'
@@ -23,13 +24,14 @@ function PresentationDetail() {
         newOptions[index].answer = value
         setOptions(newOptions)
     }
+    // get presentation by id
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <div className={styles.leftWrapper}>
                     <ArrowLeftOutlined className={styles.backBtn} />
                     <div className={styles.titleWrapper}>
-                        <div className={styles.title}>Presentation Name</div>
+                        <Input className={styles.titleInput} defaultValue="Presentation 1" />
                         <div className={styles.createdBy}>Created By bahuy3103</div>
                     </div>
                 </div>
@@ -54,8 +56,14 @@ function PresentationDetail() {
             </div>
             <div className={styles.contentWrapper}>
                 <div className={styles.slideList}>
-                    <div className={styles.slideItem}>
-                        <Slide />
+                    <div className={styles.slideItemWrapper}>
+                        <div className={styles.slideIndex}>
+                            1
+                            <HolderOutlined />
+                        </div>
+                        <div className={styles.slideItem}>
+                            <Slide />
+                        </div>
                     </div>
                 </div>
                 <div className={styles.slideContent}>
