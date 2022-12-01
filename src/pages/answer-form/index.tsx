@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Button, Card, Form, Radio, Space } from 'antd'
+import AnswerChart from '../../components/answer-chart'
 
 import './index.css'
 
@@ -34,6 +35,9 @@ function AnswerForm() {
 
     return (
         <div className="container">
+            <div className="answer-chart">
+                <AnswerChart />
+            </div>
             <div className="form-wrapper">
                 <div className="question-wrapper">
                     <h2>

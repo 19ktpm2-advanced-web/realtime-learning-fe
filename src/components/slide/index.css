@@ -4,7 +4,7 @@ p {
     margin: 0;
 }
 
-.container {
+.slide-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
