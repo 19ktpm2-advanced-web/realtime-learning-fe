@@ -9,6 +9,7 @@ p {
     flex-direction: column;
     justify-content: center;
     padding: 30px;
+    height: 100%;
 }
 
 .invitation-wrapper {
@@ -34,4 +35,5 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
 }
