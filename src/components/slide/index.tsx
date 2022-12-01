@@ -6,7 +6,7 @@ import './index.css'
 
 function Slide() {
     return (
-        <div className="container">
+        <div className="slide-container">
             <div className="invitation-wrapper">
                 <p>
                     Go to <Link to={'/'}>{config.BASE_URL}</Link> and use the code 66 44 92 8

@@ -7,7 +7,11 @@ import LoadingSpin from '../loading-spin'
 import './index.css'
 
 function AnswerChart() {
-    const [data, setData] = useState<any>([])
+    const [data, setData] = useState<any>([
+        { option: 'Great', answer: 1 },
+        { option: 'Bad', answer: 2 },
+        { option: 'Happy', answer: 0 },
+    ])
     const socket = useContext(SocketContext)
 
     const handleUpdateResults = (results: any) => {
