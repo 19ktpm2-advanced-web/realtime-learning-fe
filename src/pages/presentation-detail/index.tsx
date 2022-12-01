@@ -7,16 +7,32 @@ import {
     PlusOutlined,
     QuestionOutlined,
 } from '@ant-design/icons'
-import { Button, Divider, Input, Select, Tabs } from 'antd'
+import { Button, Divider, Empty, Form, Input, Select, Tabs } from 'antd'
+import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
-import { IOption } from 'interfaces'
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { IOption, IPresentation, ISlide } from 'interfaces'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
 
 function PresentationDetail() {
+    const navigate = useNavigate()
+    const [presentation, setPresentation] = useState<IPresentation>({})
+    const [slidePreview, setSlidePreview] = useState<ISlide>({})
     const { id } = useParams<{ id: string }>()
-    console.log(id)
+    const [editForm] = Form.useForm()
+    useEffect(() => {
+        if (id) {
+            ;(async () => {
+                const result = await instance.get(`/presentation/get/${id}`)
+                if (result.status === 200) {
+                    setPresentation(result.data)
+                    editForm.setFieldsValue(result.data)
+                }
+            })()
+        }
+    }, [id])
     const [showDescInput, setShowDescInput] = useState(false)
     const [options, setOptions] = useState<IOption[]>([])
     const onChangeOption = (value: string, index: number) => {
@@ -24,15 +40,45 @@ function PresentationDetail() {
         newOptions[index].answer = value
         setOptions(newOptions)
     }
-    // get presentation by id
+
+    const handleNewSlideClick = async () => {
+        const result = await instance.post('/presentation/slide/add', {
+            presentationId: id,
+            text: '',
+            options: [],
+        })
+        if (result.status === 200) {
+            if (presentation.slideList) {
+                setPresentation({
+                    ...presentation,
+                    slideList: [...presentation.slideList, result.data],
+                })
+            } else {
+                setPresentation({
+                    ...presentation,
+                    slideList: [result.data],
+                })
+            }
+        } else {
+            failureModal('Create slide failed', result.data.message)
+        }
+    }
+    const handleSaveClick = async () => {}
     return (
-        <div className={styles.container}>
+        <Form
+            form={editForm}
+            initialValues={presentation}
+            className={styles.container}
+            onFinish={handleSaveClick}
+        >
             <div className={styles.header}>
                 <div className={styles.leftWrapper}>
-                    <ArrowLeftOutlined className={styles.backBtn} />
+                    <ArrowLeftOutlined className={styles.backBtn} onClick={() => navigate(-1)} />
                     <div className={styles.titleWrapper}>
-                        <Input className={styles.titleInput} defaultValue="Presentation 1" />
-                        <div className={styles.createdBy}>Created By bahuy3103</div>
+                        <Form.Item name="name" className={styles.formItem}>
+                            <Input className={styles.titleInput} />
+                        </Form.Item>
+                        <div className={styles.createdBy}>Created By {presentation.createdBy}</div>
                     </div>
                 </div>
                 <div className={styles.rightHeader}>
@@ -50,25 +96,54 @@ function PresentationDetail() {
                 </div>
             </div>
             <div className={styles.navBar}>
-                <Button className={styles.newSlideBtn} icon={<PlusOutlined />} type="primary">
+                <Button
+                    className={styles.newSlideBtn}
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={handleNewSlideClick}
+                >
                     New Slide
                 </Button>
+                {!showDescInput ? (
+                    <div onClick={() => setShowDescInput(true)} className={styles.description}>
+                        Add your description here
+                    </div>
+                ) : (
+                    <Form.Item name="description" className={styles.formItem}>
+                        <Input.TextArea
+                            className={styles.descriptionInput}
+                            onBlur={() => setShowDescInput(false)}
+                            placeholder="Add your description here"
+                            autoFocus
+                        />
+                    </Form.Item>
+                )}
             </div>
             <div className={styles.contentWrapper}>
                 <div className={styles.slideList}>
-                    <div className={styles.slideItemWrapper}>
-                        <div className={styles.slideIndex}>
-                            1
-                            <HolderOutlined />
+                    {presentation.slideList?.map((slide, index) => (
+                        <div
+                            className={styles.slideItemWrapper}
+                            key={index}
+                            onClick={() => setSlidePreview(slide)}
+                        >
+                            <div className={styles.slideIndex}>
+                                {index + 1}
+                                <HolderOutlined />
+                            </div>
+                            <div className={styles.slideItem}>
+                                <Slide />
+                            </div>
                         </div>
-                        <div className={styles.slideItem}>
-                            <Slide />
-                        </div>
-                    </div>
+                    ))}
                 </div>
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
-                        <Slide />
+                        {JSON.stringify(slidePreview) !== JSON.stringify({}) ? (
+                            <Slide />
+                        ) : (
+                            <Empty description="No slide preview" />
+                        )}
                     </div>
                 </div>
                 <div className={styles.slideSetting}>
@@ -81,25 +156,6 @@ function PresentationDetail() {
                     <div className={styles.settingContent}>
                         <Tabs className={styles.tabWrapper} defaultActiveKey="content">
                             <Tabs.TabPane tab="Content" key="content">
-                                <div className={styles.settingContentWrapper}>
-                                    {!showDescInput && (
-                                        <div
-                                            onClick={() => setShowDescInput(true)}
-                                            className={styles.description}
-                                        >
-                                            {' '}
-                                            Add your description here{' '}
-                                        </div>
-                                    )}
-                                    {showDescInput && (
-                                        <Input.TextArea
-                                            className={styles.descriptionInput}
-                                            onBlur={() => setShowDescInput(false)}
-                                            placeholder="Add your description here"
-                                            autoFocus
-                                        />
-                                    )}
-                                </div>
                                 <div className={styles.settingContentWrapper}>
                                     <label className={styles.settingLabel}>
                                         Your Question
@@ -160,7 +216,7 @@ function PresentationDetail() {
                     </div>
                 </div>
             </div>
-        </div>
+        </Form>
     )
 }
 export default PresentationDetail

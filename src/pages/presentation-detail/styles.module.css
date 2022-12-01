@@ -84,6 +84,7 @@
     flex: 1 1 auto;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     border-top: 1px solid rgb(231, 232, 235);
     border-bottom: 1px solid rgb(231, 232, 235);
     padding: 8px;
@@ -109,14 +110,15 @@
     display: flex;
     background-color: #ffffff;
     flex-wrap: wrap;
-    overflow-y: auto;
+    overflow: auto;
     flex-flow: column nowrap;
     align-content: center;
     justify-content: flex-start;
     list-style: none;
     width: 40%;
+    height: 100%;
     min-height: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     padding-bottom: 0;
 }
 .slideItemWrapper {
@@ -141,13 +143,14 @@
     width: 100%;
     /* margin: 8px; */
     border: 1px solid rgb(231, 232, 235);
+    cursor: pointer;
 }
 
 .slideSetting {
-    overflow: auto;
     padding: 24px 16px 24px 32px;
     background-color: rgb(255, 255, 255);
     width: 50%;
+    overflow: auto;
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
@@ -184,6 +187,12 @@
     cursor: pointer;
     font-size: 14px;
     text-decoration: none;
+}
+.descriptionInput {
+    display: block;
+    color: rgb(16, 24, 52);
+    border-color: rgb(0 0 0 / 0%);
+    /* width: 50%; */
 }
 .description:hover {
     opacity: 0.6;
@@ -227,4 +236,9 @@
     font-size: 10px;
     justify-self: center;
     background-color: rgb(255, 255, 255);
+}
+
+/* FORM ITEM */
+.formItem {
+    margin: 0px;
 }
