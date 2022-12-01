@@ -37,7 +37,7 @@ function AnswerChart() {
     }, [socket])
 
     return (
-        <ResponsiveContainer width="80%" height={400}>
+        <ResponsiveContainer width="80%" height="100%">
             <BarChart data={data} margin={{ top: 20 }}>
                 <Bar dataKey="answer" fill="#82ca9d">
                     <LabelList
