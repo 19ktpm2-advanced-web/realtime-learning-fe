@@ -35,9 +35,9 @@ function AnswerForm() {
 
     return (
         <div className={styles.container}>
-            <div className={styles['answer-chart']}>
+            {/* <div className={styles['answer-chart']}>
                 <AnswerChart />
-            </div>
+            </div> */}
             <div className={styles['form-wrapper']}>
                 <div className={styles['question-wrapper']}>
                     <h2>

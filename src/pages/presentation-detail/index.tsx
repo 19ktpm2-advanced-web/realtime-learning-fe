@@ -10,7 +10,7 @@ import {
 import { Button, Divider, Empty, Form, Input, Select, Tabs } from 'antd'
 import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
-import { IOption, IPresentation, ISlide } from 'interfaces'
+import { IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
@@ -35,12 +35,15 @@ function PresentationDetail() {
         }
     }, [id])
     const [showDescInput, setShowDescInput] = useState(false)
-    const [options, setOptions] = useState<IOption[]>([])
     const onChangeOption = (value: string, index: number) => {
-        const newOptions = [...options]
-        newOptions[index].answer = value
-        setOptions(newOptions)
+        const newOptions = slidePreview.optionList ?? []
+        if (newOptions[index]) {
+            newOptions[index].answer = value
+            newOptions[index].votes = 0
+            setSlidePreview({ ...slidePreview, optionList: newOptions })
+        }
     }
+    console.log('slidePreview', slidePreview)
 
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
@@ -135,7 +138,6 @@ function PresentationDetail() {
                             key={index}
                             onClick={() => {
                                 setSlidePreview(slide)
-                                setOptions(slide?.optionList ?? [])
                             }}
                         >
                             <div className={styles.slideIndex}>
@@ -143,7 +145,7 @@ function PresentationDetail() {
                                 <HolderOutlined />
                             </div>
                             <div className={styles.slideItem}>
-                                <Slide />
+                                <Slide slide={slide} code={presentation?.inviteCode ?? ''} />
                             </div>
                         </div>
                     ))}
@@ -151,7 +153,7 @@ function PresentationDetail() {
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
                         {JSON.stringify(slidePreview) !== JSON.stringify({}) ? (
-                            <Slide />
+                            <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
                         ) : (
                             <Empty description="No slide preview" />
                         )}
@@ -193,7 +195,7 @@ function PresentationDetail() {
                                                 <QuestionOutlined />
                                             </span>
                                         </label>
-                                        {options.map((option, index) => {
+                                        {slidePreview?.optionList?.map((option, index) => {
                                             return (
                                                 <div className={styles.optionItem} key={index}>
                                                     <Input
@@ -207,10 +209,16 @@ function PresentationDetail() {
                                                     <CloseOutlined
                                                         className={styles.deleteOption}
                                                         onClick={() => {
-                                                            const newOptions = options.filter(
-                                                                (item, i) => i !== index,
-                                                            )
-                                                            setOptions(newOptions)
+                                                            setSlidePreview((prev) => {
+                                                                return {
+                                                                    ...prev,
+                                                                    optionList:
+                                                                        prev?.optionList?.filter(
+                                                                            (item, i) =>
+                                                                                i !== index,
+                                                                        ),
+                                                                }
+                                                            })
                                                         }}
                                                     />
                                                 </div>
@@ -220,7 +228,14 @@ function PresentationDetail() {
                                             className={styles.addOptionBtn}
                                             icon={<PlusOutlined />}
                                             onClick={() =>
-                                                setOptions([...options, { answer: '', votes: 0 }])
+                                                setSlidePreview((slidePrev) => {
+                                                    const newOptions = slidePrev?.optionList ?? []
+                                                    newOptions.push({ answer: '' })
+                                                    return {
+                                                        ...slidePrev,
+                                                        optionList: newOptions,
+                                                    }
+                                                })
                                             }
                                         >
                                             Add Option

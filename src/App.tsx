@@ -36,10 +36,10 @@ const router = createBrowserRouter([
         path: '/answer-submit-test',
         element: <AnswerForm />,
     },
-    {
-        path: '/test-chart',
-        element: <Slide />,
-    },
+    // {
+    //     path: '/test-chart',
+    //     element: <Slide />,
+    // },
     {
         element: (
             <>
