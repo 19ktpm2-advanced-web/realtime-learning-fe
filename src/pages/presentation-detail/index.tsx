@@ -28,14 +28,7 @@ function PresentationDetail() {
             ;(async () => {
                 const result = await instance.get(`/presentation/get/${id}`)
                 if (result.status === 200) {
-                    setPresentation({
-                        ...result.data,
-                        slideList: result.data.slideList.map((slide: any) => ({
-                            ...slide,
-                            question: slide.text,
-                            id: slide._id,
-                        })),
-                    })
+                    setPresentation(result.data)
                     presentationForm.setFieldsValue(result.data)
                 }
             })()
@@ -56,22 +49,12 @@ function PresentationDetail() {
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
-            question: '',
+            text: '',
             options: [],
         })
         if (result.status === 200) {
             if (presentation.slideList) {
-                setPresentation({
-                    ...presentation,
-                    slideList: [
-                        ...presentation.slideList,
-                        {
-                            ...result.data,
-                            question: result.data.text,
-                            id: result.data._id,
-                        },
-                    ],
-                })
+                setPresentation(result.data)
             } else {
                 setPresentation({
                     ...presentation,
@@ -82,6 +65,7 @@ function PresentationDetail() {
             failureModal('Create slide failed', result.data.message)
         }
     }
+    console.log('slidePreview', slidePreview)
     const handleSavePresentation = async () => {}
     const handleSaveSlide = async () => {}
     return (
@@ -153,9 +137,7 @@ function PresentationDetail() {
                                 slidePreview.id === slide.id ? styles.active : ''
                             }`}
                             key={index}
-                            onClick={() => {
-                                setSlidePreview(slide)
-                            }}
+                            onClick={() => setSlidePreview(slide)}
                         >
                             <div className={styles.slideIndex}>
                                 {index + 1}
@@ -198,7 +180,7 @@ function PresentationDetail() {
                                                 <QuestionOutlined />
                                             </span>
                                         </label>
-                                        <Form.Item name="question" className={styles.formItem}>
+                                        <Form.Item name="text" className={styles.formItem}>
                                             <Input
                                                 placeholder="Question here ..."
                                                 className={styles.inputQuestion}
