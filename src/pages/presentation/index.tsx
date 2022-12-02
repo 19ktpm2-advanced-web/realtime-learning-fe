@@ -3,7 +3,6 @@ import PresentationList from 'components/presentationList'
 import { IPresentation } from 'interfaces'
 import { Button, Form, Input, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import presentationSample from 'sample/presentations'
 import { failureModal } from 'components/modals'
 import ProgressBar from 'components/progress-bar'
 import { useNavigate } from 'react-router-dom'
@@ -16,7 +15,20 @@ function Presentation() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     useEffect(() => {
-        setPresentations(presentationSample)
+        setLoading(true)
+        try {
+            ;(async () => {
+                const response = await instance.get('/presentation/get-all')
+                if (response.status === 200) {
+                    setPresentations(response.data)
+                } else {
+                    failureModal('Something went wrong')
+                }
+                setLoading(false)
+            })()
+        } catch (e) {
+            failureModal(e)
+        }
     }, [])
     const [createForm] = Form.useForm()
     const handleFinishCreate = async (values: { name: string }) => {

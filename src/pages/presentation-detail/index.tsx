@@ -96,18 +96,24 @@ function PresentationDetail() {
         }
     }, [slidePreview])
     const handleSaveSlide = async () => {
-        try {
-            const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
-                text: slidePreview.text,
-                options: slidePreview.optionList,
-            })
-            if (result.status === 200) {
-                setPresentation(result.data)
-            } else {
-                failureModal('Update slide failed', result.data.message)
+        if (slidePreview.id && slidePreview.id) {
+            try {
+                const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
+                    presentationId: presentation.id,
+                    text: slidePreview.text,
+                    options: slidePreview.optionList,
+                })
+                if (result.status === 200) {
+                    setPresentation({
+                        ...presentation,
+                        slideList: result.data,
+                    })
+                } else {
+                    failureModal('Update slide failed', result.data.message)
+                }
+            } catch (error) {
+                failureModal('Update slide failed', error.response && error.response.data)
             }
-        } catch (error) {
-            failureModal('Update slide failed', error.response && error.response.data)
         }
     }
     const saveClick = async () => {
@@ -140,7 +146,7 @@ function PresentationDetail() {
                                 <Input className={styles.titleInput} />
                             </Form.Item>
                             <div className={styles.createdBy}>
-                                Created By {presentation.createdBy}
+                                Created By {presentation?.createBy?.fullName}
                             </div>
                         </div>
                     </div>
@@ -152,7 +158,7 @@ function PresentationDetail() {
                             type={isDataChanging ? 'primary' : 'default'}
                             onClick={saveClick}
                         >
-                            {isDataChanging ? 'UnSave' : 'Saved'}
+                            {isDataChanging ? 'Save Changes' : 'Saved'}
                         </Button>
                         <Divider type="vertical" />
                         <Button
