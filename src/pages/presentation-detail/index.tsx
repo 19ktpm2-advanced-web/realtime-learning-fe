@@ -112,6 +112,7 @@ function PresentationDetail() {
         await handleSaveSlide()
         setIsDataChange(false)
     }
+    console.log('slidePreview', slidePreview)
     return (
         <div className={styles.container}>
             <Form
@@ -234,6 +235,7 @@ function PresentationDetail() {
                                         </label>
                                         <Input
                                             placeholder="Question here ..."
+                                            value={slidePreview?.text ?? ''}
                                             onChange={(e) => {
                                                 updateSlidePreview({
                                                     ...slidePreview,
@@ -256,7 +258,7 @@ function PresentationDetail() {
                                                     <Input
                                                         placeholder="Option here ..."
                                                         className={styles.inputOption}
-                                                        defaultValue={option.answer}
+                                                        value={option?.answer ?? ''}
                                                         onChange={(e) => {
                                                             onChangeOption(e.target.value, index)
                                                         }}
