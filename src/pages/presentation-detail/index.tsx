@@ -52,15 +52,16 @@ function PresentationDetail() {
             options: [],
         })
         if (result.status === 200) {
+            const newSlide = result.data[result.data.length - 1]
             if (presentation.slideList) {
                 setPresentation({
                     ...presentation,
-                    slideList: result.data,
+                    slideList: [...presentation.slideList, newSlide],
                 })
             } else {
                 setPresentation({
                     ...presentation,
-                    slideList: [result.data],
+                    slideList: [newSlide],
                 })
             }
         } else {
