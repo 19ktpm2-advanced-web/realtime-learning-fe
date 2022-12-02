@@ -14,9 +14,9 @@ function AnswerChart({ options }: { options: IOption[] }) {
                 margin={{ top: 20 }}
                 // className="bar-chart"
             >
-                <Bar dataKey="votes" fill="#82ca9d">
+                <Bar dataKey="vote" fill="#82ca9d">
                     <LabelList
-                        dataKey="votes"
+                        dataKey="vote"
                         position="top"
                         style={{ fontSize: '1.5em', fontWeight: 'bold' }}
                     />

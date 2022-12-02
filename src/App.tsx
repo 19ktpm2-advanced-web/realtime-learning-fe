@@ -33,8 +33,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
     },
     {
-        path: '/answer-submit-test',
+        path: '/answer-form/:presentationId/:slideId',
         element: <AnswerForm />,
+        loader: ({ params }) => {
+            return {
+                presentationId: params.presentationId,
+                slideId: params.slideId,
+            }
+        },
     },
     // {
     //     path: '/test-chart',
