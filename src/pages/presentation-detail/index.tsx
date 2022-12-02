@@ -20,8 +20,13 @@ function PresentationDetail() {
     const navigate = useNavigate()
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
+    const [isDataChanging, setIsDataChange] = useState(false)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
+    const updateSlidePreview = (slide: ISlide) => {
+        setIsDataChange(true)
+        setSlidePreview(slide)
+    }
     useEffect(() => {
         if (id) {
             ;(async () => {
@@ -38,7 +43,7 @@ function PresentationDetail() {
         const newOptions: IOption[] = slidePreview.optionList ?? []
         newOptions[index].answer = value
         newOptions[index].votes = 0
-        setSlidePreview((prev) => ({ ...prev, optionList: newOptions }))
+        updateSlidePreview({ ...slidePreview, optionList: newOptions })
     }
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
@@ -74,15 +79,48 @@ function PresentationDetail() {
             failureModal('Update presentation failed', error.response && error.response.data)
         }
     }
-    console.log('presentation', presentation)
-
-    // const handleSaveSlide = async () => {}
+    useEffect(() => {
+        if (slidePreview.id) {
+            setPresentation((prev) => ({
+                ...prev,
+                slideList: prev.slideList?.map((slide) => {
+                    if (slide.id === slidePreview.id) {
+                        return slidePreview
+                    }
+                    return slide
+                }),
+            }))
+        }
+    }, [slidePreview])
+    const handleSaveSlide = async () => {
+        try {
+            const result = await instance.post(`/presentation/slide/edit/${slidePreview.id}`, {
+                text: slidePreview.text,
+                options: slidePreview.optionList,
+            })
+            if (result.status === 200) {
+                setPresentation(result.data)
+            } else {
+                failureModal('Update slide failed', result.data.message)
+            }
+        } catch (error) {
+            failureModal('Update slide failed', error.response && error.response.data)
+        }
+    }
+    const saveClick = async () => {
+        await presentationForm.submit()
+        await handleSaveSlide()
+        setIsDataChange(false)
+    }
     return (
         <div className={styles.container}>
             <Form
                 form={presentationForm}
                 initialValues={presentation}
                 onFinish={handleSavePresentation}
+                onChange={() => {
+                    setIsDataChange(true)
+                }}
             >
                 <div className={styles.header}>
                     <div className={styles.leftWrapper}>
@@ -100,8 +138,14 @@ function PresentationDetail() {
                         </div>
                     </div>
                     <div className={styles.rightHeader}>
-                        <Button className={styles.saveBtn} icon={<CheckOutlined />}>
-                            Save
+                        <Button
+                            disabled={!isDataChanging}
+                            className={styles.saveBtn}
+                            icon={!isDataChanging && <CheckOutlined />}
+                            type={isDataChanging ? 'primary' : 'default'}
+                            onClick={saveClick}
+                        >
+                            {isDataChanging ? 'UnSave' : 'Saved'}
                         </Button>
                         <Divider type="vertical" />
                         <Button
@@ -191,10 +235,10 @@ function PresentationDetail() {
                                         <Input
                                             placeholder="Question here ..."
                                             onChange={(e) => {
-                                                setSlidePreview((prev) => ({
-                                                    ...prev,
+                                                updateSlidePreview({
+                                                    ...slidePreview,
                                                     text: e.target.value,
-                                                }))
+                                                })
                                             }}
                                             className={styles.inputQuestion}
                                         />
@@ -220,15 +264,12 @@ function PresentationDetail() {
                                                     <CloseOutlined
                                                         className={styles.deleteOption}
                                                         onClick={() => {
-                                                            setSlidePreview((prev) => {
-                                                                return {
-                                                                    ...prev,
-                                                                    optionList:
-                                                                        prev?.optionList?.filter(
-                                                                            (item) =>
-                                                                                item !== option,
-                                                                        ),
-                                                                }
+                                                            updateSlidePreview({
+                                                                ...slidePreview,
+                                                                optionList:
+                                                                    slidePreview?.optionList?.filter(
+                                                                        (item) => item !== option,
+                                                                    ),
                                                             })
                                                         }}
                                                     />
@@ -238,16 +279,17 @@ function PresentationDetail() {
                                         <Button
                                             className={styles.addOptionBtn}
                                             icon={<PlusOutlined />}
-                                            onClick={() =>
-                                                setSlidePreview((slidePrev) => {
-                                                    const newOptions = slidePrev?.optionList ?? []
-                                                    newOptions.push({ answer: '', votes: 0 })
-                                                    return {
-                                                        ...slidePrev,
-                                                        optionList: newOptions,
-                                                    }
+                                            onClick={() => {
+                                                const newOptions = slidePreview?.optionList ?? []
+                                                newOptions.push({
+                                                    answer: '',
+                                                    votes: 0,
                                                 })
-                                            }
+                                                updateSlidePreview({
+                                                    ...slidePreview,
+                                                    optionList: newOptions,
+                                                })
+                                            }}
                                         >
                                             Add Option
                                         </Button>
