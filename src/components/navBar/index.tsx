@@ -39,7 +39,11 @@ const NavBar = () => {
         }
     }
     return (
-        <Menu mode="horizontal" defaultSelectedKeys={[location.pathname]} onClick={handleClick}>
+        <Menu
+            mode="horizontal"
+            defaultSelectedKeys={[`/${location.pathname.split('/')[1]}`]}
+            onClick={handleClick}
+        >
             <Menu.Item key="/" icon={<HomeOutlined />}>
                 Home
             </Menu.Item>

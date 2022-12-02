@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { IOption } from 'interfaces'
 import { useContext, useEffect, useState } from 'react'
 import { Bar, BarChart, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { SocketContext } from '../../service'
@@ -6,20 +7,12 @@ import { SocketEvent } from '../../service/socket/event'
 import LoadingSpin from '../loading-spin'
 import './index.css'
 
-function AnswerChart() {
-    const [data, setData] = useState<any>([
-        { option: 'Great', answer: 1 },
-        { option: 'Bad', answer: 2 },
-        { option: 'Happy', answer: 0 },
-    ])
+function AnswerChart({ options }: { options: IOption[] }) {
+    const [data, setData] = useState<IOption[]>(options)
     const socket = useContext(SocketContext)
 
-    const handleUpdateResults = (results: any) => {
-        setData([
-            { option: 'Great', answer: 1 },
-            { option: 'Bad', answer: 2 },
-            { option: 'Happy', answer: 0 },
-        ])
+    const handleUpdateResults = (results: IOption[]) => {
+        setData(results)
     }
 
     useEffect(() => {
@@ -38,15 +31,19 @@ function AnswerChart() {
 
     return (
         <ResponsiveContainer width="80%" height="100%">
-            <BarChart data={data} margin={{ top: 20 }}>
-                <Bar dataKey="answer" fill="#82ca9d">
+            <BarChart
+                data={data}
+                margin={{ top: 20 }}
+                // className="bar-chart"
+            >
+                <Bar dataKey="votes" fill="#82ca9d">
                     <LabelList
-                        dataKey="answer"
+                        dataKey="votes"
                         position="top"
-                        style={{ fontSize: '20px', fontWeight: 'bold' }}
+                        style={{ fontSize: '1.5em', fontWeight: 'bold' }}
                     />
                 </Bar>
-                <XAxis dataKey="option" />
+                <XAxis dataKey="answer" />
             </BarChart>
         </ResponsiveContainer>
     )

@@ -1,9 +1,12 @@
+import { ISlide } from '../slide'
+
 export interface IPresentation {
-    id: string
+    id?: string
     name?: string
     description?: string
     createdBy?: string
-    isPresenting: boolean
+    isPresenting?: boolean
     currentSlide?: number
     inviteCode?: string
+    slideList?: ISlide[]
 }
