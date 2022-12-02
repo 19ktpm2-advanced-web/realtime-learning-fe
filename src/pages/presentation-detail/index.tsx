@@ -12,11 +12,13 @@ import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
 import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
+import { useFullScreenHandle, FullScreen } from 'react-full-screen'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
 
 function PresentationDetail() {
+    const handleFullScreen = useFullScreenHandle()
     const navigate = useNavigate()
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
@@ -113,6 +115,9 @@ function PresentationDetail() {
         await handleSaveSlide()
         setIsDataChange(false)
     }
+    const handlePresentClick = async () => {
+        handleFullScreen.enter()
+    }
     console.log('slidePreview', slidePreview)
     return (
         <div className={styles.container}>
@@ -154,6 +159,7 @@ function PresentationDetail() {
                             className={styles.presentBtn}
                             type="primary"
                             icon={<CaretRightFilled />}
+                            onClick={handlePresentClick}
                         >
                             Present
                         </Button>
@@ -207,7 +213,12 @@ function PresentationDetail() {
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
                         {slidePreview.id ? (
-                            <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
+                            <FullScreen
+                                className={styles.slidePreviewFullScreen}
+                                handle={handleFullScreen}
+                            >
+                                <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
+                            </FullScreen>
                         ) : (
                             <Empty description="No slide preview" />
                         )}

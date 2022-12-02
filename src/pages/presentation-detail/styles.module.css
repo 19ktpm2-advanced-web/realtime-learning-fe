@@ -264,6 +264,10 @@
     width: 100%;
 }
 
+.slidePreviewFullScreen {
+    height: 100%;
+    background-color: white;
+}
 .slidePreview {
     width: 100%;
     height: 80%;
