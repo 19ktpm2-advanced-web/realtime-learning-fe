@@ -10,19 +10,25 @@ import {
 import { Button, Divider, Empty, Form, Input, Select, Tabs } from 'antd'
 import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
-import { IPresentation, ISlide } from 'interfaces'
+import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
+import { useFullScreenHandle, FullScreen } from 'react-full-screen'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
 
 function PresentationDetail() {
+    const handleFullScreen = useFullScreenHandle()
     const navigate = useNavigate()
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
+    const [isDataChanging, setIsDataChange] = useState(false)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
-    const [slideForm] = Form.useForm()
+    const updateSlidePreview = (slide: ISlide) => {
+        setIsDataChange(true)
+        setSlidePreview(slide)
+    }
     useEffect(() => {
         if (id) {
             ;(async () => {
@@ -36,16 +42,11 @@ function PresentationDetail() {
     }, [id])
     const [showDescInput, setShowDescInput] = useState(false)
     const onChangeOption = (value: string, index: number) => {
-        const newOptions = slidePreview.optionList ?? []
-        if (newOptions[index]) {
-            newOptions[index].answer = value
-            newOptions[index].votes = 0
-            setSlidePreview({ ...slidePreview, optionList: newOptions })
-        }
+        const newOptions: IOption[] = slidePreview.optionList ?? []
+        newOptions[index].answer = value
+        newOptions[index].votes = 0
+        updateSlidePreview({ ...slidePreview, optionList: newOptions })
     }
-    console.log('presentation', presentation)
-    console.log('slidePreview', slidePreview)
-
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
@@ -53,27 +54,80 @@ function PresentationDetail() {
             options: [],
         })
         if (result.status === 200) {
+            const newSlide = result.data[result.data.length - 1]
             if (presentation.slideList) {
-                setPresentation(result.data)
+                setPresentation({
+                    ...presentation,
+                    slideList: [...presentation.slideList, newSlide],
+                })
             } else {
                 setPresentation({
                     ...presentation,
-                    slideList: [result.data],
+                    slideList: [newSlide],
                 })
             }
         } else {
             failureModal('Create slide failed', result.data.message)
         }
     }
+    const handleSavePresentation = async (data: { name?: string; description?: string }) => {
+        try {
+            const result = await instance.put(`/presentation/edit/${presentation.id}`, data)
+            if (result.status === 200) {
+                setPresentation(result.data)
+            } else {
+                failureModal('Update presentation failed', result.data.message)
+            }
+        } catch (error) {
+            failureModal('Update presentation failed', error.response && error.response.data)
+        }
+    }
+    useEffect(() => {
+        if (slidePreview.id) {
+            setPresentation((prev) => ({
+                ...prev,
+                slideList: prev.slideList?.map((slide) => {
+                    if (slide.id === slidePreview.id) {
+                        return slidePreview
+                    }
+                    return slide
+                }),
+            }))
+        }
+    }, [slidePreview])
+    const handleSaveSlide = async () => {
+        try {
+            const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
+                text: slidePreview.text,
+                options: slidePreview.optionList,
+            })
+            if (result.status === 200) {
+                setPresentation(result.data)
+            } else {
+                failureModal('Update slide failed', result.data.message)
+            }
+        } catch (error) {
+            failureModal('Update slide failed', error.response && error.response.data)
+        }
+    }
+    const saveClick = async () => {
+        await presentationForm.submit()
+        await handleSaveSlide()
+        setIsDataChange(false)
+    }
+    const handlePresentClick = async () => {
+        handleFullScreen.enter()
+    }
     console.log('slidePreview', slidePreview)
-    const handleSavePresentation = async () => {}
-    const handleSaveSlide = async () => {}
     return (
         <div className={styles.container}>
             <Form
                 form={presentationForm}
                 initialValues={presentation}
                 onFinish={handleSavePresentation}
+                onChange={() => {
+                    setIsDataChange(true)
+                }}
             >
                 <div className={styles.header}>
                     <div className={styles.leftWrapper}>
@@ -91,14 +145,21 @@ function PresentationDetail() {
                         </div>
                     </div>
                     <div className={styles.rightHeader}>
-                        <Button className={styles.saveBtn} icon={<CheckOutlined />}>
-                            Save
+                        <Button
+                            disabled={!isDataChanging}
+                            className={styles.saveBtn}
+                            icon={!isDataChanging && <CheckOutlined />}
+                            type={isDataChanging ? 'primary' : 'default'}
+                            onClick={saveClick}
+                        >
+                            {isDataChanging ? 'UnSave' : 'Saved'}
                         </Button>
                         <Divider type="vertical" />
                         <Button
                             className={styles.presentBtn}
                             type="primary"
                             icon={<CaretRightFilled />}
+                            onClick={handlePresentClick}
                         >
                             Present
                         </Button>
@@ -152,27 +213,31 @@ function PresentationDetail() {
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
                         {slidePreview.id ? (
-                            <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
+                            <FullScreen
+                                className={styles.slidePreviewFullScreen}
+                                handle={handleFullScreen}
+                            >
+                                <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
+                            </FullScreen>
                         ) : (
                             <Empty description="No slide preview" />
                         )}
                     </div>
                 </div>
-                <div className={styles.slideSetting}>
-                    <div className={styles.settingHeader}>
-                        <label className={styles.settingLabel}> Slide Type </label>
-                        <Select className={styles.selectType} defaultValue="multiple-choice">
-                            <Select.Option value="multiple-choice">Multiple Choice</Select.Option>
-                        </Select>
-                    </div>
-                    <div className={styles.settingContent}>
-                        <Tabs className={styles.tabWrapper} defaultActiveKey="content">
-                            <Tabs.TabPane tab="Content" key="content">
-                                <Form
-                                    form={slideForm}
-                                    onFinish={handleSaveSlide}
-                                    initialValues={slidePreview}
-                                >
+
+                {slidePreview.id && (
+                    <div className={styles.slideSetting}>
+                        <div className={styles.settingHeader}>
+                            <label className={styles.settingLabel}> Slide Type </label>
+                            <Select className={styles.selectType} defaultValue="multiple-choice">
+                                <Select.Option value="multiple-choice">
+                                    Multiple Choice
+                                </Select.Option>
+                            </Select>
+                        </div>
+                        <div className={styles.settingContent}>
+                            <Tabs className={styles.tabWrapper} defaultActiveKey="content">
+                                <Tabs.TabPane tab="Content" key="content">
                                     <div className={styles.settingContentWrapper}>
                                         <label className={styles.settingLabel}>
                                             Your Question
@@ -180,12 +245,17 @@ function PresentationDetail() {
                                                 <QuestionOutlined />
                                             </span>
                                         </label>
-                                        <Form.Item name="text" className={styles.formItem}>
-                                            <Input
-                                                placeholder="Question here ..."
-                                                className={styles.inputQuestion}
-                                            />
-                                        </Form.Item>
+                                        <Input
+                                            placeholder="Question here ..."
+                                            value={slidePreview?.text ?? ''}
+                                            onChange={(e) => {
+                                                updateSlidePreview({
+                                                    ...slidePreview,
+                                                    text: e.target.value,
+                                                })
+                                            }}
+                                            className={styles.inputQuestion}
+                                        />
                                     </div>
                                     <div className={styles.settingContentWrapper}>
                                         <label className={styles.settingLabel}>
@@ -200,7 +270,7 @@ function PresentationDetail() {
                                                     <Input
                                                         placeholder="Option here ..."
                                                         className={styles.inputOption}
-                                                        defaultValue={option.answer}
+                                                        value={option?.answer ?? ''}
                                                         onChange={(e) => {
                                                             onChangeOption(e.target.value, index)
                                                         }}
@@ -208,15 +278,12 @@ function PresentationDetail() {
                                                     <CloseOutlined
                                                         className={styles.deleteOption}
                                                         onClick={() => {
-                                                            setSlidePreview((prev) => {
-                                                                return {
-                                                                    ...prev,
-                                                                    optionList:
-                                                                        prev?.optionList?.filter(
-                                                                            (item, i) =>
-                                                                                i !== index,
-                                                                        ),
-                                                                }
+                                                            updateSlidePreview({
+                                                                ...slidePreview,
+                                                                optionList:
+                                                                    slidePreview?.optionList?.filter(
+                                                                        (item) => item !== option,
+                                                                    ),
                                                             })
                                                         }}
                                                     />
@@ -226,28 +293,29 @@ function PresentationDetail() {
                                         <Button
                                             className={styles.addOptionBtn}
                                             icon={<PlusOutlined />}
-                                            onClick={() =>
-                                                setSlidePreview((slidePrev) => {
-                                                    const newOptions = slidePrev?.optionList ?? []
-                                                    newOptions.push({ answer: '' })
-                                                    return {
-                                                        ...slidePrev,
-                                                        optionList: newOptions,
-                                                    }
+                                            onClick={() => {
+                                                const newOptions = slidePreview?.optionList ?? []
+                                                newOptions.push({
+                                                    answer: '',
+                                                    votes: 0,
                                                 })
-                                            }
+                                                updateSlidePreview({
+                                                    ...slidePreview,
+                                                    optionList: newOptions,
+                                                })
+                                            }}
                                         >
                                             Add Option
                                         </Button>
                                     </div>
-                                </Form>
-                            </Tabs.TabPane>
-                            <Tabs.TabPane tab="Customize" key="customize">
-                                Have not supported yet
-                            </Tabs.TabPane>
-                        </Tabs>
+                                </Tabs.TabPane>
+                                <Tabs.TabPane tab="Customize" key="customize">
+                                    Have not supported yet
+                                </Tabs.TabPane>
+                            </Tabs>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     )
