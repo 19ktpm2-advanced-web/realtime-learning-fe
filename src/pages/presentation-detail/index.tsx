@@ -70,7 +70,7 @@ function PresentationDetail() {
     }
     const handleSavePresentation = async (data: { name?: string; description?: string }) => {
         try {
-            const result = await instance.post(`/presentation/edit/${presentation.id}`, data)
+            const result = await instance.put(`/presentation/edit/${presentation.id}`, data)
             if (result.status === 200) {
                 setPresentation(result.data)
             } else {
@@ -95,7 +95,7 @@ function PresentationDetail() {
     }, [slidePreview])
     const handleSaveSlide = async () => {
         try {
-            const result = await instance.post(`/presentation/slide/edit/${slidePreview.id}`, {
+            const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
                 text: slidePreview.text,
                 options: slidePreview.optionList,
             })
