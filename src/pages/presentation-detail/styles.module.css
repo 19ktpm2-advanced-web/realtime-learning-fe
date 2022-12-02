@@ -154,7 +154,16 @@
     border: 1px solid rgb(231, 232, 235);
     cursor: pointer;
 }
-
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(calc(100% + 32px));
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 .slideSetting {
     padding: 24px 16px 24px 32px;
     background-color: rgb(255, 255, 255);
@@ -163,6 +172,7 @@
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
+    animation: slideInLeft 0.5s ease-in-out;
 }
 
 .settingHeader {

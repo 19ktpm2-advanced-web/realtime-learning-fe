@@ -22,7 +22,6 @@ function PresentationDetail() {
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
-    const [slideForm] = Form.useForm()
     useEffect(() => {
         if (id) {
             ;(async () => {
@@ -49,7 +48,10 @@ function PresentationDetail() {
         })
         if (result.status === 200) {
             if (presentation.slideList) {
-                setPresentation(result.data)
+                setPresentation({
+                    ...presentation,
+                    slideList: result.data,
+                })
             } else {
                 setPresentation({
                     ...presentation,
@@ -60,8 +62,21 @@ function PresentationDetail() {
             failureModal('Create slide failed', result.data.message)
         }
     }
-    const handleSavePresentation = async () => {}
-    const handleSaveSlide = async () => {}
+    const handleSavePresentation = async (data: { name?: string; description?: string }) => {
+        try {
+            const result = await instance.post(`/presentation/edit/${presentation.id}`, data)
+            if (result.status === 200) {
+                setPresentation(result.data)
+            } else {
+                failureModal('Update presentation failed', result.data.message)
+            }
+        } catch (error) {
+            failureModal('Update presentation failed', error.response && error.response.data)
+        }
+    }
+    console.log('presentation', presentation)
+
+    // const handleSaveSlide = async () => {}
     return (
         <div className={styles.container}>
             <Form
@@ -152,21 +167,20 @@ function PresentationDetail() {
                         )}
                     </div>
                 </div>
-                <div className={styles.slideSetting}>
-                    <div className={styles.settingHeader}>
-                        <label className={styles.settingLabel}> Slide Type </label>
-                        <Select className={styles.selectType} defaultValue="multiple-choice">
-                            <Select.Option value="multiple-choice">Multiple Choice</Select.Option>
-                        </Select>
-                    </div>
-                    <div className={styles.settingContent}>
-                        <Tabs className={styles.tabWrapper} defaultActiveKey="content">
-                            <Tabs.TabPane tab="Content" key="content">
-                                <Form
-                                    form={slideForm}
-                                    onFinish={handleSaveSlide}
-                                    initialValues={slidePreview}
-                                >
+
+                {slidePreview.id && (
+                    <div className={styles.slideSetting}>
+                        <div className={styles.settingHeader}>
+                            <label className={styles.settingLabel}> Slide Type </label>
+                            <Select className={styles.selectType} defaultValue="multiple-choice">
+                                <Select.Option value="multiple-choice">
+                                    Multiple Choice
+                                </Select.Option>
+                            </Select>
+                        </div>
+                        <div className={styles.settingContent}>
+                            <Tabs className={styles.tabWrapper} defaultActiveKey="content">
+                                <Tabs.TabPane tab="Content" key="content">
                                     <div className={styles.settingContentWrapper}>
                                         <label className={styles.settingLabel}>
                                             Your Question
@@ -174,12 +188,16 @@ function PresentationDetail() {
                                                 <QuestionOutlined />
                                             </span>
                                         </label>
-                                        <Form.Item name="text" className={styles.formItem}>
-                                            <Input
-                                                placeholder="Question here ..."
-                                                className={styles.inputQuestion}
-                                            />
-                                        </Form.Item>
+                                        <Input
+                                            placeholder="Question here ..."
+                                            onChange={(e) => {
+                                                setSlidePreview((prev) => ({
+                                                    ...prev,
+                                                    text: e.target.value,
+                                                }))
+                                            }}
+                                            className={styles.inputQuestion}
+                                        />
                                     </div>
                                     <div className={styles.settingContentWrapper}>
                                         <label className={styles.settingLabel}>
@@ -207,8 +225,8 @@ function PresentationDetail() {
                                                                     ...prev,
                                                                     optionList:
                                                                         prev?.optionList?.filter(
-                                                                            (item, i) =>
-                                                                                i !== index,
+                                                                            (item) =>
+                                                                                item !== option,
                                                                         ),
                                                                 }
                                                             })
@@ -234,14 +252,14 @@ function PresentationDetail() {
                                             Add Option
                                         </Button>
                                     </div>
-                                </Form>
-                            </Tabs.TabPane>
-                            <Tabs.TabPane tab="Customize" key="customize">
-                                Have not supported yet
-                            </Tabs.TabPane>
-                        </Tabs>
+                                </Tabs.TabPane>
+                                <Tabs.TabPane tab="Customize" key="customize">
+                                    Have not supported yet
+                                </Tabs.TabPane>
+                            </Tabs>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     )
