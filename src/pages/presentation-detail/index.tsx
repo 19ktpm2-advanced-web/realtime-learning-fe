@@ -223,7 +223,6 @@ function PresentationDetail() {
                                             onClick={() =>
                                                 setSlidePreview((slidePrev) => {
                                                     const newOptions = slidePrev?.optionList ?? []
-                                                    console.log('newOptions', newOptions)
                                                     newOptions.push({ answer: '', votes: 0 })
                                                     return {
                                                         ...slidePrev,

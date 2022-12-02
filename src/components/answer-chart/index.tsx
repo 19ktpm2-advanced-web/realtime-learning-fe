@@ -1,33 +1,13 @@
-/* eslint-disable */
 import { IOption } from 'interfaces'
-import { useContext, useEffect, useState } from 'react'
-import { Bar, BarChart, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { SocketContext } from '../../service'
-import { SocketEvent } from '../../service/socket/event'
-import LoadingSpin from '../loading-spin'
+import { useEffect } from 'react'
+import { Bar, BarChart, LabelList, ResponsiveContainer, XAxis } from 'recharts'
+// import LoadingSpin from '../loading-spin'
 import './index.css'
 
 function AnswerChart({ options }: { options: IOption[] }) {
-    const [data, setData] = useState<IOption[]>(options)
-    const socket = useContext(SocketContext)
-
-    const handleUpdateResults = (results: IOption[]) => {
-        setData(results)
-    }
-
     useEffect(() => {
         // Get initial results of slide
     }, [])
-
-    useEffect(() => {
-        socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
-
-        return () => {
-            // before the component is destroyed
-            // unbind all event handlers used in this component
-            socket.removeAllListeners()
-        }
-    }, [socket])
 
     return (
         <ResponsiveContainer width="80%" height="100%" key={Math.random()}>
