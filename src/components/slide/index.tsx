@@ -7,16 +7,6 @@ import AnswerChart from '../answer-chart'
 import './index.css'
 
 function Slide({ slide, code }: { slide: ISlide; code: string }) {
-    const [data, setData] = useState<ISlide>({})
-    const [options, setOptions] = useState<IOption[]>([])
-    useEffect(() => {
-        setData(slide)
-        console.log('options in Slide', slide.optionList)
-        if (slide.optionList) {
-            console.log('Set options')
-            setOptions(slide.optionList)
-        }
-    }, [slide])
     return (
         <div className="slide-container">
             <div className="invitation-wrapper">
@@ -25,10 +15,10 @@ function Slide({ slide, code }: { slide: ISlide; code: string }) {
                 </p>
             </div>
             <div className="question-wrapper">
-                <h2>{data.text}</h2>
+                <h2>{slide.text}</h2>
             </div>
             <div className="chart-wrapper">
-                <AnswerChart options={options} />
+                <AnswerChart options={slide.optionList ?? []} />
             </div>
         </div>
     )

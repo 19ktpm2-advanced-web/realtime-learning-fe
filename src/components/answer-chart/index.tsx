@@ -8,8 +8,6 @@ import LoadingSpin from '../loading-spin'
 import './index.css'
 
 function AnswerChart({ options }: { options: IOption[] }) {
-    console.log('options - answerChart', options)
-    console.log('option length - answerChart', options.length > 0)
     const [data, setData] = useState<IOption[]>(options)
     const socket = useContext(SocketContext)
 
