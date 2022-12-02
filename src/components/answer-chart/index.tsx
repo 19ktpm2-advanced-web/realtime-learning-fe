@@ -1,16 +1,14 @@
 import { IOption } from 'interfaces'
-import { useEffect } from 'react'
 import { Bar, BarChart, LabelList, ResponsiveContainer, XAxis } from 'recharts'
 // import LoadingSpin from '../loading-spin'
 import './index.css'
 
 function AnswerChart({ options }: { options: IOption[] }) {
-    useEffect(() => {
-        // Get initial results of slide
-    }, [])
-
+    const combineAnswer = options.reduce((acc, option) => {
+        return `${acc}-${option.answer}`
+    }, '')
     return (
-        <ResponsiveContainer width="80%" height="100%" key={Math.random()}>
+        <ResponsiveContainer width="80%" height="100%" key={`${options.length}-${combineAnswer}`}>
             <BarChart
                 data={options}
                 margin={{ top: 20 }}
