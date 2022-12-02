@@ -8,6 +8,8 @@ import LoadingSpin from '../loading-spin'
 import './index.css'
 
 function AnswerChart({ options }: { options: IOption[] }) {
+    console.log('options - answerChart', options)
+    console.log('option length - answerChart', options.length > 0)
     const [data, setData] = useState<IOption[]>(options)
     const socket = useContext(SocketContext)
 
@@ -30,9 +32,9 @@ function AnswerChart({ options }: { options: IOption[] }) {
     }, [socket])
 
     return (
-        <ResponsiveContainer width="80%" height="100%">
+        <ResponsiveContainer width="80%" height="100%" key={Math.random()}>
             <BarChart
-                data={data}
+                data={options}
                 margin={{ top: 20 }}
                 // className="bar-chart"
             >

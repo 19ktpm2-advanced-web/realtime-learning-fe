@@ -10,7 +10,7 @@ import {
 import { Button, Divider, Empty, Form, Input, Select, Tabs } from 'antd'
 import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
-import { IPresentation, ISlide } from 'interfaces'
+import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
@@ -36,16 +36,11 @@ function PresentationDetail() {
     }, [id])
     const [showDescInput, setShowDescInput] = useState(false)
     const onChangeOption = (value: string, index: number) => {
-        const newOptions = slidePreview.optionList ?? []
-        if (newOptions[index]) {
-            newOptions[index].answer = value
-            newOptions[index].votes = 0
-            setSlidePreview({ ...slidePreview, optionList: newOptions })
-        }
+        const newOptions: IOption[] = slidePreview.optionList ?? []
+        newOptions[index].answer = value
+        newOptions[index].votes = 0
+        setSlidePreview((prev) => ({ ...prev, optionList: newOptions }))
     }
-    console.log('presentation', presentation)
-    console.log('slidePreview', slidePreview)
-
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
@@ -65,7 +60,6 @@ function PresentationDetail() {
             failureModal('Create slide failed', result.data.message)
         }
     }
-    console.log('slidePreview', slidePreview)
     const handleSavePresentation = async () => {}
     const handleSaveSlide = async () => {}
     return (
@@ -229,7 +223,8 @@ function PresentationDetail() {
                                             onClick={() =>
                                                 setSlidePreview((slidePrev) => {
                                                     const newOptions = slidePrev?.optionList ?? []
-                                                    newOptions.push({ answer: '' })
+                                                    console.log('newOptions', newOptions)
+                                                    newOptions.push({ answer: '', votes: 0 })
                                                     return {
                                                         ...slidePrev,
                                                         optionList: newOptions,
