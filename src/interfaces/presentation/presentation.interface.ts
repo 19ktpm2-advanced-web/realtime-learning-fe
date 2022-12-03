@@ -4,7 +4,11 @@ export interface IPresentation {
     id?: string
     name?: string
     description?: string
-    createdBy?: string
+    createBy?: {
+        id?: string
+        avatar?: string
+        fullName?: string
+    }
     isPresenting?: boolean
     currentSlide?: number
     inviteCode?: string

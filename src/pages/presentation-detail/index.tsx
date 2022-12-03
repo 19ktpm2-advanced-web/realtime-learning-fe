@@ -54,7 +54,7 @@ function PresentationDetail() {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
             text: '',
-            options: [],
+            optionList: [],
         })
         if (result.status === 200) {
             const newSlide = result.data[result.data.length - 1]
@@ -87,6 +87,7 @@ function PresentationDetail() {
     }
     useEffect(() => {
         if (slidePreview.id) {
+            console.log('slidePreview.id', slidePreview.id)
             setPresentation((prev) => ({
                 ...prev,
                 slideList: prev.slideList?.map((slide) => {
@@ -99,18 +100,24 @@ function PresentationDetail() {
         }
     }, [slidePreview])
     const handleSaveSlide = async () => {
-        try {
-            const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
-                text: slidePreview.text,
-                options: slidePreview.optionList,
-            })
-            if (result.status === 200) {
-                setPresentation(result.data)
-            } else {
-                failureModal('Update slide failed', result.data.message)
+        if (slidePreview.id && slidePreview.id) {
+            try {
+                const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
+                    presentationId: presentation.id,
+                    text: slidePreview.text,
+                    optionList: slidePreview.optionList,
+                })
+                if (result.status === 200) {
+                    setPresentation({
+                        ...presentation,
+                        slideList: result.data,
+                    })
+                } else {
+                    failureModal('Update slide failed', result.data.message)
+                }
+            } catch (error) {
+                failureModal('Update slide failed', error.response && error.response.data)
             }
-        } catch (error) {
-            failureModal('Update slide failed', error.response && error.response.data)
         }
     }
     const saveClick = async () => {

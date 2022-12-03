@@ -11,6 +11,11 @@ import './index.css'
 function Slide({ slide, code }: { slide: ISlide; code: string }) {
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
+    useEffect(() => {
+        if (slide?.optionList) {
+            setOptionData(slide.optionList)
+        }
+    }, [slide])
     const handleUpdateResults = (results: IOption[]) => {
         setOptionData(results)
     }

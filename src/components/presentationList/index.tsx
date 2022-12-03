@@ -11,10 +11,6 @@ const PresentationList = ({ presentations }: { presentations: IPresentation[] })
             dataIndex: 'name',
         },
         {
-            title: 'Owner',
-            dataIndex: 'createdBy',
-        },
-        {
             title: 'Description',
             dataIndex: 'description',
         },
