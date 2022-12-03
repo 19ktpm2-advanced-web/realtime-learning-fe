@@ -14,11 +14,13 @@ import Activation from 'pages/account-activation'
 import NavBar from './components/navBar'
 import Presentation from 'pages/presentation'
 import PresentationDetail from 'pages/presentation-detail'
-import AnswerChart from './components/answer-chart'
-import Slide from './components/slide'
-import { socket, SocketContext } from './service'
+import { SocketContext, socketService } from './service'
 import AnswerForm from './pages/answer-form'
 const router = createBrowserRouter([
+    {
+        path: '/404',
+        element: <ErrorPage />,
+    },
     {
         path: '/login',
         element: <Login />,
@@ -33,13 +35,15 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
     },
     {
-        path: '/answer-submit-test',
+        path: '/answer-form/:presentationCode',
         element: <AnswerForm />,
+        loader: ({ params }) => {
+            return {
+                presentationCode: params.presentationCode,
+            }
+        },
+        errorElement: <ErrorPage />,
     },
-    // {
-    //     path: '/test-chart',
-    //     element: <Slide />,
-    // },
     {
         element: (
             <>
@@ -92,7 +96,7 @@ const queryClient = new QueryClient()
 
 function App() {
     return (
-        <SocketContext.Provider value={socket}>
+        <SocketContext.Provider value={socketService}>
             <QueryClientProvider client={queryClient} contextSharing>
                 <RouterProvider router={router} />
             </QueryClientProvider>

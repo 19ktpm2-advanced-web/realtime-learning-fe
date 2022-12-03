@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
     ArrowLeftOutlined,
     CaretRightFilled,
@@ -12,7 +13,8 @@ import { failureModal } from 'components/modals'
 import Slide from 'components/slide'
 import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
-import { useFullScreenHandle, FullScreen } from 'react-full-screen'
+import { FullScreen, FullScreenHandle, useFullScreenHandle } from 'react-full-screen'
+import { useMutation } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
@@ -84,7 +86,6 @@ function PresentationDetail() {
     }
     useEffect(() => {
         if (slidePreview.id) {
-            console.log('slidePreview.id', slidePreview.id)
             setPresentation((prev) => ({
                 ...prev,
                 slideList: prev.slideList?.map((slide) => {
@@ -122,10 +123,49 @@ function PresentationDetail() {
         await handleSaveSlide()
         setIsDataChange(false)
     }
+
+    const { mutate } = useMutation((startPresentingData) => {
+        return instance.post('/presentation/slide/update-present-status', startPresentingData)
+    })
+
     const handlePresentClick = async () => {
-        handleFullScreen.enter()
+        const payload: any = {
+            presentationId: presentation.id,
+            slideId: slidePreview.id,
+            isPresenting: true,
+        }
+        mutate(payload, {
+            onSuccess: (res) => {
+                if (res?.status === 200) {
+                    handleFullScreen.enter()
+                } else {
+                    failureModal('Cannot load slide to present', res.statusText)
+                }
+            },
+            onError: (error: any) => {
+                failureModal('Something is wrong', error.response && error.response.data)
+            },
+        })
     }
-    console.log('slidePreview', slidePreview)
+
+    const handleFullScreenChange = (state: boolean, handle: FullScreenHandle) => {
+        if (!state) {
+            const payload: any = {
+                presentationId: presentation.id,
+                slideId: slidePreview.id,
+                isPresenting: false,
+            }
+            mutate(payload, {
+                onSuccess: (res) => {
+                    if (res?.status !== 200) failureModal('Something is wrong', res.statusText)
+                },
+                onError: (error: any) => {
+                    failureModal('Something is wrong', error.response && error.response.data)
+                },
+            })
+        }
+    }
+
     return (
         <div className={styles.container}>
             <Form
@@ -147,7 +187,7 @@ function PresentationDetail() {
                                 <Input className={styles.titleInput} />
                             </Form.Item>
                             <div className={styles.createdBy}>
-                                Created By {presentation?.createBy?.fullName}
+                                <p>{`Created By ${presentation.createBy?.fullName}`}</p>
                             </div>
                         </div>
                     </div>
@@ -159,7 +199,7 @@ function PresentationDetail() {
                             type={isDataChanging ? 'primary' : 'default'}
                             onClick={saveClick}
                         >
-                            {isDataChanging ? 'Save Changes' : 'Saved'}
+                            {isDataChanging ? 'Save' : 'Saved'}
                         </Button>
                         <Divider type="vertical" />
                         <Button
@@ -212,7 +252,11 @@ function PresentationDetail() {
                                 <HolderOutlined />
                             </div>
                             <div className={styles.slideItem}>
-                                <Slide slide={slide} code={presentation?.inviteCode ?? ''} />
+                                <Slide
+                                    slide={slide}
+                                    code={presentation?.inviteCode ?? ''}
+                                    isFullScreen={handleFullScreen.active}
+                                />
                             </div>
                         </div>
                     ))}
@@ -223,11 +267,16 @@ function PresentationDetail() {
                             <FullScreen
                                 className={styles.slidePreviewFullScreen}
                                 handle={handleFullScreen}
+                                onChange={handleFullScreenChange}
                             >
-                                <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
+                                <Slide
+                                    slide={slidePreview}
+                                    code={presentation?.inviteCode ?? ''}
+                                    isFullScreen={handleFullScreen.active}
+                                />
                             </FullScreen>
                         ) : (
-                            <Empty description="No slide preview" />
+                            <Empty description="No slide preview" className={styles.emptyWrapper} />
                         )}
                     </div>
                 </div>
