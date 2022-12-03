@@ -13,8 +13,10 @@ import Slide from 'components/slide'
 import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
 import { useFullScreenHandle, FullScreen } from 'react-full-screen'
+import { useMutation } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
+import LoadingSpin from '../../components/loading-spin'
 import styles from './styles.module.css'
 
 function PresentationDetail() {
@@ -23,6 +25,7 @@ function PresentationDetail() {
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
     const [isDataChanging, setIsDataChange] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
     const updateSlidePreview = (slide: ISlide) => {
@@ -115,208 +118,257 @@ function PresentationDetail() {
         await handleSaveSlide()
         setIsDataChange(false)
     }
+
+    const { mutate } = useMutation((startPresentingData) => {
+        return instance.post('/presentation/slide/start-presenting', startPresentingData)
+    })
+
     const handlePresentClick = async () => {
-        handleFullScreen.enter()
+        setIsLoading(true)
+        const payload: any = {
+            presentationId: presentation.id,
+            slideId: slidePreview.id,
+        }
+        mutate(payload, {
+            onSuccess: (res) => {
+                if (res?.status === 200) {
+                    handleFullScreen.enter()
+                } else {
+                    failureModal('Cannot load slide to present', res.statusText)
+                }
+                setIsLoading(false)
+            },
+            onError: (error: any) => {
+                setIsLoading(false)
+                failureModal('Something is wrong', error.response && error.response.data)
+            },
+        })
     }
-    console.log('slidePreview', slidePreview)
+
     return (
         <div className={styles.container}>
-            <Form
-                form={presentationForm}
-                initialValues={presentation}
-                onFinish={handleSavePresentation}
-                onChange={() => {
-                    setIsDataChange(true)
-                }}
-            >
-                <div className={styles.header}>
-                    <div className={styles.leftWrapper}>
-                        <ArrowLeftOutlined
-                            className={styles.backBtn}
-                            onClick={() => navigate(-1)}
-                        />
-                        <div className={styles.titleWrapper}>
-                            <Form.Item name="name" className={styles.formItem}>
-                                <Input className={styles.titleInput} />
-                            </Form.Item>
-                            <div className={styles.createdBy}>
-                                Created By {presentation.createdBy}
-                            </div>
-                        </div>
-                    </div>
-                    <div className={styles.rightHeader}>
-                        <Button
-                            disabled={!isDataChanging}
-                            className={styles.saveBtn}
-                            icon={!isDataChanging && <CheckOutlined />}
-                            type={isDataChanging ? 'primary' : 'default'}
-                            onClick={saveClick}
-                        >
-                            {isDataChanging ? 'UnSave' : 'Saved'}
-                        </Button>
-                        <Divider type="vertical" />
-                        <Button
-                            className={styles.presentBtn}
-                            type="primary"
-                            icon={<CaretRightFilled />}
-                            onClick={handlePresentClick}
-                        >
-                            Present
-                        </Button>
-                    </div>
-                </div>
-                <div className={styles.navBar}>
-                    <Button
-                        className={styles.newSlideBtn}
-                        icon={<PlusOutlined />}
-                        type="primary"
-                        onClick={handleNewSlideClick}
+            {isLoading ? (
+                <LoadingSpin />
+            ) : (
+                <>
+                    <Form
+                        form={presentationForm}
+                        initialValues={presentation}
+                        onFinish={handleSavePresentation}
+                        onChange={() => {
+                            setIsDataChange(true)
+                        }}
                     >
-                        New Slide
-                    </Button>
-                    {!showDescInput ? (
-                        <div onClick={() => setShowDescInput(true)} className={styles.description}>
-                            Add your description here
-                        </div>
-                    ) : (
-                        <Form.Item name="description" className={styles.formItem}>
-                            <Input.TextArea
-                                className={styles.descriptionInput}
-                                onBlur={() => setShowDescInput(false)}
-                                placeholder="Add your description here"
-                                autoFocus
-                            />
-                        </Form.Item>
-                    )}
-                </div>
-            </Form>
-            <div className={styles.contentWrapper}>
-                <div className={styles.slideList}>
-                    {presentation.slideList?.map((slide, index) => (
-                        <div
-                            className={`${styles.slideItemWrapper} ${
-                                slidePreview.id === slide.id ? styles.active : ''
-                            }`}
-                            key={index}
-                            onClick={() => setSlidePreview(slide)}
-                        >
-                            <div className={styles.slideIndex}>
-                                {index + 1}
-                                <HolderOutlined />
+                        <div className={styles.header}>
+                            <div className={styles.leftWrapper}>
+                                <ArrowLeftOutlined
+                                    className={styles.backBtn}
+                                    onClick={() => navigate(-1)}
+                                />
+                                <div className={styles.titleWrapper}>
+                                    <Form.Item name="name" className={styles.formItem}>
+                                        <Input className={styles.titleInput} />
+                                    </Form.Item>
+                                    <div className={styles.createdBy}>
+                                        Created By {presentation.createdBy}
+                                    </div>
+                                </div>
                             </div>
-                            <div className={styles.slideItem}>
-                                <Slide slide={slide} code={presentation?.inviteCode ?? ''} />
+                            <div className={styles.rightHeader}>
+                                <Button
+                                    disabled={!isDataChanging}
+                                    className={styles.saveBtn}
+                                    icon={!isDataChanging && <CheckOutlined />}
+                                    type={isDataChanging ? 'primary' : 'default'}
+                                    onClick={saveClick}
+                                >
+                                    {isDataChanging ? 'UnSave' : 'Saved'}
+                                </Button>
+                                <Divider type="vertical" />
+                                <Button
+                                    className={styles.presentBtn}
+                                    type="primary"
+                                    icon={<CaretRightFilled />}
+                                    onClick={handlePresentClick}
+                                >
+                                    Present
+                                </Button>
                             </div>
                         </div>
-                    ))}
-                </div>
-                <div className={styles.slideContent}>
-                    <div className={styles.slidePreview}>
-                        {slidePreview.id ? (
-                            <FullScreen
-                                className={styles.slidePreviewFullScreen}
-                                handle={handleFullScreen}
+                        <div className={styles.navBar}>
+                            <Button
+                                className={styles.newSlideBtn}
+                                icon={<PlusOutlined />}
+                                type="primary"
+                                onClick={handleNewSlideClick}
                             >
-                                <Slide slide={slidePreview} code={presentation?.inviteCode ?? ''} />
-                            </FullScreen>
-                        ) : (
-                            <Empty description="No slide preview" />
-                        )}
-                    </div>
-                </div>
-
-                {slidePreview.id && (
-                    <div className={styles.slideSetting}>
-                        <div className={styles.settingHeader}>
-                            <label className={styles.settingLabel}> Slide Type </label>
-                            <Select className={styles.selectType} defaultValue="multiple-choice">
-                                <Select.Option value="multiple-choice">
-                                    Multiple Choice
-                                </Select.Option>
-                            </Select>
+                                New Slide
+                            </Button>
+                            {!showDescInput ? (
+                                <div
+                                    onClick={() => setShowDescInput(true)}
+                                    className={styles.description}
+                                >
+                                    Add your description here
+                                </div>
+                            ) : (
+                                <Form.Item name="description" className={styles.formItem}>
+                                    <Input.TextArea
+                                        className={styles.descriptionInput}
+                                        onBlur={() => setShowDescInput(false)}
+                                        placeholder="Add your description here"
+                                        autoFocus
+                                    />
+                                </Form.Item>
+                            )}
                         </div>
-                        <div className={styles.settingContent}>
-                            <Tabs className={styles.tabWrapper} defaultActiveKey="content">
-                                <Tabs.TabPane tab="Content" key="content">
-                                    <div className={styles.settingContentWrapper}>
-                                        <label className={styles.settingLabel}>
-                                            Your Question
-                                            <span>
-                                                <QuestionOutlined />
-                                            </span>
-                                        </label>
-                                        <Input
-                                            placeholder="Question here ..."
-                                            value={slidePreview?.text ?? ''}
-                                            onChange={(e) => {
-                                                updateSlidePreview({
-                                                    ...slidePreview,
-                                                    text: e.target.value,
-                                                })
-                                            }}
-                                            className={styles.inputQuestion}
+                    </Form>
+                    <div className={styles.contentWrapper}>
+                        <div className={styles.slideList}>
+                            {presentation.slideList?.map((slide, index) => (
+                                <div
+                                    className={`${styles.slideItemWrapper} ${
+                                        slidePreview.id === slide.id ? styles.active : ''
+                                    }`}
+                                    key={index}
+                                    onClick={() => setSlidePreview(slide)}
+                                >
+                                    <div className={styles.slideIndex}>
+                                        {index + 1}
+                                        <HolderOutlined />
+                                    </div>
+                                    <div className={styles.slideItem}>
+                                        <Slide
+                                            slide={slide}
+                                            code={presentation?.inviteCode ?? ''}
                                         />
                                     </div>
-                                    <div className={styles.settingContentWrapper}>
-                                        <label className={styles.settingLabel}>
-                                            Options
-                                            <span>
-                                                <QuestionOutlined />
-                                            </span>
-                                        </label>
-                                        {slidePreview?.optionList?.map((option, index) => {
-                                            return (
-                                                <div className={styles.optionItem} key={index}>
-                                                    <Input
-                                                        placeholder="Option here ..."
-                                                        className={styles.inputOption}
-                                                        value={option?.answer ?? ''}
-                                                        onChange={(e) => {
-                                                            onChangeOption(e.target.value, index)
-                                                        }}
-                                                    />
-                                                    <CloseOutlined
-                                                        className={styles.deleteOption}
-                                                        onClick={() => {
-                                                            updateSlidePreview({
-                                                                ...slidePreview,
-                                                                optionList:
-                                                                    slidePreview?.optionList?.filter(
-                                                                        (item) => item !== option,
-                                                                    ),
-                                                            })
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
-                                        })}
-                                        <Button
-                                            className={styles.addOptionBtn}
-                                            icon={<PlusOutlined />}
-                                            onClick={() => {
-                                                const newOptions = slidePreview?.optionList ?? []
-                                                newOptions.push({
-                                                    answer: '',
-                                                    votes: 0,
-                                                })
-                                                updateSlidePreview({
-                                                    ...slidePreview,
-                                                    optionList: newOptions,
-                                                })
-                                            }}
-                                        >
-                                            Add Option
-                                        </Button>
-                                    </div>
-                                </Tabs.TabPane>
-                                <Tabs.TabPane tab="Customize" key="customize">
-                                    Have not supported yet
-                                </Tabs.TabPane>
-                            </Tabs>
+                                </div>
+                            ))}
                         </div>
+                        <div className={styles.slideContent}>
+                            <div className={styles.slidePreview}>
+                                {slidePreview.id ? (
+                                    <FullScreen
+                                        className={styles.slidePreviewFullScreen}
+                                        handle={handleFullScreen}
+                                    >
+                                        <Slide
+                                            slide={slidePreview}
+                                            code={presentation?.inviteCode ?? ''}
+                                        />
+                                    </FullScreen>
+                                ) : (
+                                    <Empty description="No slide preview" />
+                                )}
+                            </div>
+                        </div>
+
+                        {slidePreview.id && (
+                            <div className={styles.slideSetting}>
+                                <div className={styles.settingHeader}>
+                                    <label className={styles.settingLabel}> Slide Type </label>
+                                    <Select
+                                        className={styles.selectType}
+                                        defaultValue="multiple-choice"
+                                    >
+                                        <Select.Option value="multiple-choice">
+                                            Multiple Choice
+                                        </Select.Option>
+                                    </Select>
+                                </div>
+                                <div className={styles.settingContent}>
+                                    <Tabs className={styles.tabWrapper} defaultActiveKey="content">
+                                        <Tabs.TabPane tab="Content" key="content">
+                                            <div className={styles.settingContentWrapper}>
+                                                <label className={styles.settingLabel}>
+                                                    Your Question
+                                                    <span>
+                                                        <QuestionOutlined />
+                                                    </span>
+                                                </label>
+                                                <Input
+                                                    placeholder="Question here ..."
+                                                    value={slidePreview?.text ?? ''}
+                                                    onChange={(e) => {
+                                                        updateSlidePreview({
+                                                            ...slidePreview,
+                                                            text: e.target.value,
+                                                        })
+                                                    }}
+                                                    className={styles.inputQuestion}
+                                                />
+                                            </div>
+                                            <div className={styles.settingContentWrapper}>
+                                                <label className={styles.settingLabel}>
+                                                    Options
+                                                    <span>
+                                                        <QuestionOutlined />
+                                                    </span>
+                                                </label>
+                                                {slidePreview?.optionList?.map((option, index) => {
+                                                    return (
+                                                        <div
+                                                            className={styles.optionItem}
+                                                            key={index}
+                                                        >
+                                                            <Input
+                                                                placeholder="Option here ..."
+                                                                className={styles.inputOption}
+                                                                value={option?.answer ?? ''}
+                                                                onChange={(e) => {
+                                                                    onChangeOption(
+                                                                        e.target.value,
+                                                                        index,
+                                                                    )
+                                                                }}
+                                                            />
+                                                            <CloseOutlined
+                                                                className={styles.deleteOption}
+                                                                onClick={() => {
+                                                                    updateSlidePreview({
+                                                                        ...slidePreview,
+                                                                        optionList:
+                                                                            slidePreview?.optionList?.filter(
+                                                                                (item) =>
+                                                                                    item !== option,
+                                                                            ),
+                                                                    })
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                })}
+                                                <Button
+                                                    className={styles.addOptionBtn}
+                                                    icon={<PlusOutlined />}
+                                                    onClick={() => {
+                                                        const newOptions =
+                                                            slidePreview?.optionList ?? []
+                                                        newOptions.push({
+                                                            answer: '',
+                                                            votes: 0,
+                                                        })
+                                                        updateSlidePreview({
+                                                            ...slidePreview,
+                                                            optionList: newOptions,
+                                                        })
+                                                    }}
+                                                >
+                                                    Add Option
+                                                </Button>
+                                            </div>
+                                        </Tabs.TabPane>
+                                        <Tabs.TabPane tab="Customize" key="customize">
+                                            Have not supported yet
+                                        </Tabs.TabPane>
+                                    </Tabs>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </>
+            )}
         </div>
     )
 }

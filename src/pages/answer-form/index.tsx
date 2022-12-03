@@ -1,12 +1,12 @@
 /* eslint-disable */
-import { Button, Card, Divider, Form, Radio, Space } from 'antd'
+import { Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation } from 'react-query'
 import { useLoaderData } from 'react-router-dom'
 import AnswerChart from '../../components/answer-chart'
-import { failureModal, successModal } from '../../components/modals'
-import slide from '../../components/slide'
-import { IOption, ISlide } from '../../interfaces'
+import LoadingSpin from '../../components/loading-spin'
+import { failureModal } from '../../components/modals'
+import { ISlide } from '../../interfaces'
 import { SocketContext } from '../../service'
 import instance from '../../service/axiosPrivate'
 import { SocketEvent } from '../../service/socket/event'
@@ -14,28 +14,48 @@ import styles from './styles.module.css'
 
 function AnswerForm() {
     const [form] = Form.useForm()
-    const socket = useContext(SocketContext)
+    const socketService = useContext(SocketContext)
     const {
-        presentationId,
-        slideId,
+        presentationCode,
     }: {
-        presentationId: string
-        slideId: string
+        presentationCode: string
     } = useLoaderData() as any
     const [slide, setSlide] = useState<ISlide>({})
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
 
     useEffect(() => {
-        socket.emit(SocketEvent.JOIN_ROOM, {
-            roomId: presentationId,
+        try {
+            socketService.establishConnection()
+        } catch (error) {
+            failureModal(
+                'Something is wrong with the socket! Please try to reload the page.',
+                error,
+            )
+        }
+
+        // Each user watching the same presentation will join the same room
+        socketService.socket.emit(SocketEvent.JOIN_ROOM, {
+            roomId: presentationCode,
         })
-    }, [])
+        socketService.socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
+
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socketService.socket.removeAllListeners()
+            socketService.disconnect()
+        }
+    }, [socketService.socket])
+
+    const handleUpdateResults = (results: any) => {
+        setSlide(results.slide)
+    }
 
     useEffect(() => {
         setIsLoading(true)
         instance
-            .get(`/presentation/slide/get/${presentationId}&${slideId}`, {})
+            .get(`/presentation/slide/get/${presentationCode}`, {})
             .then((res) => {
                 if (res?.status === 200) {
                     setSlide(res.data)
@@ -50,20 +70,6 @@ function AnswerForm() {
             })
     }, [])
 
-    useEffect(() => {
-        socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
-
-        return () => {
-            // before the component is destroyed
-            // unbind all event handlers used in this component
-            socket.removeAllListeners()
-        }
-    }, [socket])
-
-    const handleUpdateResults = (results: any) => {
-        setSlide(results.slide)
-    }
-
     const { mutate } = useMutation((updateAnswerData) => {
         return instance.post('/presentation/slide/update-answer', updateAnswerData)
     })
@@ -71,8 +77,7 @@ function AnswerForm() {
     const handleSubmit = (data: any) => {
         const payload: any = {
             optionId: data.answer,
-            presentationId,
-            slideId,
+            presentationCode,
         }
         setIsLoading(true)
         mutate(payload, {
@@ -94,7 +99,7 @@ function AnswerForm() {
     return (
         <div className={styles.container}>
             {isLoading ? (
-                <></>
+                <LoadingSpin />
             ) : (
                 <>
                     <div className={styles['answer-chart']}>
