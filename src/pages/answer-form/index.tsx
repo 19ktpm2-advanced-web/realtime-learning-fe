@@ -2,7 +2,7 @@
 import { Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import AnswerChart from '../../components/answer-chart'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
@@ -13,6 +13,7 @@ import { SocketEvent } from '../../service/socket/event'
 import styles from './styles.module.css'
 
 function AnswerForm() {
+    const navigate = useNavigate()
     const [form] = Form.useForm()
     const socketService = useContext(SocketContext)
     const {
@@ -23,6 +24,23 @@ function AnswerForm() {
     const [slide, setSlide] = useState<ISlide>({})
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
+
+    useEffect(() => {
+        setIsLoading(true)
+        instance
+            .get(`/presentation/slide/get/${presentationCode}`)
+            .then((res) => {
+                setIsLoading(false)
+                if (res?.status === 200) {
+                    setSlide(res.data)
+                } else {
+                    navigate('/404')
+                }
+            })
+            .catch((error) => {
+                navigate('/404')
+            })
+    }, [])
 
     useEffect(() => {
         try {
@@ -40,6 +58,10 @@ function AnswerForm() {
         })
         socketService.socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
 
+        socketService.socket.on(SocketEvent.END_PRESENTING, () => {
+            navigate('/404')
+        })
+
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -51,24 +73,6 @@ function AnswerForm() {
     const handleUpdateResults = (results: any) => {
         setSlide(results.slide)
     }
-
-    useEffect(() => {
-        setIsLoading(true)
-        instance
-            .get(`/presentation/slide/get/${presentationCode}`, {})
-            .then((res) => {
-                if (res?.status === 200) {
-                    setSlide(res.data)
-                } else {
-                    failureModal('Something is wrong', res.statusText)
-                }
-                setIsLoading(false)
-            })
-            .catch((error) => {
-                setIsLoading(false)
-                failureModal('Something is wrong', error.response && error.response.data)
-            })
-    }, [])
 
     const { mutate } = useMutation((updateAnswerData) => {
         return instance.post('/presentation/slide/update-answer', updateAnswerData)
@@ -116,12 +120,7 @@ function AnswerForm() {
                         ) : (
                             <>
                                 <div className={styles['question-wrapper']}>
-                                    <h2>
-                                        Are you OK? Lorem ipsum, dolor sit amet consectetur
-                                        adipisicing elit. Assumenda est, illo nemo laborum dolorem
-                                        alias enim unde perferendis. Magni rerum commodi itaque
-                                        optio autem quas inventore vel ipsam repellendus quibusdam!
-                                    </h2>
+                                    <h2>{slide.text}</h2>
                                 </div>
                                 <Form
                                     layout="horizontal"

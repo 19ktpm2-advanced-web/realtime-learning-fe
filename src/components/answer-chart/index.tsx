@@ -11,17 +11,17 @@ function AnswerChart({ options }: { options: IOption[] }) {
         <ResponsiveContainer width="80%" height="100%" key={`${options.length}-${combineAnswer}`}>
             <BarChart
                 data={options}
-                margin={{ top: 20 }}
+                margin={{ top: 20, bottom: 20 }}
                 // className="bar-chart"
             >
-                <Bar dataKey="vote" fill="#82ca9d">
+                <Bar dataKey="votes" fill="#82ca9d">
                     <LabelList
-                        dataKey="vote"
+                        dataKey="votes"
                         position="top"
                         style={{ fontSize: '1.5em', fontWeight: 'bold' }}
                     />
                 </Bar>
-                <XAxis dataKey="answer" />
+                <XAxis dataKey="answer" style={{ fontSize: '2.5em', fontWeight: 'bold' }} />
             </BarChart>
         </ResponsiveContainer>
     )

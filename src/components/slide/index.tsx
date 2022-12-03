@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { IOption, ISlide } from 'interfaces'
 import { useEffect, useState, memo, useContext } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +9,15 @@ import AnswerChart from '../answer-chart'
 import { failureModal } from '../modals'
 import './index.css'
 
-function Slide({ slide, code }: { slide: ISlide; code: string }) {
+function Slide({
+    slide,
+    code,
+    isFullScreen,
+}: {
+    slide: ISlide
+    code: string
+    isFullScreen: boolean
+}) {
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     useEffect(() => {
@@ -16,8 +25,8 @@ function Slide({ slide, code }: { slide: ISlide; code: string }) {
             setOptionData(slide.optionList)
         }
     }, [slide])
-    const handleUpdateResults = (results: IOption[]) => {
-        setOptionData(results)
+    const handleUpdateResults = (result: { slide: ISlide }) => {
+        setOptionData(result.slide.optionList || [])
     }
 
     useEffect(() => {
@@ -47,15 +56,24 @@ function Slide({ slide, code }: { slide: ISlide; code: string }) {
     return (
         <div className="slide-container">
             <div className="invitation-wrapper">
-                <p>
-                    Share link: <Link to="/">{generatePresentationLink(code)}</Link>
-                </p>
+                {slide.optionList && slide.optionList.length > 0 && isFullScreen ? (
+                    <p>
+                        Share link:{' '}
+                        <Link to={`/answer-form/${code}`}>{generatePresentationLink(code)}</Link>
+                    </p>
+                ) : (
+                    <></>
+                )}
             </div>
             <div className="question-wrapper">
                 <h2>{slide.text}</h2>
             </div>
             <div className="chart-wrapper">
-                <AnswerChart options={optionData} />
+                {slide.optionList && slide.optionList.length > 0 ? (
+                    <AnswerChart options={optionData} />
+                ) : (
+                    <></>
+                )}
             </div>
         </div>
     )

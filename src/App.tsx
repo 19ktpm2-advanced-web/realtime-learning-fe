@@ -18,6 +18,10 @@ import { SocketContext, socketService } from './service'
 import AnswerForm from './pages/answer-form'
 const router = createBrowserRouter([
     {
+        path: '/404',
+        element: <ErrorPage />,
+    },
+    {
         path: '/login',
         element: <Login />,
     },
@@ -38,6 +42,7 @@ const router = createBrowserRouter([
                 presentationCode: params.presentationCode,
             }
         },
+        errorElement: <ErrorPage />,
     },
     {
         element: (
