@@ -4,12 +4,13 @@ import {
     CaretRightFilled,
     CheckOutlined,
     CloseOutlined,
+    ExclamationCircleFilled,
     HolderOutlined,
     PlusOutlined,
     QuestionOutlined,
 } from '@ant-design/icons'
-import { Button, Divider, Empty, Form, Input, Select, Tabs } from 'antd'
-import { failureModal } from 'components/modals'
+import { Button, Divider, Empty, Form, Input, Modal, Select, Tabs } from 'antd'
+import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
@@ -25,8 +26,10 @@ function PresentationDetail() {
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
     const [isDataChanging, setIsDataChange] = useState(false)
+    const [slideListChanged, setSlideListChanged] = useState(false)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
+    const { confirm } = Modal
     const updateSlidePreview = (slide: ISlide) => {
         setIsDataChange(true)
         setSlidePreview(slide)
@@ -38,10 +41,12 @@ function PresentationDetail() {
                 if (result.status === 200) {
                     setPresentation(result.data)
                     presentationForm.setFieldsValue(result.data)
+
+                    setSlideListChanged(false)
                 }
             })()
         }
-    }, [id])
+    }, [id, slideListChanged])
     const [showDescInput, setShowDescInput] = useState(false)
     const onChangeOption = (value: string, index: number) => {
         const newOptions: IOption[] = slidePreview.optionList ?? []
@@ -140,6 +145,47 @@ function PresentationDetail() {
                     handleFullScreen.enter()
                 } else {
                     failureModal('Cannot load slide to present', res.statusText)
+                }
+            },
+            onError: (error: any) => {
+                failureModal('Something is wrong', error.response && error.response.data)
+            },
+        })
+    }
+
+    const { mutate: deleteSlideMutate } = useMutation(
+        ({ presentationId, slideId }: { presentationId: string; slideId: string }) => {
+            return instance.delete(`/presentation/slide/delete/${presentationId}&${slideId}`)
+        },
+    )
+
+    const showDeleteConfirm = () => {
+        confirm({
+            title: 'Are you sure delete this slide?',
+            icon: <ExclamationCircleFilled />,
+            content: 'This action cannot be undone',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                handleDeleteSlide()
+            },
+        })
+    }
+
+    const handleDeleteSlide = () => {
+        const payload: any = {
+            presentationId: presentation.id,
+            slideId: slidePreview.id,
+        }
+        deleteSlideMutate(payload, {
+            onSuccess: (res) => {
+                if (res?.status === 200) {
+                    setSlideListChanged(true)
+                    setSlidePreview({})
+                    successModal('Slide deleted successfully')
+                } else {
+                    failureModal('Something is wrong', res.statusText)
                 }
             },
             onError: (error: any) => {
@@ -362,6 +408,14 @@ function PresentationDetail() {
                                             }}
                                         >
                                             Add Option
+                                        </Button>
+
+                                        <Button
+                                            className={styles.deleteSlideBtn}
+                                            icon={<CloseOutlined />}
+                                            onClick={showDeleteConfirm}
+                                        >
+                                            Delete slide
                                         </Button>
                                     </div>
                                 </Tabs.TabPane>
