@@ -255,6 +255,15 @@
     background-color: rgb(219, 220, 225);
 }
 
+.deleteSlideBtn {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid rgb(18, 19, 20);
+    background-color: rgb(199 22 22);
+    color: white;
+    margin-top: 1em;
+}
+
 /* SLIDE */
 .slideContent {
     padding: 2em;
