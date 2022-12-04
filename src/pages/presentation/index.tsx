@@ -14,6 +14,8 @@ function Presentation() {
     const [isVisibleModal, setIsVisibleModal] = useState(false)
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
+    const [presentationsChanged, setPresentationsChanged] = useState(false)
+
     useEffect(() => {
         setLoading(true)
         try {
@@ -29,7 +31,8 @@ function Presentation() {
         } catch (e) {
             failureModal(e)
         }
-    }, [])
+    }, [presentationsChanged])
+
     const [createForm] = Form.useForm()
     const handleFinishCreate = async (values: { name: string }) => {
         const newPresentation = {
@@ -54,6 +57,11 @@ function Presentation() {
             setIsVisibleModal(false)
         }
     }
+
+    const onPresentationDeleted = () => {
+        setPresentationsChanged(!presentationsChanged)
+    }
+
     return (
         <div className={styles.container}>
             <div>My Presentations</div>
@@ -67,7 +75,10 @@ function Presentation() {
                     New presentation
                 </Button>
             </div>
-            <PresentationList presentations={presentations} />
+            <PresentationList
+                presentations={presentations}
+                onPresentationDeleted={onPresentationDeleted}
+            />
             <Modal
                 visible={isVisibleModal}
                 okText="Create Presentation"
