@@ -195,7 +195,9 @@ function PresentationDetail() {
     }
 
     const handleFullScreenChange = (state: boolean, handle: FullScreenHandle) => {
+        setSlideListChanged(false)
         if (!state) {
+            setSlideListChanged(true)
             const payload: any = {
                 presentationId: presentation.id,
                 slideId: slidePreview.id,
