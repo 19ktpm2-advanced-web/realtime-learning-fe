@@ -18,7 +18,7 @@ export class SocketService {
     }
 
     establishConnection() {
-        console.log('this.socket.io.opts.transports: ', this.socket.io.opts.transports)
+        console.log('this.socket.io.opts: ', this.socket.io.opts.transports)
         this.socket.connect()
         // Try to reconnect
         this.socket.on('connect_error', () => {
