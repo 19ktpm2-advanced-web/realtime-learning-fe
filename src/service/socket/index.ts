@@ -9,7 +9,7 @@ export class SocketService {
     constructor() {
         this.socket = io(config.socket.SERVER_URL || 'http://localhost:3300', {
             autoConnect: false,
-            transports: ['websocket'],
+            // transports: ['websocket'],
         })
     }
 
