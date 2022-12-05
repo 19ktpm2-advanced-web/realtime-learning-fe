@@ -8,7 +8,7 @@ import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
 import { ISlide } from '../../interfaces'
 import { SocketContext } from '../../service'
-import instance from '../../service/axiosPrivate'
+import instance from '../../service/axiosPublic'
 import { SocketEvent } from '../../service/socket/event'
 import styles from './styles.module.css'
 
@@ -34,10 +34,12 @@ function AnswerForm() {
                 if (res?.status === 200) {
                     setSlide(res.data)
                 } else {
+                    console.log(res)
                     navigate('/404')
                 }
             })
             .catch((error) => {
+                console.log('error: ', error)
                 navigate('/404')
             })
     }, [])
