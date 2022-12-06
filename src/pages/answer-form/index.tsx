@@ -1,9 +1,11 @@
 /* eslint-disable */
-import { Button, Card, Divider, Form, Radio } from 'antd'
+import { MessageOutlined } from '@ant-design/icons'
+import { Badge, Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import AnswerChart from '../../components/answer-chart'
+import ChatBox from '../../components/chat-box'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
 import { ISlide } from '../../interfaces'
@@ -24,6 +26,7 @@ function AnswerForm() {
     const [slide, setSlide] = useState<ISlide>({})
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
+    const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
 
     useEffect(() => {
         setIsLoading(true)
@@ -34,12 +37,10 @@ function AnswerForm() {
                 if (res?.status === 200) {
                     setSlide(res.data)
                 } else {
-                    console.log(res)
                     navigate('/404')
                 }
             })
             .catch((error) => {
-                console.log('error: ', error)
                 navigate('/404')
             })
     }, [])
@@ -121,6 +122,13 @@ function AnswerForm() {
                             </div>
                         ) : (
                             <>
+                                <div className={styles['header']}>
+                                    <MessageOutlined
+                                        className={styles['message-icon']}
+                                        onClick={() => setChatBoxIsOpen(true)}
+                                    />
+                                </div>
+                                <ChatBox isOpen={chatBoxIsOpen} handleVisible={setChatBoxIsOpen} />
                                 <div className={styles['question-wrapper']}>
                                     <h2>{slide.text}</h2>
                                 </div>

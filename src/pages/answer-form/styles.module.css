@@ -16,7 +16,7 @@ p {
 
 .answer-chart {
     width: 100%;
-    flex-basis: 60%;
+    flex-basis: 40%;
     font-size: 1em;
     height: 60%;
 }
@@ -26,7 +26,18 @@ p {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    flex-basis: 40%;
+    flex-basis: 60%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.message-icon {
+    font-size: 2em;
 }
 
 .question-wrapper {
