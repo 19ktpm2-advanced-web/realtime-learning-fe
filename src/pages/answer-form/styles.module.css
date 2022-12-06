@@ -27,6 +27,7 @@ p {
     align-items: flex-start;
     justify-content: center;
     flex-basis: 60%;
+    height: 100%;
 }
 
 .header {
@@ -84,4 +85,5 @@ p {
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: 100%;
 }

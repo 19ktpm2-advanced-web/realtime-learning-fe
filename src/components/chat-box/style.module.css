@@ -1,11 +1,16 @@
 @import '~antd/dist/antd.css';
 
-.message-box {
+.message-list-wrapper {
     padding: 1em;
     overflow-y: auto;
     max-height: 100%;
     max-width: 100%;
     white-space: initial;
+}
+
+.message-list {
+    height: 100%;
+    overflow: auto;
 }
 
 .form {

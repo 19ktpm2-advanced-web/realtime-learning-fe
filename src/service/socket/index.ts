@@ -2,7 +2,7 @@
 import React from 'react'
 import { io, Socket } from 'socket.io-client'
 import { config } from '../../config'
-import { SocketEvent } from './event'
+import { ChatEvent, PresentationEvent } from './event'
 
 export class SocketService {
     readonly socket: Socket
@@ -24,7 +24,7 @@ export class SocketService {
                 this.socket.connect()
             }, 1000)
         })
-        this.socket.on(SocketEvent.DISCONNECT, (reason) => {
+        this.socket.on(PresentationEvent.DISCONNECT, (reason) => {
             throw new Error(reason)
         })
     }

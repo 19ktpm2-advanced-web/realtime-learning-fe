@@ -1,3 +1,4 @@
+import { IMessage } from '../message'
 import { ISlide } from '../slide'
 
 export interface IPresentation {
@@ -13,4 +14,5 @@ export interface IPresentation {
     currentSlide?: number
     inviteCode?: string
     slideList?: ISlide[]
+    messages?: IMessage[]
 }
