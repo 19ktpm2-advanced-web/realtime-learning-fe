@@ -1,4 +1,6 @@
 /* eslint-disable */
+import { MessageOutlined } from '@ant-design/icons'
+import { Badge } from 'antd'
 import { IOption, ISlide } from 'interfaces'
 import { useEffect, useState, memo, useContext } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,8 +8,9 @@ import { SocketContext } from '../../service'
 import { SocketEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
 import AnswerChart from '../answer-chart'
+import ChatBox from '../chat-box'
 import { failureModal } from '../modals'
-import './index.css'
+import styles from './style.module.css'
 
 function Slide({
     slide,
@@ -20,6 +23,8 @@ function Slide({
 }) {
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
+    const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+
     useEffect(() => {
         if (slide?.optionList) {
             setOptionData(slide.optionList)
@@ -54,8 +59,8 @@ function Slide({
     }, [socketService.socket])
 
     return (
-        <div className="slide-container">
-            <div className="invitation-wrapper">
+        <div className={styles.slideContainer}>
+            <div className={styles.invitationWrapper}>
                 {slide.optionList && slide.optionList.length > 0 && isFullScreen ? (
                     <p>
                         Share link:{' '}
@@ -65,16 +70,22 @@ function Slide({
                     <></>
                 )}
             </div>
-            <div className="question-wrapper">
+            <div className={styles.questionWrapper}>
                 <h2>{slide.text}</h2>
             </div>
-            <div className="chart-wrapper">
+            <div className={styles.chartWrapper}>
                 {slide.optionList && slide.optionList.length > 0 ? (
                     <AnswerChart options={optionData} />
                 ) : (
                     <></>
                 )}
             </div>
+            <div className={styles.footer}>
+                <Badge count={5} color="#1857cf" className={styles.messageIcon} size="small">
+                    <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
+                </Badge>
+            </div>
+            <ChatBox isOpen={chatBoxIsOpen} handleVisible={setChatBoxIsOpen} />
         </div>
     )
 }
