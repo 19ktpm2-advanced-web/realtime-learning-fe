@@ -1,18 +1,40 @@
 /* eslint-disable */
 import { Button, Form, Modal } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
-import { MessageBox } from 'react-chat-elements'
+import { MessageList, MessageType } from 'react-chat-elements'
 // RCE CSS
 import 'react-chat-elements/dist/main.css'
+import { useMutation } from 'react-query'
+import { IMessage } from '../../interfaces/message'
+import publicInstance from '../../service/axiosPublic'
 import styles from './style.module.css'
 
 function ChatBox({
     isOpen,
     handleVisible,
+    messages,
+    presentationCode,
 }: {
     isOpen: boolean
     handleVisible: (isVisible: boolean) => void
+    messages: IMessage[]
+    presentationCode: string
 }) {
+    const [form] = Form.useForm()
+
+    const { mutate } = useMutation((addMessageData) => {
+        return publicInstance.post('/presentation/chat/add-anonymous-message', addMessageData)
+    })
+    const handleSubmit = (data: any) => {
+        form.resetFields()
+
+        const payload: any = {
+            message: data.message,
+            presentationCode,
+        }
+
+        mutate(payload)
+    }
     return (
         <Modal
             title="Chat"
@@ -20,52 +42,35 @@ function ChatBox({
             open={isOpen}
             footer={null}
             onCancel={() => handleVisible(false)}
+            getContainer={false}
             bodyStyle={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
                 padding: 0,
                 height: '200px',
                 maxWidth: '100%',
             }}
         >
-            <div className={styles['message-box']}>
-                <MessageBox
-                    /* @ts-ignore */
-                    position="left"
-                    title="Burhan"
-                    type="text"
-                    text="Hi there !"
-                    date={new Date()}
-                />
-                <MessageBox
-                    /* @ts-ignore */
-                    position="left"
-                    title="Burhan"
-                    type="text"
-                    text="Hi there !"
-                    date={new Date()}
-                />
-                <MessageBox
-                    /* @ts-ignore */
-                    position="left"
-                    title="Burhan"
-                    type="text"
-                    text="Hi there !"
-                    date={new Date()}
-                />
-                <MessageBox
-                    /* @ts-ignore */
-                    position="left"
-                    title="Burhan"
-                    type="text"
-                    text="Hi there !"
-                    date={new Date()}
+            <div className={styles['message-list-wrapper']}>
+                {/* @ts-ignore */}
+                <MessageList
+                    toBottomHeight={0}
+                    dataSource={messages.map((message) => {
+                        /* @ts-ignore */
+                        const item: MessageType = {
+                            position: 'left',
+                            title: message.title,
+                            type: 'text',
+                            text: message.text,
+                            date: message.date,
+                        }
+                        return item
+                    })}
                 />
             </div>
-            <Form
-                // onFinish={handleSubmit}
-                className={styles['form']}
-                // form={form}
-            >
-                <Form.Item noStyle>
+            <Form onFinish={handleSubmit} className={styles['form']} form={form}>
+                <Form.Item name="message" noStyle>
                     <div className={styles['chat-area']}>
                         <TextArea
                             className={styles['chat-input']}

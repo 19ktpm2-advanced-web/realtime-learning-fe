@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { MessageOutlined } from '@ant-design/icons'
-import { Badge, Button, Card, Divider, Form, Radio } from 'antd'
+import { Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { useLoaderData, useNavigate } from 'react-router-dom'
@@ -9,9 +9,10 @@ import ChatBox from '../../components/chat-box'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
 import { ISlide } from '../../interfaces'
+import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
-import instance from '../../service/axiosPublic'
-import { SocketEvent } from '../../service/socket/event'
+import publicInstance from '../../service/axiosPublic'
+import { ChatEvent, PresentationEvent } from '../../service/socket/event'
 import styles from './styles.module.css'
 
 function AnswerForm() {
@@ -27,10 +28,15 @@ function AnswerForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [messages, setMessages] = useState<IMessage[]>([])
+
+    const handleIncomingMessage = (newMessage: IMessage) => {
+        setMessages((messages) => [...messages, newMessage])
+    }
 
     useEffect(() => {
         setIsLoading(true)
-        instance
+        publicInstance
             .get(`/presentation/slide/get/${presentationCode}`)
             .then((res) => {
                 setIsLoading(false)
@@ -46,6 +52,21 @@ function AnswerForm() {
     }, [])
 
     useEffect(() => {
+        publicInstance
+            .get(`/presentation/chat/messages/${presentationCode}`)
+            .then((res) => {
+                if (res?.status === 200) {
+                    setMessages(res.data)
+                } else {
+                    failureModal('Something is wrong', res.statusText)
+                }
+            })
+            .catch((error) => {
+                failureModal('Something is wrong', error.response && error.response.data)
+            })
+    }, [])
+
+    useEffect(() => {
         try {
             socketService.establishConnection()
         } catch (error) {
@@ -56,14 +77,16 @@ function AnswerForm() {
         }
 
         // Each user watching the same presentation will join the same room
-        socketService.socket.emit(SocketEvent.JOIN_ROOM, {
+        socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
             roomId: presentationCode,
         })
-        socketService.socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
+        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
 
-        socketService.socket.on(SocketEvent.END_PRESENTING, () => {
+        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
             navigate('/404')
         })
+
+        socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         return () => {
             // before the component is destroyed
@@ -78,7 +101,7 @@ function AnswerForm() {
     }
 
     const { mutate } = useMutation((updateAnswerData) => {
-        return instance.post('/presentation/slide/update-answer', updateAnswerData)
+        return publicInstance.post('/presentation/slide/update-answer', updateAnswerData)
     })
 
     const handleSubmit = (data: any) => {
@@ -116,19 +139,24 @@ function AnswerForm() {
                     <Divider type="vertical" style={{ height: '100%' }} />
 
                     <div className={styles['form-wrapper']}>
+                        <div className={styles['header']}>
+                            <MessageOutlined
+                                className={styles['message-icon']}
+                                onClick={() => setChatBoxIsOpen(true)}
+                            />
+                        </div>
+                        <ChatBox
+                            isOpen={chatBoxIsOpen}
+                            handleVisible={setChatBoxIsOpen}
+                            messages={messages}
+                            presentationCode={presentationCode}
+                        />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
                                 <h1>Thanks for answering</h1>
                             </div>
                         ) : (
                             <>
-                                <div className={styles['header']}>
-                                    <MessageOutlined
-                                        className={styles['message-icon']}
-                                        onClick={() => setChatBoxIsOpen(true)}
-                                    />
-                                </div>
-                                <ChatBox isOpen={chatBoxIsOpen} handleVisible={setChatBoxIsOpen} />
                                 <div className={styles['question-wrapper']}>
                                     <h2>{slide.text}</h2>
                                 </div>

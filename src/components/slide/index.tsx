@@ -4,12 +4,14 @@ import { Badge } from 'antd'
 import { IOption, ISlide } from 'interfaces'
 import { useEffect, useState, memo, useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
-import { SocketEvent } from '../../service/socket/event'
+import { ChatEvent, PresentationEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
 import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
 import { failureModal } from '../modals'
+import publicInstance from '../../service/axiosPublic'
 import styles from './style.module.css'
 
 function Slide({
@@ -24,14 +26,35 @@ function Slide({
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [messages, setMessages] = useState<IMessage[]>([])
 
     useEffect(() => {
         if (slide?.optionList) {
             setOptionData(slide.optionList)
         }
     }, [slide])
+
+    useEffect(() => {
+        publicInstance
+            .get(`/presentation/chat/messages/${code}`)
+            .then((res) => {
+                if (res?.status === 200) {
+                    setMessages(res.data)
+                } else {
+                    failureModal('Something is wrong', res.statusText)
+                }
+            })
+            .catch((error) => {
+                failureModal('Something is wrong', error.response && error.response.data)
+            })
+    }, [])
+
     const handleUpdateResults = (result: { slide: ISlide }) => {
         setOptionData(result.slide.optionList || [])
+    }
+
+    const handleIncomingMessage = (newMessage: IMessage) => {
+        setMessages((messages) => [...messages, newMessage])
     }
 
     useEffect(() => {
@@ -45,10 +68,11 @@ function Slide({
         }
 
         // Each user watching the same presentation will join the same room
-        socketService.socket.emit(SocketEvent.JOIN_ROOM, {
+        socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
             roomId: code,
         })
-        socketService.socket.on(SocketEvent.UPDATE_RESULTS, handleUpdateResults)
+        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
+        socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         return () => {
             // before the component is destroyed
@@ -85,7 +109,12 @@ function Slide({
                     <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
                 </Badge>
             </div>
-            <ChatBox isOpen={chatBoxIsOpen} handleVisible={setChatBoxIsOpen} />
+            <ChatBox
+                isOpen={chatBoxIsOpen}
+                handleVisible={setChatBoxIsOpen}
+                messages={messages}
+                presentationCode={code}
+            />
         </div>
     )
 }
