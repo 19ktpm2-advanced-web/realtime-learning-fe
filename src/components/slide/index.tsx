@@ -1,6 +1,6 @@
-import React, { useMemo, useEffect, useState, memo, useContext } from 'react'
+import { useEffect, useState, memo, useContext } from 'react'
 import { MessageOutlined } from '@ant-design/icons'
-import { Badge, notification } from 'antd'
+import { Badge } from 'antd'
 import { IOption, ISlide } from 'interfaces'
 
 import { Link } from 'react-router-dom'
@@ -10,11 +10,10 @@ import { ChatEvent, PresentationEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
 import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
+import MessageNotification from '../message-notification'
 import { failureModal } from '../modals'
 import publicInstance from '../../service/axiosPublic'
 import styles from './style.module.css'
-
-const Context = React.createContext({ name: 'Default' })
 
 function Slide({
     slide,
@@ -25,24 +24,13 @@ function Slide({
     code: string
     isFullScreen: boolean
 }) {
-    const [api, contextHolder] = notification.useNotification()
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [messages, setMessages] = useState<IMessage[]>([])
     const [unReadMessages, setUnReadMessages] = useState(0)
-    async function openNewMessageNotification(message: IMessage) {
-        if (chatBoxIsOpen) return
-        const profile = await localStorage.getItem('profile')
-        if (profile && JSON.parse(profile)?.fullName === message.title) return
-        api.info({
-            message: `From: ${message.title}`,
-            description: message.text,
-            placement: 'bottomRight',
-            duration: 2,
-        })
-    }
-    const contextValue = useMemo(() => ({ name: 'Ant Design' }), [])
+    const [showNotification, setShowNotification] = useState(false)
+    const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
     useEffect(() => {
         if (chatBoxIsOpen) {
             setUnReadMessages(0)
@@ -75,7 +63,8 @@ function Slide({
     }
 
     const handleIncomingMessage = (newMessage: IMessage) => {
-        openNewMessageNotification(newMessage)
+        setShowNotification(true)
+        setComingMessage(newMessage)
         setMessages((prev) => [...prev, newMessage])
     }
 
@@ -105,8 +94,8 @@ function Slide({
     }, [socketService.socket])
 
     return (
-        <Context.Provider value={contextValue}>
-            {contextHolder}
+        <>
+            <MessageNotification visible={showNotification} message={comingMessage} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
                     {slide.optionList && slide.optionList.length > 0 && isFullScreen && (
@@ -143,7 +132,7 @@ function Slide({
                     presentationCode={code}
                 />
             </div>
-        </Context.Provider>
+        </>
     )
 }
 

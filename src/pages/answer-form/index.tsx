@@ -13,6 +13,7 @@ import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import publicInstance from '../../service/axiosPublic'
 import { ChatEvent, PresentationEvent } from '../../service/socket/event'
+import MessageNotification from 'components/message-notification'
 import styles from './styles.module.css'
 
 function AnswerForm() {
@@ -29,8 +30,12 @@ function AnswerForm() {
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [messages, setMessages] = useState<IMessage[]>([])
+    const [showNotification, setShowNotification] = useState(false)
+    const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
 
     const handleIncomingMessage = (newMessage: IMessage) => {
+        setShowNotification(true)
+        setComingMessage(newMessage)
         setMessages((messages) => [...messages, newMessage])
     }
 
@@ -128,6 +133,7 @@ function AnswerForm() {
 
     return (
         <div className={styles.container}>
+            <MessageNotification visible={showNotification} message={comingMessage} />
             {isLoading ? (
                 <LoadingSpin />
             ) : (
