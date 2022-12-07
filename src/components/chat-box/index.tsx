@@ -1,12 +1,14 @@
 /* eslint-disable */
-import { Button, Form, Modal } from 'antd'
+import { Button, Form, Modal, Switch } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
+import { useState } from 'react'
 import { MessageList, MessageType } from 'react-chat-elements'
 // RCE CSS
 import 'react-chat-elements/dist/main.css'
 import { useMutation } from 'react-query'
 import { IMessage } from '../../interfaces/message'
 import publicInstance from '../../service/axiosPublic'
+import privateInstance from '../../service/axiosPrivate'
 import styles from './style.module.css'
 
 function ChatBox({
@@ -21,9 +23,16 @@ function ChatBox({
     presentationCode: string
 }) {
     const [form] = Form.useForm()
-
+    const [isAnonymous, setIsAnonymous] = useState(false)
     const { mutate } = useMutation((addMessageData) => {
-        return publicInstance.post('/presentation/chat/add-anonymous-message', addMessageData)
+        if (isAnonymous) {
+            return publicInstance.post('/presentation/chat/add-anonymous-message', addMessageData)
+        } else {
+            return privateInstance.post(
+                '/presentation/chat/add-authenticated-message',
+                addMessageData,
+            )
+        }
     })
     const handleSubmit = (data: any) => {
         form.resetFields()
@@ -48,7 +57,7 @@ function ChatBox({
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 padding: 0,
-                height: '200px',
+                height: '80vh',
                 maxWidth: '100%',
             }}
         >
@@ -67,6 +76,13 @@ function ChatBox({
                         }
                         return item
                     })}
+                />
+            </div>
+            <div>
+                <Switch
+                    checkedChildren="Anonymous"
+                    unCheckedChildren="Normal"
+                    onChange={() => setIsAnonymous((prev: Boolean) => !prev)}
                 />
             </div>
             <Form onFinish={handleSubmit} className={styles['form']} form={form}>
