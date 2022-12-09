@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
     ArrowLeftOutlined,
     CaretRightFilled,
@@ -14,7 +13,7 @@ import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import { IOption, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
-import { FullScreen, FullScreenHandle, useFullScreenHandle } from 'react-full-screen'
+import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { useMutation } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
@@ -159,20 +158,6 @@ function PresentationDetail() {
         },
     )
 
-    const showDeleteConfirm = () => {
-        confirm({
-            title: 'Are you sure delete this slide?',
-            icon: <ExclamationCircleFilled />,
-            content: 'This action cannot be undone',
-            okText: 'Yes',
-            okType: 'danger',
-            cancelText: 'No',
-            onOk() {
-                handleDeleteSlide()
-            },
-        })
-    }
-
     const handleDeleteSlide = () => {
         const payload: any = {
             presentationId: presentation.id,
@@ -193,8 +178,21 @@ function PresentationDetail() {
             },
         })
     }
+    const showDeleteConfirm = () => {
+        confirm({
+            title: 'Are you sure delete this slide?',
+            icon: <ExclamationCircleFilled />,
+            content: 'This action cannot be undone',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                handleDeleteSlide()
+            },
+        })
+    }
 
-    const handleFullScreenChange = (state: boolean, handle: FullScreenHandle) => {
+    const handleFullScreenChange = (state: boolean) => {
         setSlideListChanged(false)
         if (!state) {
             setSlideListChanged(true)
@@ -269,20 +267,23 @@ function PresentationDetail() {
                     >
                         New Slide
                     </Button>
-                    {!showDescInput ? (
-                        <div onClick={() => setShowDescInput(true)} className={styles.description}>
-                            Add your description here
-                        </div>
-                    ) : (
-                        <Form.Item name="description" className={styles.formItem}>
+                    <Form.Item name="description" className={styles.formItem}>
+                        {!showDescInput ? (
+                            <div
+                                onClick={() => setShowDescInput(true)}
+                                className={styles.description}
+                            >
+                                Add your description here
+                            </div>
+                        ) : (
                             <Input.TextArea
                                 className={styles.descriptionInput}
                                 onBlur={() => setShowDescInput(false)}
                                 placeholder="Add your description here"
                                 autoFocus
                             />
-                        </Form.Item>
-                    )}
+                        )}
+                    </Form.Item>
                 </div>
             </Form>
             <div className={styles.contentWrapper}>
