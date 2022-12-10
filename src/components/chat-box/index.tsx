@@ -103,8 +103,8 @@ function ChatBox({
                 >
                     {messages.map((message) => {
                         return (
-                            /* @ts-ignore */
                             <MessageBox
+                                /* @ts-ignore */
                                 position="left"
                                 title={message.title}
                                 text={message.text}
