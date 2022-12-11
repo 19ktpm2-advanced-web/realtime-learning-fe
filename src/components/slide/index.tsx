@@ -12,7 +12,6 @@ import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
 import { failureModal } from '../modals'
-import publicInstance from '../../service/axiosPublic'
 import styles from './style.module.css'
 
 function Slide({
@@ -27,7 +26,6 @@ function Slide({
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
-    const [messages, setMessages] = useState<IMessage[]>([])
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
@@ -42,22 +40,6 @@ function Slide({
         }
     }, [slide])
 
-    useEffect(() => {
-        publicInstance
-            .get(`/presentation/chat/messages/${code}`)
-            .then((res) => {
-                if (res?.status === 200) {
-                    setMessages(res.data)
-                    setUnReadMessages(res.data.length)
-                } else {
-                    failureModal('Something is wrong', res.statusText)
-                }
-            })
-            .catch((error) => {
-                failureModal('Something is wrong', error.response && error.response.data)
-            })
-    }, [])
-
     const handleUpdateResults = (result: { slide: ISlide }) => {
         setOptionData(result.slide.optionList || [])
     }
@@ -65,7 +47,6 @@ function Slide({
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
         setComingMessage(newMessage)
-        setMessages((prev) => [...prev, newMessage])
     }
 
     useEffect(() => {
@@ -128,8 +109,8 @@ function Slide({
                 <ChatBox
                     isOpen={chatBoxIsOpen}
                     handleVisible={setChatBoxIsOpen}
-                    messages={messages}
                     presentationCode={code}
+                    comingMessage={comingMessage}
                 />
             </div>
         </>

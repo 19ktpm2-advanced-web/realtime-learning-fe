@@ -29,14 +29,12 @@ function AnswerForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
-    const [messages, setMessages] = useState<IMessage[]>([])
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
         setComingMessage(newMessage)
-        setMessages((messages) => [...messages, newMessage])
     }
 
     useEffect(() => {
@@ -53,21 +51,6 @@ function AnswerForm() {
             })
             .catch((error) => {
                 navigate('/404')
-            })
-    }, [])
-
-    useEffect(() => {
-        publicInstance
-            .get(`/presentation/chat/messages/${presentationCode}`)
-            .then((res) => {
-                if (res?.status === 200) {
-                    setMessages(res.data)
-                } else {
-                    failureModal('Something is wrong', res.statusText)
-                }
-            })
-            .catch((error) => {
-                failureModal('Something is wrong', error.response && error.response.data)
             })
     }, [])
 
@@ -154,8 +137,8 @@ function AnswerForm() {
                         <ChatBox
                             isOpen={chatBoxIsOpen}
                             handleVisible={setChatBoxIsOpen}
-                            messages={messages}
                             presentationCode={presentationCode}
+                            comingMessage={comingMessage}
                         />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
