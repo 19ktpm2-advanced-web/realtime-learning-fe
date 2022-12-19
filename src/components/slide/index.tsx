@@ -1,16 +1,16 @@
 import { useEffect, useState, memo, useContext } from 'react'
 import { MessageOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
-import { IOption, ISlide } from 'interfaces'
+import { ISlide } from 'interfaces'
 
 import { Link } from 'react-router-dom'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import { ChatEvent, PresentationEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
-import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
+import SlideContent from '../slideContent'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
 
@@ -24,7 +24,6 @@ function Slide({
     isFullScreen: boolean
 }) {
     const socketService = useContext(SocketContext)
-    const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
@@ -34,15 +33,6 @@ function Slide({
             setUnReadMessages(0)
         }
     }, [chatBoxIsOpen])
-    useEffect(() => {
-        if (slide?.optionList) {
-            setOptionData(slide.optionList)
-        }
-    }, [slide])
-
-    const handleUpdateResults = (result: { slide: ISlide }) => {
-        setOptionData(result.slide.optionList || [])
-    }
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
@@ -63,7 +53,6 @@ function Slide({
         socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
             roomId: code,
         })
-        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         return () => {
@@ -88,14 +77,7 @@ function Slide({
                         </p>
                     )}
                 </div>
-                <div className={styles.questionWrapper}>
-                    <h2>{slide.text}</h2>
-                </div>
-                <div className={styles.chartWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && (
-                        <AnswerChart options={optionData} />
-                    )}
-                </div>
+                <SlideContent type={slide.type} slide={slide} />
                 <div className={styles.footer}>
                     <Badge
                         count={unReadMessages}
