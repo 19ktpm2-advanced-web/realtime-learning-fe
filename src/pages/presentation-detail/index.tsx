@@ -6,12 +6,12 @@ import {
     ExclamationCircleFilled,
     HolderOutlined,
     PlusOutlined,
-    QuestionOutlined,
 } from '@ant-design/icons'
 import { Button, Divider, Empty, Form, Input, Modal, Select, Tabs } from 'antd'
 import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
-import { IOption, IPresentation, ISlide } from 'interfaces'
+import SlideSetting from 'components/slideSetting'
+import { IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { useMutation } from 'react-query'
@@ -47,12 +47,6 @@ function PresentationDetail() {
         }
     }, [id, slideListChanged])
     const [showDescInput, setShowDescInput] = useState(false)
-    const onChangeOption = (value: string, index: number) => {
-        const newOptions: IOption[] = slidePreview.optionList ?? []
-        newOptions[index].answer = value
-        newOptions[index].votes = 0
-        updateSlidePreview({ ...slidePreview, optionList: newOptions })
-    }
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
@@ -343,84 +337,17 @@ function PresentationDetail() {
                         <div className={styles.settingContent}>
                             <Tabs className={styles.tabWrapper} defaultActiveKey="content">
                                 <Tabs.TabPane tab="Content" key="content">
-                                    <div className={styles.settingContentWrapper}>
-                                        <label className={styles.settingLabel}>
-                                            Your Question
-                                            <span>
-                                                <QuestionOutlined />
-                                            </span>
-                                        </label>
-                                        <Input
-                                            placeholder="Question here ..."
-                                            value={slidePreview?.text ?? ''}
-                                            onChange={(e) => {
-                                                updateSlidePreview({
-                                                    ...slidePreview,
-                                                    text: e.target.value,
-                                                })
-                                            }}
-                                            className={styles.inputQuestion}
-                                        />
-                                    </div>
-                                    <div className={styles.settingContentWrapper}>
-                                        <label className={styles.settingLabel}>
-                                            Options
-                                            <span>
-                                                <QuestionOutlined />
-                                            </span>
-                                        </label>
-                                        {slidePreview?.optionList?.map((option, index) => {
-                                            return (
-                                                <div className={styles.optionItem} key={index}>
-                                                    <Input
-                                                        placeholder="Option here ..."
-                                                        className={styles.inputOption}
-                                                        value={option?.answer ?? ''}
-                                                        onChange={(e) => {
-                                                            onChangeOption(e.target.value, index)
-                                                        }}
-                                                    />
-                                                    <CloseOutlined
-                                                        className={styles.deleteOption}
-                                                        onClick={() => {
-                                                            updateSlidePreview({
-                                                                ...slidePreview,
-                                                                optionList:
-                                                                    slidePreview?.optionList?.filter(
-                                                                        (item) => item !== option,
-                                                                    ),
-                                                            })
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
-                                        })}
-                                        <Button
-                                            className={styles.addOptionBtn}
-                                            icon={<PlusOutlined />}
-                                            onClick={() => {
-                                                const newOptions = slidePreview?.optionList ?? []
-                                                newOptions.push({
-                                                    answer: '',
-                                                    votes: 0,
-                                                })
-                                                updateSlidePreview({
-                                                    ...slidePreview,
-                                                    optionList: newOptions,
-                                                })
-                                            }}
-                                        >
-                                            Add Option
-                                        </Button>
-
-                                        <Button
-                                            className={styles.deleteSlideBtn}
-                                            icon={<CloseOutlined />}
-                                            onClick={showDeleteConfirm}
-                                        >
-                                            Delete slide
-                                        </Button>
-                                    </div>
+                                    <SlideSetting
+                                        slide={slidePreview}
+                                        updateSlide={updateSlidePreview}
+                                    />
+                                    <Button
+                                        className={styles.deleteSlideBtn}
+                                        icon={<CloseOutlined />}
+                                        onClick={showDeleteConfirm}
+                                    >
+                                        Delete slide
+                                    </Button>
                                 </Tabs.TabPane>
                                 <Tabs.TabPane tab="Customize" key="customize">
                                     Have not supported yet
