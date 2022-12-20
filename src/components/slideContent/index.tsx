@@ -4,8 +4,8 @@ import HeadingContent from './heading'
 import MultipleChoiceContent from './multipleChoice'
 import ParagraphContent from './paragraph'
 
-function SlideContent({ type, slide }: { type?: SlideType; slide: ISlide }) {
-    switch (type) {
+function SlideContent({ slide }: { slide: ISlide }) {
+    switch (slide.type) {
         case SlideType.MULTIPLE_CHOICE:
             return <MultipleChoiceContent slide={slide} />
         case SlideType.HEADING:

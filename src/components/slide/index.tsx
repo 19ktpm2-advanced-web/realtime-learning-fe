@@ -77,7 +77,7 @@ function Slide({
                         </p>
                     )}
                 </div>
-                <SlideContent type={slide.type} slide={slide} />
+                <SlideContent slide={slide} />
                 <div className={styles.footer}>
                     <Badge
                         count={unReadMessages}
