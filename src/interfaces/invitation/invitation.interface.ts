@@ -1,6 +1,7 @@
 /* eslint-disable import/no-named-as-default */
 import InvitationType from '../../enums/invitation.enum'
 import { IGroup } from '../group'
+import { IPresentation } from '../presentation'
 import { IUser } from '../user'
 
 export interface IInvitation {
@@ -10,7 +11,9 @@ export interface IInvitation {
 
     inviteeEmail: string
 
-    group: IGroup
+    group?: IGroup
+
+    presentation?: IPresentation
 
     invitationExpireAt: Date
 
