@@ -146,7 +146,7 @@ function AnswerForm() {
                             </div>
                         ) : (
                             <>
-                                <div className={styles['question-wrapper']}>
+                                <div className={styles['qnaQuestion-wrapper']}>
                                     <h2>{slide.text}</h2>
                                 </div>
                                 <Form

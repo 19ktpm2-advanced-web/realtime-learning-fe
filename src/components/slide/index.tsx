@@ -1,5 +1,5 @@
 import { useEffect, useState, memo, useContext } from 'react'
-import { MessageOutlined } from '@ant-design/icons'
+import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
 import { IOption, ISlide } from 'interfaces'
 
@@ -13,6 +13,7 @@ import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
+import QnA from '../qna-box'
 
 function Slide({
     slide,
@@ -26,6 +27,7 @@ function Slide({
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [QnAIsOpen, setQnAIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
@@ -103,12 +105,27 @@ function Slide({
                         className={styles.messageIcon}
                         size="small"
                     >
+                        <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
+                    </Badge>
+                    <Badge
+                        count={unReadMessages}
+                        color="#1857cf"
+                        className={styles.messageIcon}
+                        size="small"
+                    >
                         <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
                     </Badge>
                 </div>
                 <ChatBox
                     isOpen={chatBoxIsOpen}
                     handleVisible={setChatBoxIsOpen}
+                    presentationCode={code}
+                    comingMessage={comingMessage}
+                />
+
+                <QnA
+                    isOpen={QnAIsOpen}
+                    handleVisible={setQnAIsOpen}
                     presentationCode={code}
                     comingMessage={comingMessage}
                 />
