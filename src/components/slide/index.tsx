@@ -18,10 +18,12 @@ function Slide({
     slide,
     code,
     isFullScreen,
+    visibleChat = true,
 }: {
     slide: ISlide
     code: string
     isFullScreen: boolean
+    visibleChat?: boolean
 }) {
     const socketService = useContext(SocketContext)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
@@ -78,22 +80,26 @@ function Slide({
                     )}
                 </div>
                 <SlideContent slide={slide} />
-                <div className={styles.footer}>
-                    <Badge
-                        count={unReadMessages}
-                        color="#1857cf"
-                        className={styles.messageIcon}
-                        size="small"
-                    >
-                        <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
-                    </Badge>
-                </div>
-                <ChatBox
-                    isOpen={chatBoxIsOpen}
-                    handleVisible={setChatBoxIsOpen}
-                    presentationCode={code}
-                    comingMessage={comingMessage}
-                />
+                {visibleChat && (
+                    <>
+                        <div className={styles.footer}>
+                            <Badge
+                                count={unReadMessages}
+                                color="#1857cf"
+                                className={styles.messageIcon}
+                                size="small"
+                            >
+                                <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
+                            </Badge>
+                        </div>
+                        <ChatBox
+                            isOpen={chatBoxIsOpen}
+                            handleVisible={setChatBoxIsOpen}
+                            presentationCode={code}
+                            comingMessage={comingMessage}
+                        />
+                    </>
+                )}
             </div>
         </>
     )

@@ -7,7 +7,7 @@ import {
     HolderOutlined,
     PlusOutlined,
 } from '@ant-design/icons'
-import { Button, Divider, Empty, Form, Input, Modal, Select, Tabs } from 'antd'
+import { Button, Card, Divider, Empty, Form, Input, Modal, Popover, Select, Tabs } from 'antd'
 import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import SlideSetting from 'components/slideSetting'
@@ -21,18 +21,22 @@ import {
 } from 'interfaces'
 import { useEffect, useState } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
+import InfiniteScroll from 'react-infinite-scroller'
 import { useMutation } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
 
+const PAGE_SIZE = 10
 function PresentationDetail() {
     const handleFullScreen = useFullScreenHandle()
     const navigate = useNavigate()
     const [presentation, setPresentation] = useState<IPresentation>({})
+    const [slideList, setSlideList] = useState<ISlide[]>([])
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
     const [isDataChanging, setIsDataChange] = useState(false)
-    const [slideListChanged, setSlideListChanged] = useState(false)
+    const [slideTypeList, setSlideTypeList] = useState<string[]>([])
+    const [hasMore, setHasMore] = useState(true)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
     const { confirm } = Modal
@@ -41,36 +45,61 @@ function PresentationDetail() {
         setSlidePreview(slide)
     }
     useEffect(() => {
-        if (id) {
-            ;(async () => {
-                const result = await instance.get(`/presentation/get/${id}`)
-                if (result.status === 200) {
-                    setPresentation(result.data)
-                    presentationForm.setFieldsValue(result.data)
-
-                    setSlideListChanged(false)
-                }
-            })()
+        const arr: string[] = Object.keys(SlideType).map((key) => {
+            return SlideType[key as keyof typeof SlideType]
+        })
+        setSlideTypeList(arr)
+    }, [])
+    const fetchPresentation = async () => {
+        try {
+            const result = await instance.get(`/presentation/get/${id}`)
+            if (result.status === 200) {
+                setPresentation(result.data)
+                presentationForm.setFieldsValue(result.data)
+            }
+        } catch (error) {
+            failureModal('Get presentation failed', error.response && error.response.data)
         }
-    }, [id, slideListChanged])
+    }
+    const fetchSlideList = async (pageNumber: number) => {
+        try {
+            const result = await instance.get(
+                `/presentation/${id}/slide/getAll?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
+            )
+            if (result.status === 200) {
+                if (result.data < PAGE_SIZE) {
+                    setHasMore(false)
+                }
+                if (result.data.length > 0) {
+                    if (slideList.length === 0) {
+                        setSlideList(result.data)
+                    } else if (
+                        slideList[slideList.length - 1].id !==
+                        result.data[result.data.length - 1].id
+                    ) {
+                        setSlideList((prev) => [...prev, ...result.data])
+                    }
+                }
+            }
+        } catch (error) {
+            failureModal('Get presentation failed', error.response && error.response.data)
+        }
+    }
+    useEffect(() => {
+        if (id) {
+            fetchPresentation()
+            fetchSlideList(1)
+        }
+    }, [id])
     const [showDescInput, setShowDescInput] = useState(false)
-    const handleNewSlideClick = async () => {
+    const handleNewSlideClick = async (type: string) => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
+            type,
         })
         if (result.status === 200) {
             const newSlide = result.data[result.data.length - 1]
-            if (presentation.slideList) {
-                setPresentation({
-                    ...presentation,
-                    slideList: [...presentation.slideList, newSlide],
-                })
-            } else {
-                setPresentation({
-                    ...presentation,
-                    slideList: [newSlide],
-                })
-            }
+            setSlideList((prev) => [...prev, newSlide])
         } else {
             failureModal('Create slide failed', result.data.message)
         }
@@ -89,19 +118,18 @@ function PresentationDetail() {
     }
     useEffect(() => {
         if (slidePreview.id) {
-            setPresentation((prev) => ({
-                ...prev,
-                slideList: prev.slideList?.map((slide) => {
+            setSlideList((prev) => {
+                return prev.map((slide) => {
                     if (slide.id === slidePreview.id) {
                         return slidePreview
                     }
                     return slide
-                }),
-            }))
+                })
+            })
         }
     }, [slidePreview])
     const handleSaveSlide = async () => {
-        if (slidePreview.id && slidePreview.id) {
+        if (slidePreview.id) {
             let data: any = {}
             switch (slidePreview.type) {
                 case SlideType.MULTIPLE_CHOICE: {
@@ -132,6 +160,7 @@ function PresentationDetail() {
                 default:
                     break
             }
+            console.log('data', data)
             try {
                 const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
                     presentationId: presentation.id,
@@ -139,10 +168,7 @@ function PresentationDetail() {
                     data: data ?? {},
                 })
                 if (result.status === 200) {
-                    setPresentation({
-                        ...presentation,
-                        slideList: result.data,
-                    })
+                    setSlideList(result.data)
                 } else {
                     failureModal('Update slide failed', result.data.message)
                 }
@@ -152,7 +178,7 @@ function PresentationDetail() {
         }
     }
     const saveClick = async () => {
-        await presentationForm.submit()
+        presentationForm.submit()
         await handleSaveSlide()
         setIsDataChange(false)
     }
@@ -195,8 +221,8 @@ function PresentationDetail() {
         deleteSlideMutate(payload, {
             onSuccess: (res) => {
                 if (res?.status === 200) {
-                    setSlideListChanged(true)
                     setSlidePreview({})
+                    setSlideList((prev) => prev.filter((slide) => slide.id !== slidePreview.id))
                     successModal('Slide deleted successfully')
                 } else {
                     failureModal('Something is wrong', res.statusText)
@@ -222,9 +248,7 @@ function PresentationDetail() {
     }
 
     const handleFullScreenChange = (state: boolean) => {
-        setSlideListChanged(false)
         if (!state) {
-            setSlideListChanged(true)
             const payload: any = {
                 presentationId: presentation.id,
                 slideId: slidePreview.id,
@@ -240,7 +264,6 @@ function PresentationDetail() {
             })
         }
     }
-
     return (
         <div className={styles.container}>
             <Form
@@ -288,14 +311,37 @@ function PresentationDetail() {
                     </div>
                 </div>
                 <div className={styles.navBar}>
-                    <Button
-                        className={styles.newSlideBtn}
-                        icon={<PlusOutlined />}
-                        type="primary"
-                        onClick={handleNewSlideClick}
+                    <Popover
+                        placement="bottomLeft"
+                        content={
+                            <div className={styles.slideTypeListContainer}>
+                                <div className={styles.slideTypeListWrapper}>
+                                    {slideTypeList.map((item: string) => {
+                                        return (
+                                            <div
+                                                className={styles.slideTypeItem}
+                                                onClick={() => handleNewSlideClick(item)}
+                                            >
+                                                <Card>
+                                                    <p>{item}</p>
+                                                </Card>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        }
+                        trigger="click"
                     >
-                        New Slide
-                    </Button>
+                        <Button
+                            className={styles.newSlideBtn}
+                            icon={<PlusOutlined />}
+                            type="primary"
+                            // onClick={handleNewSlideClick}
+                        >
+                            New Slide
+                        </Button>
+                    </Popover>
                     <Form.Item name="description" className={styles.formItem}>
                         {!showDescInput ? (
                             <div
@@ -317,27 +363,40 @@ function PresentationDetail() {
             </Form>
             <div className={styles.contentWrapper}>
                 <div className={styles.slideList}>
-                    {presentation.slideList?.map((slide, index) => (
-                        <div
-                            className={`${styles.slideItemWrapper} ${
-                                slidePreview.id === slide.id ? styles.active : ''
-                            }`}
-                            key={index}
-                            onClick={() => setSlidePreview(slide)}
-                        >
-                            <div className={styles.slideIndex}>
-                                {index + 1}
-                                <HolderOutlined />
+                    <InfiniteScroll
+                        pageStart={0}
+                        loadMore={fetchSlideList}
+                        hasMore={hasMore}
+                        loader={
+                            <div className="loader" key={0}>
+                                Loading ...
                             </div>
-                            <div className={styles.slideItem}>
-                                <Slide
-                                    slide={slide}
-                                    code={presentation?.inviteCode ?? ''}
-                                    isFullScreen={handleFullScreen.active}
-                                />
+                        }
+                        useWindow={false}
+                    >
+                        {slideList?.map((slide, index) => (
+                            <div
+                                className={`${styles.slideItemWrapper} ${
+                                    slidePreview.id === slide.id ? styles.active : ''
+                                }`}
+                                key={index}
+                                onClick={() => setSlidePreview(slide)}
+                            >
+                                <div className={styles.slideIndex}>
+                                    {index + 1}
+                                    <HolderOutlined />
+                                </div>
+                                <div className={styles.slideItem}>
+                                    <Slide
+                                        slide={slide}
+                                        code={presentation?.inviteCode ?? ''}
+                                        isFullScreen={handleFullScreen.active}
+                                        visibleChat={false}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </InfiniteScroll>
                 </div>
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
@@ -351,6 +410,7 @@ function PresentationDetail() {
                                     slide={slidePreview}
                                     code={presentation?.inviteCode ?? ''}
                                     isFullScreen={handleFullScreen.active}
+                                    visibleChat={false}
                                 />
                             </FullScreen>
                         ) : (
