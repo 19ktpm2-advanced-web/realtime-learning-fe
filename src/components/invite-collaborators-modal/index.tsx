@@ -5,8 +5,8 @@ import { Input, Tag } from 'antd'
 import { useMutation } from 'react-query'
 import instance from '../../service/axiosPrivate'
 import { failureModal, successModal } from '../modals'
-import { IPresentation } from '../../interfaces'
 import { PlusOutlined } from '@ant-design/icons'
+import CollaboratorsList from '../collaborators-list'
 
 function InviteCollaboratorsModal({
     isModalOpen,
@@ -113,6 +113,8 @@ function InviteCollaboratorsModal({
                     />
                 </Form.Item>
             </Form>
+
+            <CollaboratorsList presentationId={presentationId} />
         </Modal>
     )
 }

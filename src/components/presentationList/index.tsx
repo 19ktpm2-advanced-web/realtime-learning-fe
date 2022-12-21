@@ -12,7 +12,7 @@ import { IPresentation } from '../../interfaces'
 import instance from '../../service/axiosPrivate'
 import { useMutation } from 'react-query'
 import { failureModal, successModal } from '../modals'
-import InviteCollaboratorsModal from './invite-collaborators.modal'
+import InviteCollaboratorsModal from '../invite-collaborators-modal'
 
 const PresentationList = ({
     presentations,
