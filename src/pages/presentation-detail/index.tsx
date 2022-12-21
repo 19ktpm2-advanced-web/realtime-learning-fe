@@ -400,7 +400,7 @@ function PresentationDetail() {
                 </div>
                 <div className={styles.slideContent}>
                     <div className={styles.slidePreview}>
-                        {slidePreview.id ? (
+                        {slidePreview?.id ? (
                             <FullScreen
                                 className={styles.slidePreviewFullScreen}
                                 handle={handleFullScreen}
@@ -410,7 +410,6 @@ function PresentationDetail() {
                                     slide={slidePreview}
                                     code={presentation?.inviteCode ?? ''}
                                     isFullScreen={handleFullScreen.active}
-                                    visibleChat={false}
                                 />
                             </FullScreen>
                         ) : (
