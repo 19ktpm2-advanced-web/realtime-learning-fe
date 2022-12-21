@@ -68,7 +68,7 @@ function Slide({
             <MessageNotification visible={showNotification} message={comingMessage} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && isFullScreen && (
+                    {isFullScreen && (
                         <p>
                             Share link:{' '}
                             <Link to={`/answer-form/${code}`}>

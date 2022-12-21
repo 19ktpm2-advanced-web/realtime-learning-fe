@@ -57,8 +57,6 @@ function PresentationDetail() {
     const handleNewSlideClick = async () => {
         const result = await instance.post('/presentation/slide/add', {
             presentationId: id,
-            text: '',
-            optionList: [],
         })
         if (result.status === 200) {
             const newSlide = result.data[result.data.length - 1]
