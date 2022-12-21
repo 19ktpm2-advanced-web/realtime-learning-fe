@@ -1,6 +1,6 @@
-import { ISlide } from 'interfaces'
+import { IParagraphSlide } from 'interfaces'
 
-function ParagraphContent({ slide }: { slide: ISlide }) {
+function ParagraphContent({ slide }: { slide: IParagraphSlide }) {
     console.log(slide)
     return (
         <div className="heading-content">

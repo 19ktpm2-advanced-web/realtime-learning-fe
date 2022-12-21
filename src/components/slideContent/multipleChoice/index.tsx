@@ -1,13 +1,13 @@
 import AnswerChart from 'components/answer-chart'
 import { failureModal } from 'components/modals'
 import { IOption } from 'interfaces'
-import { ISlide } from 'interfaces/slide'
+import { IMultipleChoiceSlide } from 'interfaces/slide'
 import { useContext, useEffect, useState } from 'react'
 import { SocketContext } from 'service'
 import { PresentationEvent } from 'service/socket/event'
 import styles from './styles.module.css'
 
-function MultipleChoiceContent({ slide }: { slide: ISlide }) {
+function MultipleChoiceContent({ slide }: { slide: IMultipleChoiceSlide }) {
     const socketService = useContext(SocketContext)
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     useEffect(() => {
@@ -15,7 +15,7 @@ function MultipleChoiceContent({ slide }: { slide: ISlide }) {
             setOptionData(slide.optionList)
         }
     }, [slide])
-    const handleUpdateResults = (result: { slide: ISlide }) => {
+    const handleUpdateResults = (result: { slide: IMultipleChoiceSlide }) => {
         setOptionData(result.slide.optionList || [])
     }
     useEffect(() => {

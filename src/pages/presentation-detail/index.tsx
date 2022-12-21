@@ -11,7 +11,14 @@ import { Button, Divider, Empty, Form, Input, Modal, Select, Tabs } from 'antd'
 import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import SlideSetting from 'components/slideSetting'
-import { IPresentation, ISlide } from 'interfaces'
+import { SlideType } from 'enums'
+import {
+    IHeadingSlide,
+    IMultipleChoiceSlide,
+    IParagraphSlide,
+    IPresentation,
+    ISlide,
+} from 'interfaces'
 import { useEffect, useState } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { useMutation } from 'react-query'
@@ -97,11 +104,41 @@ function PresentationDetail() {
     }, [slidePreview])
     const handleSaveSlide = async () => {
         if (slidePreview.id && slidePreview.id) {
+            let data: any = {}
+            switch (slidePreview.type) {
+                case SlideType.MULTIPLE_CHOICE: {
+                    const multipleChoiceSlide: IMultipleChoiceSlide =
+                        slidePreview as IMultipleChoiceSlide
+                    data = {
+                        text: multipleChoiceSlide.text,
+                        optionList: multipleChoiceSlide.optionList,
+                    }
+                    break
+                }
+                case SlideType.HEADING: {
+                    const headingSlide = slidePreview as IHeadingSlide
+                    data = {
+                        heading: headingSlide.heading,
+                        subHeading: headingSlide.subHeading,
+                    }
+                    break
+                }
+                case SlideType.PARAGRAPH: {
+                    const paragraphSlide = slidePreview as IParagraphSlide
+                    data = {
+                        headingValue: paragraphSlide.heading,
+                        paragraph: paragraphSlide.paragraph,
+                    }
+                    break
+                }
+                default:
+                    break
+            }
             try {
                 const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
                     presentationId: presentation.id,
-                    text: slidePreview.text,
-                    optionList: slidePreview.optionList,
+                    type: slidePreview.type,
+                    data: data ?? {},
                 })
                 if (result.status === 200) {
                     setPresentation({

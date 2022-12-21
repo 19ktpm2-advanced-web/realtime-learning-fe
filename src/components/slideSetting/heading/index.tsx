@@ -1,6 +1,6 @@
-import { ISlide } from 'interfaces'
+import { IHeadingSlide } from 'interfaces'
 
-function HeadingSlideSetting({ slide }: { slide: ISlide }) {
+function HeadingSlideSetting({ slide }: { slide: IHeadingSlide }) {
     console.log(slide)
     return (
         <div className="heading-content">

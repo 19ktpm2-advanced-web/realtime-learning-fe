@@ -1,14 +1,14 @@
 import { CloseOutlined, PlusOutlined, QuestionOutlined } from '@ant-design/icons'
 import { Button, Input } from 'antd'
-import { IOption, ISlide } from 'interfaces'
+import { IMultipleChoiceSlide, IOption } from 'interfaces'
 import styles from './styles.module.css'
 
 function MultipleChoiceSetting({
     slide,
     updateSlide,
 }: {
-    slide: ISlide
-    updateSlide: (slide: ISlide) => void
+    slide: IMultipleChoiceSlide
+    updateSlide: (slide: IMultipleChoiceSlide) => void
 }) {
     const onChangeOption = (value: string, index: number) => {
         const newOptions: IOption[] = slide.optionList ?? []

@@ -1,5 +1,5 @@
 import { SlideType } from 'enums'
-import { ISlide } from 'interfaces'
+import { IHeadingSlide, IMultipleChoiceSlide, IParagraphSlide, ISlide } from 'interfaces'
 import HeadingSlideSetting from './heading'
 import MultipleChoiceSetting from './multipleChoice'
 import ParagraphSlideSetting from './paragraph'
@@ -12,12 +12,18 @@ function SlideSetting({
     updateSlide: (slide: ISlide) => void
 }) {
     switch (slide.type) {
-        case SlideType.MULTIPLE_CHOICE:
-            return <MultipleChoiceSetting slide={slide} updateSlide={updateSlide} />
-        case SlideType.HEADING:
-            return <HeadingSlideSetting slide={slide} />
-        case SlideType.PARAGRAPH:
-            return <ParagraphSlideSetting slide={slide} />
+        case SlideType.MULTIPLE_CHOICE: {
+            const multipleChoiceSlide = slide as IMultipleChoiceSlide
+            return <MultipleChoiceSetting slide={multipleChoiceSlide} updateSlide={updateSlide} />
+        }
+        case SlideType.HEADING: {
+            const headingSlide = slide as IHeadingSlide
+            return <HeadingSlideSetting slide={headingSlide} />
+        }
+        case SlideType.PARAGRAPH: {
+            const paragraphSlide = slide as IParagraphSlide
+            return <ParagraphSlideSetting slide={paragraphSlide} />
+        }
         default:
             return null
     }
