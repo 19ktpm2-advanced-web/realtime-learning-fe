@@ -152,7 +152,7 @@ function PresentationDetail() {
                 case SlideType.PARAGRAPH: {
                     const paragraphSlide = slidePreview as IParagraphSlide
                     data = {
-                        headingValue: paragraphSlide.heading,
+                        heading: paragraphSlide.heading,
                         paragraph: paragraphSlide.paragraph,
                     }
                     break
@@ -422,10 +422,10 @@ function PresentationDetail() {
                     <div className={styles.slideSetting}>
                         <div className={styles.settingHeader}>
                             <label className={styles.settingLabel}> Slide Type </label>
-                            <Select className={styles.selectType} defaultValue="multiple-choice">
-                                <Select.Option value="multiple-choice">
-                                    Multiple Choice
-                                </Select.Option>
+                            <Select className={styles.selectType} value={slidePreview.type}>
+                                {slideTypeList.map((item: string) => {
+                                    return <Select.Option value={item}>{item}</Select.Option>
+                                })}
                             </Select>
                         </div>
                         <div className={styles.settingContent}>
