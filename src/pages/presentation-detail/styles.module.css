@@ -298,3 +298,20 @@
 .formItem {
     margin: 0px;
 }
+
+/* POPUP SLIDE TYPES LIST */
+.slideTypeListContainer {
+    margin: 0;
+    max-height: 80vh;
+    border-radius: 3px;
+}
+.slideTypeListWrapper {
+    width: 412px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    justify-content: space-around;
+}
+.slideTypeItem {
+    height: 80px;
+}

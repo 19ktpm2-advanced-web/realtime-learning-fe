@@ -1,16 +1,16 @@
 import { useEffect, useState, memo, useContext } from 'react'
 import { MessageOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
-import { IOption, ISlide } from 'interfaces'
+import { ISlide } from 'interfaces'
 
 import { Link } from 'react-router-dom'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import { ChatEvent, PresentationEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
-import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
+import SlideContent from '../slideContent'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
 
@@ -18,13 +18,14 @@ function Slide({
     slide,
     code,
     isFullScreen,
+    visibleChat = true,
 }: {
     slide: ISlide
     code: string
     isFullScreen: boolean
+    visibleChat?: boolean
 }) {
     const socketService = useContext(SocketContext)
-    const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
@@ -34,15 +35,6 @@ function Slide({
             setUnReadMessages(0)
         }
     }, [chatBoxIsOpen])
-    useEffect(() => {
-        if (slide?.optionList) {
-            setOptionData(slide.optionList)
-        }
-    }, [slide])
-
-    const handleUpdateResults = (result: { slide: ISlide }) => {
-        setOptionData(result.slide.optionList || [])
-    }
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
@@ -63,7 +55,6 @@ function Slide({
         socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
             roomId: code,
         })
-        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         return () => {
@@ -79,7 +70,7 @@ function Slide({
             <MessageNotification visible={showNotification} message={comingMessage} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && isFullScreen && (
+                    {isFullScreen && (
                         <p>
                             Share link:{' '}
                             <Link to={`/answer-form/${code}`}>
@@ -88,30 +79,27 @@ function Slide({
                         </p>
                     )}
                 </div>
-                <div className={styles.questionWrapper}>
-                    <h2>{slide.text}</h2>
-                </div>
-                <div className={styles.chartWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && (
-                        <AnswerChart options={optionData} />
-                    )}
-                </div>
-                <div className={styles.footer}>
-                    <Badge
-                        count={unReadMessages}
-                        color="#1857cf"
-                        className={styles.messageIcon}
-                        size="small"
-                    >
-                        <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
-                    </Badge>
-                </div>
-                <ChatBox
-                    isOpen={chatBoxIsOpen}
-                    handleVisible={setChatBoxIsOpen}
-                    presentationCode={code}
-                    comingMessage={comingMessage}
-                />
+                <SlideContent slide={slide} />
+                {visibleChat && (
+                    <>
+                        <div className={styles.footer}>
+                            <Badge
+                                count={unReadMessages}
+                                color="#1857cf"
+                                className={styles.messageIcon}
+                                size="small"
+                            >
+                                <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
+                            </Badge>
+                        </div>
+                        <ChatBox
+                            isOpen={chatBoxIsOpen}
+                            handleVisible={setChatBoxIsOpen}
+                            presentationCode={code}
+                            comingMessage={comingMessage}
+                        />
+                    </>
+                )}
             </div>
         </>
     )
