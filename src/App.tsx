@@ -16,6 +16,7 @@ import Presentation from 'pages/presentation'
 import PresentationDetail from 'pages/presentation-detail'
 import { SocketContext, socketService } from './service'
 import AnswerForm from './pages/answer-form'
+import Present from 'pages/present'
 const router = createBrowserRouter([
     {
         path: '/404',
@@ -43,6 +44,15 @@ const router = createBrowserRouter([
             }
         },
         errorElement: <ErrorPage />,
+    },
+    {
+        path: '/present/:presentationCode',
+        element: <Present />,
+        loader: ({ params }) => {
+            return {
+                presentationCode: params.presentationCode,
+            }
+        },
     },
     {
         element: (
