@@ -12,7 +12,8 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
     const [loading, setLoading] = useState(false)
     const [hashMore, setHasMore] = useState(true)
     const profile: IUser = JSON.parse(localStorage.getItem('profile') || '')
-    const [data, setData] = useState<IUser[]>([{ ...profile }])
+    const [data, setData] = useState<IUser[]>([])
+    const [presentationIdChanged, setPresentationIdChanged] = useState(false)
 
     const loadMoreData = async () => {
         if (loading) {
@@ -22,8 +23,7 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
 
         try {
             const res = await instance.get(
-                `/presentation/collaborators/${presentationId}?skip=${
-                    data.length > 1 ? data.length : 0
+                `/presentation/collaborators/${presentationId}?skip=${data.length
                 }&limit=${COLLABORATORS_LIMIT}`,
             )
             if (res?.status === 200) {
@@ -43,9 +43,14 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
     }
 
     useEffect(() => {
-        console.log('presentationId: ', presentationId)
+        setData([])
+        setPresentationIdChanged(!presentationIdChanged)
+    }, [presentationId])
+
+
+    useEffect(() => {
         loadMoreData()
-    }, [])
+    }, [presentationIdChanged])
 
     return (
         <div
@@ -66,13 +71,13 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
                 {data.length > 0 ? (
                     <List
                         dataSource={data}
-                        renderItem={(item) => (
+                        renderItem={(item, index) => (
                             <List.Item key={item.email}>
                                 <List.Item.Meta
                                     avatar={<Avatar src={item.avatar} />}
                                     title={<a href="https://ant.design">{item.email}</a>}
                                     description={
-                                        profile?.email === item.email ? 'Owner' : 'Collaborators'
+                                        index === 0 ? 'Owner' : 'Collaborators'
                                     }
                                 />
                             </List.Item>

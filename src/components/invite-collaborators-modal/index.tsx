@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Modal } from 'antd'
 import { Input, Tag } from 'antd'
 import { useMutation } from 'react-query'
@@ -21,7 +21,7 @@ function InviteCollaboratorsModal({
 }) {
     const [tags, setTags] = useState<string[]>([])
     const [form] = Form.useForm()
-
+console.log('invite modal rerender')
     const { mutate } = useMutation((createEmailInvitationsData) => {
         return instance.post(
             '/invitation/presentation/create-email-invitations',
