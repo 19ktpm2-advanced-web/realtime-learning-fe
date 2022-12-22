@@ -37,6 +37,7 @@ function PresentationDetail() {
     const [isDataChanging, setIsDataChange] = useState(false)
     const [slideTypeList, setSlideTypeList] = useState<string[]>([])
     const [hasMore, setHasMore] = useState(true)
+    const [isOpenNewSlideList, setIsOpenNewSlideList] = useState(false)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
     const { confirm } = Modal
@@ -332,14 +333,16 @@ function PresentationDetail() {
                             </div>
                         }
                         trigger="click"
+                        onOpenChange={(open: boolean) => {
+                            setIsOpenNewSlideList(open)
+                        }}
                     >
                         <Button
-                            className={styles.newSlideBtn}
-                            icon={<PlusOutlined />}
-                            type="primary"
-                            // onClick={handleNewSlideClick}
+                            className={!isOpenNewSlideList ? styles.newSlideBtn : styles.cancelBtn}
+                            icon={isOpenNewSlideList ? <CloseOutlined /> : <PlusOutlined />}
+                            type={isOpenNewSlideList ? 'default' : 'primary'}
                         >
-                            New Slide
+                            {isOpenNewSlideList ? 'Cancel' : 'New Slide'}
                         </Button>
                     </Popover>
                     <Form.Item name="description" className={styles.formItem}>
