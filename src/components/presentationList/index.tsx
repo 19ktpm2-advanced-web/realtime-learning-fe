@@ -24,7 +24,6 @@ const PresentationList = ({
     const navigate = useNavigate()
     const [presentationOnFocusId, setPresentationOnFocusId] = useState('')
     const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false)
-    const [selectedPresentation, setSelectedPresentation] = useState<IPresentation>({})
     const { confirm } = Modal
 
     const showDeleteConfirm = () => {
