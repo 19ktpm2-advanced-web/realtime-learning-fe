@@ -5,13 +5,13 @@ import { IUser } from '../../interfaces'
 import instance from '../../service/axiosPrivate'
 import { failureModal } from '../modals'
 import InfiniteScroll from 'react-infinite-scroller'
+import { CloseOutlined } from '@ant-design/icons'
 
 const COLLABORATORS_LIMIT = 3
 
 const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
     const [loading, setLoading] = useState(false)
     const [hashMore, setHasMore] = useState(true)
-    const profile: IUser = JSON.parse(localStorage.getItem('profile') || '')
     const [data, setData] = useState<IUser[]>([])
     const [presentationIdChanged, setPresentationIdChanged] = useState(false)
 
@@ -23,13 +23,15 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
 
         try {
             const res = await instance.get(
-                `/presentation/collaborators/${presentationId}?skip=${data.length
+                `/presentation/collaborators/${presentationId}?skip=${
+                    data.length > 1 ? data.length - 1 : data.length
                 }&limit=${COLLABORATORS_LIMIT}`,
             )
             if (res?.status === 200) {
-                setData([...data, ...res.data])
-                if (res.data.length <= 0) {
+                if (res.data.length <= 1) {
                     setHasMore(false)
+                } else {
+                    setData([...data, ...res.data])
                 }
 
                 setLoading(false)
@@ -46,7 +48,6 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
         setData([])
         setPresentationIdChanged(!presentationIdChanged)
     }, [presentationId])
-
 
     useEffect(() => {
         loadMoreData()
@@ -76,10 +77,9 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
                                 <List.Item.Meta
                                     avatar={<Avatar src={item.avatar} />}
                                     title={<a href="https://ant.design">{item.email}</a>}
-                                    description={
-                                        index === 0 ? 'Owner' : 'Collaborators'
-                                    }
+                                    description={index === 0 ? 'Owner' : 'Collaborators'}
                                 />
+                                <CloseOutlined />
                             </List.Item>
                         )}
                     />
