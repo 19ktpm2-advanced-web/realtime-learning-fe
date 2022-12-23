@@ -1,0 +1,19 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.heading {
+    margin-bottom: 16px;
+    font-size: 3em;
+}
+.subHeading {
+    max-width: 120px;
+    white-space: pre-line;
+    line-height: 1.4;
+    text-align: center;
+    word-wrap: break-word;
+    font-size: 1.3em;
+}

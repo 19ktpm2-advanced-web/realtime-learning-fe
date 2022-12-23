@@ -30,6 +30,8 @@ function Slide({
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
+    const [presentationPath, setPresentationPath] = useState('')
+    const [presentationLink, setPresentationLink] = useState('')
     useEffect(() => {
         if (chatBoxIsOpen) {
             setUnReadMessages(0)
@@ -65,6 +67,14 @@ function Slide({
         }
     }, [socketService.socket])
 
+    useEffect(() => {
+        if (code) {
+            const { url, path } = generatePresentationLink(code, slide.type)
+            setPresentationPath(path)
+            setPresentationLink(url)
+        }
+    }, [code])
+
     return (
         <>
             <MessageNotification visible={showNotification} message={comingMessage} />
@@ -72,10 +82,7 @@ function Slide({
                 <div className={styles.invitationWrapper}>
                     {isFullScreen && (
                         <p>
-                            Share link:{' '}
-                            <Link to={`/answer-form/${code}`}>
-                                {generatePresentationLink(code)}
-                            </Link>
+                            Share link: <Link to={presentationPath}>{presentationLink}</Link>
                         </p>
                     )}
                 </div>
