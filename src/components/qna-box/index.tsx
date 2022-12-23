@@ -14,116 +14,112 @@ import { IQnAQuestion } from '../../interfaces/qnaQuestion'
 import publicInstance from '../../service/axiosPublic'
 import privateInstance from '../../service/axiosPrivate'
 import styles from './style.module.css'
+import { CheckOutlined, CloseOutlined, LikeOutlined } from '@ant-design/icons'
 
 const PAGE_SIZE = 20
 const sampleQuestionList: IQnAQuestion[] = [
-    {
-        id: '1',
-        question: 'fwfe',
-        likeCount: 1,
-        isAnswered: false,
-    },
-    {
-        id: '2',
-        question: 'fefwef',
-        likeCount: 2,
-        isAnswered: false,
-    },
-    {
-        id: '3',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: true,
-    },
-    {
-        id: '4',
-        question: '234fwewe24',
-        likeCount: 4,
-        isAnswered: true,
-    },
-    {
-        id: '5',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: true,
-    },
-    {
-        id: '6',
-        question: 'fewffewf',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '7',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '8',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '9',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '10',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '11',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '12',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '13',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '14',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '15',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
-    {
-        id: '16',
-        question: 'fwef',
-        likeCount: 4,
-        isAnswered: false,
-    },
+    // generate samplequestionlist data type IQnAQuestion
+    //  {
+    //      id: '1',
+    //      question: 'How to use this app?',
+    //      isAnswered: true,
+    //      likeCount: 0,
+    //  },
+    //  {
+    //      id: '2',
+    //      question: 'what is the best way to use this app?',
+    //      isAnswered: false,
+    //      likeCount: 34,
+    //  },
+    //  {
+    //      id: '3',
+    //      question: 'random string',
+    //      isAnswered: false,
+    //      likeCount: 10,
+    //  },
+    //  {
+    //      id: '4',
+    //      question: 'Guideline',
+    //      isAnswered: true,
+    //      likeCount: 234,
+    //  },
+    //  {
+    //      id: '5',
+    //      question: 'what is the best way to use this app?',
+    //      isAnswered: false,
+    //      likeCount: 34,
+    //  },
+    //  {
+    //      id: '6',
+    //      question: 'random string',
+    //      isAnswered: false,
+    //      likeCount: 10,
+    //  },
+    //  {
+    //      id: '7',
+    //      question: 'Guideline',
+    //      isAnswered: true,
+    //      likeCount: 234,
+    //  },
+    //  {
+    //      id: '8',
+    //      question: 'How do I change my account settings?',
+    //      isAnswered: false,
+    //      likeCount: 0,
+    //      },
+    //      {
+    //      id: '9',
+    //      question: 'What are the different features of this app?',
+    //      isAnswered: true,
+    //      likeCount: 15,
+    //      },
+    //      {
+    //      id: '10',
+    //      question: 'How do I troubleshoot an issue with the app?',
+    //      isAnswered: false,
+    //      likeCount: 2,
+    //      },
+    //      {
+    //      id: '11',
+    //      question: 'What are the system requirements for using this app?',
+    //      isAnswered: true,
+    //      likeCount: 25,
+    //      },
+    //      {
+    //      id: '12',
+    //      question: 'Is there a user manual or documentation available for this app?',
+    //      isAnswered: true,
+    //      likeCount: 7,
+    //      },
+    //      {
+    //      id: '13',
+    //      question: 'Is there a way to customize the appearance of the app?',
+    //      isAnswered: false,
+    //      likeCount: 0,
+    //      },
+    //      {
+    //      id: '14',
+    //      question: 'Are there any discounts or promotions currently available for this app?',
+    //      isAnswered: false,
+    //      likeCount: 0,
+    //      },
+    //      {
+    //      id: '15',
+    //      question: 'Is this app available in different languages?',
+    //      isAnswered: true,
+    //      likeCount: 19,
+    //      }
 ]
 function QnA({
     isOpen,
     handleVisible,
     presentationCode,
-    comingMessage,
+    comingQuestion,
 }: {
     isOpen: boolean
     handleVisible: (isVisible: boolean) => void
     presentationCode: string
-    comingMessage: IMessage | null
+    comingQuestion: IQnAQuestion | null
 }) {
     const [questionList, setQuestionList] = useState<IQnAQuestion[]>([])
     const [hashMore, setHasMore] = useState(true)
@@ -131,7 +127,7 @@ function QnA({
     const fetchMessages = async (pageNumber: number) => {
         try {
             const res = await publicInstance.get(
-                `/presentation/chat/messages/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
+                `/presentation/qna/get-question-list/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
             )
             if (res?.status === 200) {
                 res.data.reverse()
@@ -146,28 +142,44 @@ function QnA({
             failureModal('Something is wrong', error.response && error.response.data)
         }
     }
+    const handleOnclickMarkAsAnsweredOrUnanswered = async (id: string) => {
+        try {
+            // const res = await privateInstance.post(`/presentation/chat/messages/${id}/answer`)
+            if (true) {
+                setQuestionList((prev) => {
+                    const index = prev.findIndex((question) => question.id === id)
+                    prev[index]['isAnswered'] = !prev[index]['isAnswered']
+                    return [...prev]
+                })
+            } else {
+                failureModal('Something is wrong')
+            }
+        } catch (error) {
+            failureModal('Something is wrong', error.response && error.response.data)
+        }
+    }
     useEffect(() => {
-        if (!comingMessage) {
+        if (!comingQuestion) {
             fetchMessages(1)
-            setQuestionList(sampleQuestionList)
+            // setQuestionList(sampleQuestionList)
         } else {
             // setQuestionList((prev) => [...prev, questionList])
-            setQuestionList(sampleQuestionList)
+            setQuestionList((prev) => [...prev, comingQuestion])
             setHasMore(true)
         }
-    }, [comingMessage])
+    }, [comingQuestion])
     const { mutate } = useMutation((addMessageData) => {
         const profile = localStorage.getItem('profile')
         if (!profile) {
-            return publicInstance.post('/presentation/chat/add-anonymous-message', addMessageData)
+            return publicInstance.post('/presentation/qna/add-anonymous-question', addMessageData)
         }
-        return privateInstance.post('/presentation/chat/add-authenticated-message', addMessageData)
+        return publicInstance.post('/presentation/qna/add-anonymous-question', addMessageData)
     })
-    const handleSubmit = (data: any) => {
+    const handleSubmit = (qnaQuestion: any) => {
         form.resetFields()
 
         const payload: any = {
-            message: data.message,
+            qnaQuestion,
             presentationCode,
         }
 
@@ -202,39 +214,70 @@ function QnA({
                             key: id,
                             children: (
                                 // add scroll here
-
-                                <InfiniteScroll
-                                    pageStart={0}
-                                    loadMore={fetchMessages}
-                                    hasMore={hashMore}
-                                    loader={
-                                        <div className="loader" key={0}>
-                                            Loading ...
-                                        </div>
-                                    }
-                                    useWindow={false}
-                                    isReverse
+                                <div
+                                    id="scrollableDiv"
+                                    style={{
+                                        height: 600,
+                                        overflow: 'auto',
+                                        overflowX: 'hidden',
+                                        padding: '0 16px',
+                                    }}
                                 >
-                                    <List
-                                        dataSource={questionList.filter(
-                                            (question) => question.isAnswered === isAnswered,
-                                        )}
-                                        renderItem={(item) => (
-                                            <List.Item key={item.id}>
-                                                <List.Item.Meta
-                                                    // avatar={<Avatar src={item.picture.large} />}
-                                                    title={
-                                                        <a href="https://ant.design">
-                                                            {item.question}
-                                                        </a>
-                                                    }
-                                                    description="Mark as answered"
-                                                />
-                                                <div>Content</div>
-                                            </List.Item>
-                                        )}
-                                    />
-                                </InfiniteScroll>
+                                    <InfiniteScroll
+                                        pageStart={0}
+                                        loadMore={fetchMessages}
+                                        hasMore={hashMore}
+                                        loader={
+                                            <div className="loader" key={0}>
+                                                Loading ...
+                                            </div>
+                                        }
+                                        useWindow={false}
+                                        isReverse
+                                        threshold={0}
+                                    >
+                                        <List
+                                            // filter then sort by likeCount
+                                            dataSource={questionList
+                                                .filter(
+                                                    (question) =>
+                                                        question.isAnswered === isAnswered,
+                                                )
+                                                .sort((a, b) => b.likeCount - a.likeCount)}
+                                            renderItem={(item) => (
+                                                <List.Item key={item.id}>
+                                                    <List.Item.Meta
+                                                        // avatar={<Avatar src={item.picture.large} />}
+                                                        title={
+                                                            <a className={styles['question-text']}>
+                                                                {item.question}
+                                                            </a>
+                                                        }
+                                                        description={
+                                                            <span
+                                                                className={
+                                                                    styles['mark-as-answered-text']
+                                                                }
+                                                                onClick={() =>
+                                                                    handleOnclickMarkAsAnsweredOrUnanswered(
+                                                                        item.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {!item.isAnswered
+                                                                    ? 'Mark as Answered'
+                                                                    : 'Mark as Unanswered'}
+                                                            </span>
+                                                        }
+                                                    />
+                                                    <div>
+                                                        <LikeOutlined /> {item.likeCount}
+                                                    </div>
+                                                </List.Item>
+                                            )}
+                                        />
+                                    </InfiniteScroll>
+                                </div>
                             ),
 
                             // add end here
@@ -244,7 +287,7 @@ function QnA({
             </div>
 
             <Form onFinish={handleSubmit} className={styles.form} form={form}>
-                <Form.Item name="message" noStyle>
+                <Form.Item name="question" noStyle>
                     <div className={styles['chat-area']}>
                         <TextArea
                             className={styles['chat-input']}

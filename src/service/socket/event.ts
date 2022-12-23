@@ -8,3 +8,6 @@ export enum PresentationEvent {
 export enum ChatEvent {
     NEW_CHAT_MESSAGE = 'new-chat-message',
 }
+export enum QnAEvent {
+    NEW_QNA_QUESTION = 'new-qna-question',
+}

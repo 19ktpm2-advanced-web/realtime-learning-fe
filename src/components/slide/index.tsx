@@ -6,7 +6,7 @@ import { IOption, ISlide } from 'interfaces'
 import { Link } from 'react-router-dom'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
-import { ChatEvent, PresentationEvent } from '../../service/socket/event'
+import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
 import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
@@ -14,6 +14,7 @@ import MessageNotification from '../message-notification'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
 import QnA from '../qna-box'
+import { IQnAQuestion } from '../../interfaces/qnaQuestion'
 
 function Slide({
     slide,
@@ -31,6 +32,7 @@ function Slide({
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
+    const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
     useEffect(() => {
         if (chatBoxIsOpen) {
             setUnReadMessages(0)
@@ -51,6 +53,11 @@ function Slide({
         setComingMessage(newMessage)
     }
 
+    const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
+        setShowNotification(true)
+        setComingQuestion(newQuestion)
+    }
+
     useEffect(() => {
         try {
             socketService.establishConnection()
@@ -67,6 +74,7 @@ function Slide({
         })
         socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
+        socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
 
         return () => {
             // before the component is destroyed
@@ -127,7 +135,7 @@ function Slide({
                     isOpen={QnAIsOpen}
                     handleVisible={setQnAIsOpen}
                     presentationCode={code}
-                    comingMessage={comingMessage}
+                    comingQuestion={comingQuestion}
                 />
             </div>
         </>

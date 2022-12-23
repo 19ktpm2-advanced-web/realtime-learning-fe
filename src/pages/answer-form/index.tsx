@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { MessageOutlined } from '@ant-design/icons'
+import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
@@ -12,9 +12,11 @@ import { ISlide } from '../../interfaces'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import publicInstance from '../../service/axiosPublic'
-import { ChatEvent, PresentationEvent } from '../../service/socket/event'
+import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import MessageNotification from 'components/message-notification'
 import styles from './styles.module.css'
+import QnA from '../../components/qna-box'
+import { IQnAQuestion } from '../../interfaces/qnaQuestion'
 
 function AnswerForm() {
     const navigate = useNavigate()
@@ -29,12 +31,19 @@ function AnswerForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [qnaIsOpen, setqnaIsOpen] = useState(false)
     const [showNotification, setShowNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
+    const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
         setComingMessage(newMessage)
+    }
+
+    const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
+        setShowNotification(true)
+        setComingQuestion(newQuestion)
     }
 
     useEffect(() => {
@@ -75,6 +84,8 @@ function AnswerForm() {
         })
 
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
+
+        socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
 
         return () => {
             // before the component is destroyed
@@ -117,6 +128,7 @@ function AnswerForm() {
     return (
         <div className={styles.container}>
             <MessageNotification visible={showNotification} message={comingMessage} />
+
             {isLoading ? (
                 <LoadingSpin />
             ) : (
@@ -133,12 +145,22 @@ function AnswerForm() {
                                 className={styles['message-icon']}
                                 onClick={() => setChatBoxIsOpen(true)}
                             />
+                            <QuestionCircleOutlined
+                                className={styles['message-icon']}
+                                onClick={() => setqnaIsOpen(true)}
+                            />
                         </div>
                         <ChatBox
                             isOpen={chatBoxIsOpen}
                             handleVisible={setChatBoxIsOpen}
                             presentationCode={presentationCode}
                             comingMessage={comingMessage}
+                        />
+                        <QnA
+                            isOpen={qnaIsOpen}
+                            handleVisible={setqnaIsOpen}
+                            presentationCode={presentationCode}
+                            comingQuestion={comingQuestion}
                         />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
