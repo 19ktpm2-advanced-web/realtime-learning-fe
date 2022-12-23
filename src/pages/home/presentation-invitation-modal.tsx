@@ -7,7 +7,7 @@ import { useMutation } from 'react-query'
 import instance from '../../service/axiosPrivate'
 import { failureModal, successModal } from '../../components/modals'
 
-function InvitationModal({
+function PresentationInvitationModal({
     isModalOpen,
     handleOk,
     handleCancel,
@@ -19,21 +19,21 @@ function InvitationModal({
     data: IInvitation | undefined
 }) {
     const { mutate } = useMutation((acceptInvitationData) => {
-        return instance.post('/invitation/accept-invitation', acceptInvitationData)
+        return instance.post('/invitation/presentation/accept-invitation', acceptInvitationData)
     })
 
     const handleAcceptInvitation = (data: any) => {
         mutate(data, {
             onSuccess: (res) => {
                 if (res?.status === 200) {
-                    successModal('Join group successfully')
+                    successModal('Join presentation successfully')
                     handleOk()
                 } else {
-                    failureModal('Join group failed', res.statusText)
+                    failureModal('Join presentation failed', res.statusText)
                 }
             },
             onError: (error: any) => {
-                failureModal('Join group failed', error.response && error.response.data)
+                failureModal('Join presentation failed', error.response && error.response.data)
             },
         })
     }
@@ -50,11 +50,11 @@ function InvitationModal({
             width={300}
         >
             <p>
-                You are invited to join <b>{data?.group?.name}</b> by{' '}
+                You are invited to join <b>{data?.presentation?.name}</b> by{' '}
                 <b>{data?.inviter.fullName}</b>
             </p>
         </Modal>
     )
 }
 
-export default InvitationModal
+export default PresentationInvitationModal
