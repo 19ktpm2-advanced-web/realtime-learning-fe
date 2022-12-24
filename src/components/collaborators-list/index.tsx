@@ -81,12 +81,13 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
                 }&limit=${COLLABORATORS_LIMIT}`,
             )
             if (res?.status === 200) {
-                if (data.length >= 1 && res.data.length <= 1) {
+                if (res.data.length <= 1) {
                     setHasMore(false)
-                } else {
-                    setData([...data, ...res.data])
                 }
 
+                if ((res.data.length === 1 && data.length === 0) || res.data.length > 1)
+                    setData([...data, ...res.data])
+                    
                 setLoading(false)
             } else {
                 setLoading(false)

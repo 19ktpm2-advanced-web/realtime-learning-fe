@@ -1,13 +1,30 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 import PresentationList from 'components/presentationList'
 import { IPresentation } from 'interfaces'
-import { Button, Form, Input, Modal } from 'antd'
+import { Button, Form, Input, Modal, Select } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { failureModal } from 'components/modals'
 import ProgressBar from 'components/progress-bar'
 import { useNavigate } from 'react-router-dom'
 import instance from '../../service/axiosPrivate'
 import styles from './styles.module.css'
+import { PresentationFilterOptions } from 'enums'
+
+const presentationFilterOptions = [
+    {
+        value: PresentationFilterOptions.SHOW_EVERYTHING,
+        label: PresentationFilterOptions.SHOW_EVERYTHING,
+    },
+    {
+        value: PresentationFilterOptions.OWNED_BY_ME,
+        label: PresentationFilterOptions.OWNED_BY_ME,
+    },
+    {
+        value: PresentationFilterOptions.SHARED_WITH_ME,
+        label: PresentationFilterOptions.SHARED_WITH_ME,
+    },
+]
 
 function Presentation() {
     const [presentations, setPresentations] = useState<IPresentation[]>([])
@@ -15,23 +32,24 @@ function Presentation() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const [presentationsChanged, setPresentationsChanged] = useState(false)
+    const [currentPresentationFilter, setCurrentPresentationFilter] = useState(
+        PresentationFilterOptions.SHOW_EVERYTHING,
+    )
 
     useEffect(() => {
         setLoading(true)
-        try {
-            ;(async () => {
-                const response = await instance.get('/presentation/get-all')
-                if (response.status === 200) {
-                    setPresentations(response.data)
-                } else {
-                    failureModal('Something went wrong')
-                }
-                setLoading(false)
-            })()
-        } catch (e) {
-            failureModal(e)
+        switch (currentPresentationFilter) {
+            case PresentationFilterOptions.SHOW_EVERYTHING:
+                getPresentations()
+                break
+            case PresentationFilterOptions.OWNED_BY_ME:
+                getPresentationsOwnedByMe()
+                break
+            case PresentationFilterOptions.SHARED_WITH_ME:
+                getPresentationSharedWithMe()
+                break
         }
-    }, [presentationsChanged])
+    }, [presentationsChanged, currentPresentationFilter])
 
     const [createForm] = Form.useForm()
     const handleFinishCreate = async (values: { name: string }) => {
@@ -62,6 +80,52 @@ function Presentation() {
         setPresentationsChanged(!presentationsChanged)
     }
 
+    const getPresentations = async () => {
+        try {
+            const response = await instance.get('/presentation/participated')
+            if (response.status === 200) {
+                setPresentations(response.data)
+            } else {
+                failureModal('Something went wrong')
+            }
+            setLoading(false)
+        } catch (e) {
+            failureModal(e)
+        }
+    }
+
+    const getPresentationsOwnedByMe = async () => {
+        try {
+            const response = await instance.get('/presentation/get-all')
+            if (response.status === 200) {
+                setPresentations(response.data)
+            } else {
+                failureModal('Something went wrong')
+            }
+            setLoading(false)
+        } catch (e) {
+            failureModal(e)
+        }
+    }
+
+    const getPresentationSharedWithMe = async () => {
+        try {
+            const response = await instance.get('/presentation/collaborated')
+            if (response.status === 200) {
+                setPresentations(response.data)
+            } else {
+                failureModal('Something went wrong')
+            }
+            setLoading(false)
+        } catch (e) {
+            failureModal(e)
+        }
+    }
+
+    const handleFilterChanged = (value: PresentationFilterOptions) => {
+        setCurrentPresentationFilter(value)
+    }
+
     return (
         <div className={styles.container}>
             <div>My Presentations</div>
@@ -74,7 +138,15 @@ function Presentation() {
                 >
                     New presentation
                 </Button>
+                <Select
+                    className={styles.presentationFilter}
+                    defaultValue={PresentationFilterOptions.SHOW_EVERYTHING}
+                    style={{ width: 180 }}
+                    onChange={handleFilterChanged}
+                    options={presentationFilterOptions}
+                />
             </div>
+
             <PresentationList
                 presentations={presentations}
                 onPresentationDeleted={onPresentationDeleted}

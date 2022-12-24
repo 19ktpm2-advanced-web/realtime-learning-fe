@@ -79,7 +79,7 @@ const PresentationList = ({
 
     const items: MenuProps['items'] = [
         {
-            label: 'Invite collaborators',
+            label: 'Collaborators',
             key: 'invite-collab',
             icon: <ShareAltOutlined />,
         },
