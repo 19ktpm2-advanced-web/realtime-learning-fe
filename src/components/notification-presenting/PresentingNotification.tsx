@@ -1,13 +1,16 @@
 import { CloseOutlined } from '@ant-design/icons'
 import { failureModal } from 'components/modals'
 import { IPresentation } from 'interfaces'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { SocketContext } from 'service'
 import instance from 'service/axiosPrivate'
+import { PresentationEvent } from 'service/socket/event'
 import { generatePresentationLink } from 'utils/presentation.util'
 import styles from './styles.module.css'
 
 const PresentingNotification = ({ presentationId }: { presentationId?: string }) => {
+    const socketService = useContext(SocketContext)
     const [presentation, setPresentation] = useState<IPresentation>({} as IPresentation)
     const [presentationPath, setPresentationPath] = useState('')
     const [presentationLink, setPresentationLink] = useState('')
@@ -25,6 +28,27 @@ const PresentingNotification = ({ presentationId }: { presentationId?: string })
             failureModal('Get presentation failed', error.response && error.response.data)
         }
     }
+    useEffect(() => {
+        try {
+            socketService.establishConnection()
+        } catch (error) {
+            failureModal(
+                'Something is wrong with the socket! Please try to reload the page.',
+                error,
+            )
+        }
+        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
+            console.log('end presenting')
+            setShow(false)
+        })
+
+        return () => {
+            // before the component is destroyed
+            // unbind all event handlers used in this component
+            socketService.socket.removeAllListeners()
+            socketService.disconnect()
+        }
+    }, [socketService.socket])
     useEffect(() => {
         if (presentationId) {
             fetchPresentation()
