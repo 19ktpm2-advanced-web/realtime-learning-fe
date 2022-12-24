@@ -16,6 +16,7 @@ import Presentation from 'pages/presentation'
 import PresentationDetail from 'pages/presentation-detail'
 import { SocketContext, socketService } from './service'
 import AnswerForm from './pages/answer-form'
+import InvitationType from './enums/invitation.enum'
 import Present from 'pages/present'
 const router = createBrowserRouter([
     {
@@ -72,7 +73,10 @@ const router = createBrowserRouter([
                 path: '/invitation/:invitationId',
                 element: <Home />,
                 loader: ({ params }) => {
-                    return params.invitationId
+                    return {
+                        invitationType: InvitationType.GROUP_INVITATION,
+                        invitationId: params.invitationId,
+                    }
                 },
             },
             {
@@ -98,6 +102,17 @@ const router = createBrowserRouter([
             {
                 path: '/presentation',
                 element: <Presentation />,
+            },
+            {
+                id: 'presentation-invitation',
+                path: '/invitation/presentation/:invitationId',
+                element: <Home />,
+                loader: ({ params }) => {
+                    return {
+                        invitationType: InvitationType.PRESENTATION_INVITATION,
+                        invitationId: params.invitationId,
+                    }
+                },
             },
         ],
     },
