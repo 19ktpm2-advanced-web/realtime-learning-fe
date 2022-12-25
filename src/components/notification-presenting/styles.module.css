@@ -1,0 +1,25 @@
+.notificationContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.notification {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgb(231, 232, 235);
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #eeda89;
+}
+.notificationText {
+    color: #1e3169;
+}
+.notificationIcon {
+    font-size: 16px;
+    color: #1e3169;
+    cursor: pointer;
+}

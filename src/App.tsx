@@ -37,11 +37,12 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
     },
     {
-        path: '/answer-form/:presentationCode',
+        path: '/answer-form/:presentationCode/:groupId',
         element: <AnswerForm />,
         loader: ({ params }) => {
             return {
                 presentationCode: params.presentationCode,
+                groupId: params.groupId,
             }
         },
         errorElement: <ErrorPage />,
@@ -52,6 +53,16 @@ const router = createBrowserRouter([
         loader: ({ params }) => {
             return {
                 presentationCode: params.presentationCode,
+            }
+        },
+    },
+    {
+        path: '/present/:presentationCode/:groupId',
+        element: <Present />,
+        loader: ({ params }) => {
+            return {
+                presentationCode: params.presentationCode,
+                groupId: params.groupId,
             }
         },
     },

@@ -1,6 +1,7 @@
 import { EditOutlined } from '@ant-design/icons'
 import { Avatar, Button, Image, Upload } from 'antd'
 import { failureModal } from 'components/modals'
+import PresentingNotification from 'components/notification-presenting'
 import { Privilege } from 'enums'
 import { IGroup } from 'interfaces/group/group.interface'
 import { useState } from 'react'
@@ -61,6 +62,7 @@ function GroupGeneral({ groupId }: { groupId?: String }) {
     })
     return (
         <div className={styles.wrapper}>
+            <PresentingNotification presentationId={group?.presenting ?? ''} groupId={group?.id} />
             <div className={styles.bannerWrapper}>
                 <Image preview={false} className={styles.banner} src={group?.background} />
                 {permission.includes(Privilege.EDITING) && (

@@ -9,4 +9,5 @@ export interface IGroup {
     members: IMember[]
     owner: IMember
     coOwners: IMember[]
+    presenting: string
 }
