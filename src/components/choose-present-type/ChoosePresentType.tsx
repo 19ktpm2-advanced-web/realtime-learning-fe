@@ -1,6 +1,6 @@
 import { Modal, Select, Switch } from 'antd'
 import { failureModal } from 'components/modals'
-import { Access } from 'enums'
+import { Access, Privilege } from 'enums'
 import { IGroup, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
 import instance from 'service/axiosPrivate'
@@ -24,22 +24,13 @@ const ChoosePresentType = ({
     const [groupId, setGroupList] = useState<IGroup[]>([])
     const fetchGroupList = async () => {
         try {
-            const resultJoined = await instance.get('/group/groupJoined')
-
-            if (resultJoined.status === 200) {
-                setGroupList(resultJoined.data.groups)
-            }
-            const result = await instance.get('/group/getOwn')
-            if (result.status === 200) {
-                setGroupList((prev) => {
-                    if (prev && prev.length > 0) {
-                        const diff = result.data.groups.filter((group: IGroup) => {
-                            return !prev.find((prevGroup: IGroup) => prevGroup.id === group.id)
-                        })
-                        return [...prev, ...diff]
-                    }
-                    return result.data.groups
-                })
+            const res = await instance.post('/group/groupHasPrivilege', {
+                privileges: [Privilege.PRESENTING],
+            })
+            if (res?.status === 200) {
+                setGroupList(res.data.groups)
+            } else {
+                failureModal('Get group list failed', res.statusText)
             }
         } catch (error) {
             failureModal('Get group list failed', error.response && error.response.data)
@@ -86,6 +77,7 @@ const ChoosePresentType = ({
                         {presentAccess === Access.PUBLIC ? 'Present Public' : 'Present In Group'}
                     </span>
                     <Switch
+                        disabled={groupId.length === 0}
                         onChange={(checked) =>
                             setPresentAccess(!checked ? Access.PUBLIC : Access.ONLY_GROUP)
                         }
