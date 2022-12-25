@@ -7,6 +7,7 @@ import instance from '../../service/axiosPrivate'
 import { failureModal, successModal } from '../modals'
 import { PlusOutlined } from '@ant-design/icons'
 import CollaboratorsList from '../collaborators-list'
+import { IPresentation, IUser } from 'interfaces'
 
 function InviteCollaboratorsModal({
     isModalOpen,
@@ -20,8 +21,25 @@ function InviteCollaboratorsModal({
     presentationId: string
 }) {
     const [tags, setTags] = useState<string[]>([])
+    const profile: IUser = JSON.parse(localStorage.getItem('profile') || '')
+    const [presentation, setPresentation] = useState<IPresentation>({})
     const [form] = Form.useForm()
-console.log('invite modal rerender')
+
+    useEffect(() => {
+        try {
+            ;(async () => {
+                const response = await instance.get(`/presentation/get/${presentationId}`)
+                if (response.status === 200) {
+                    setPresentation(response.data)
+                } else {
+                    failureModal('Something went wrong')
+                }
+            })()
+        } catch (e) {
+            failureModal(e)
+        }
+    }, [presentationId])
+
     const { mutate } = useMutation((createEmailInvitationsData) => {
         return instance.post(
             '/invitation/presentation/create-email-invitations',
@@ -79,7 +97,7 @@ console.log('invite modal rerender')
     const tagChild = tags.map(forMap)
     return (
         <Modal
-            title="Add email to invite"
+            title={'Collaborators'}
             open={isModalOpen}
             okText="Invite"
             onOk={() => {
@@ -98,21 +116,25 @@ console.log('invite modal rerender')
                 disabled: tags.length === 0,
             }}
         >
-            <div style={{ marginBottom: 16 }}>{tagChild}</div>
-            <Form form={form} layout="horizontal">
-                <Form.Item
-                    name="email"
-                    rules={[{ type: 'email', message: 'Invalid email format' }]}
-                >
-                    <Input
-                        placeholder="Enter email to invite"
-                        type="email"
-                        onBlur={handleInputConfirm}
-                        onPressEnter={handleInputConfirm}
-                        addonAfter={<PlusOutlined onClick={handleInputConfirm} />}
-                    />
-                </Form.Item>
-            </Form>
+            {profile.email === presentation.createBy?.email ? (
+                <>
+                    <div style={{ marginBottom: 16 }}>{tagChild}</div>
+                    <Form form={form} layout="horizontal">
+                        <Form.Item
+                            name="email"
+                            rules={[{ type: 'email', message: 'Invalid email format' }]}
+                        >
+                            <Input
+                                placeholder="Enter email to invite"
+                                type="email"
+                                onBlur={handleInputConfirm}
+                                onPressEnter={handleInputConfirm}
+                                addonAfter={<PlusOutlined onClick={handleInputConfirm} />}
+                            />
+                        </Form.Item>
+                    </Form>
+                </>
+            ) : null}
 
             <CollaboratorsList presentationId={presentationId} />
         </Modal>

@@ -9,6 +9,7 @@ export interface IPresentation {
         id?: string
         avatar?: string
         fullName?: string
+        email?: string
     }
     isPresenting?: boolean
     currentSlide?: number
