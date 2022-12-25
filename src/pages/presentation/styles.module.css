@@ -10,9 +10,19 @@
     padding-right: 32px;
 }
 .headerWrapper {
+    display: flex;
+    justify-content: space-between;
     padding: 32px 0 32px 0;
 }
+
 .addNewPresentationBtn {
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 3px;
+    height: 100%;
+}
+
+.presentationFilter {
     font-weight: 600;
     font-size: 16px;
     border-radius: 3px;

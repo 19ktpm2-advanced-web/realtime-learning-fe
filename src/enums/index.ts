@@ -4,3 +4,4 @@ import SlideType from './SlideType.enum'
 import Access from './Access.enum'
 
 export { Privilege, Role, SlideType, Access }
+export * from './presentation.enum'
