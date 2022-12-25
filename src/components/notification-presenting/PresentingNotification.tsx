@@ -1,4 +1,5 @@
 import { CloseOutlined } from '@ant-design/icons'
+import CustomAlert from 'components/custom-alert'
 import { failureModal } from 'components/modals'
 import { IPresentation } from 'interfaces'
 import { useContext, useEffect, useState } from 'react'
@@ -20,6 +21,7 @@ const PresentingNotification = ({
     const [presentation, setPresentation] = useState<IPresentation>({} as IPresentation)
     const [presentationPath, setPresentationPath] = useState('')
     const [presentationLink, setPresentationLink] = useState('')
+    const [showAlert, setShowAlert] = useState(false)
     const [show, setShow] = useState(true)
     const fetchPresentation = async () => {
         try {
@@ -43,18 +45,28 @@ const PresentingNotification = ({
                 error,
             )
         }
-        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
-            console.log('end presenting')
-            setShow(false)
-        })
-
+        if (presentation.inviteCode && groupId) {
+            socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
+                roomId: presentation.inviteCode,
+            })
+            socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
+                roomId: groupId,
+            })
+            socketService.socket.on(PresentationEvent.NEW_PRESENTING_IN_GROUP, () => {
+                setShow(true)
+                setShowAlert(true)
+            })
+            socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
+                setShow(false)
+            })
+        }
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
             socketService.socket.removeAllListeners()
             socketService.disconnect()
         }
-    }, [socketService.socket])
+    }, [socketService, presentation, presentationId, groupId])
     useEffect(() => {
         if (presentationId) {
             fetchPresentation()
@@ -80,19 +92,26 @@ const PresentingNotification = ({
         }
     }, [presentation])
     return (
-        <div className={styles.notificationContainer}>
-            {show && presentationPath && presentationLink && (
-                <div className={styles.notification}>
-                    <div className={styles.notificationText}>
-                        Presentation is presenting{' '}
-                        <Link to={presentationPath}>{presentationLink}</Link>
+        <>
+            <CustomAlert
+                toastId={groupId}
+                content={{ title: 'New presentation is presenting' }}
+                visible={showAlert}
+            />
+            <div className={styles.notificationContainer}>
+                {show && presentationPath && presentationLink && (
+                    <div className={styles.notification}>
+                        <div className={styles.notificationText}>
+                            Presentation is presenting{' '}
+                            <Link to={presentationPath}>{presentationLink}</Link>
+                        </div>
+                        <div className={styles.notificationIcon}>
+                            <CloseOutlined onClick={() => setShow(false)} />
+                        </div>
                     </div>
-                    <div className={styles.notificationIcon}>
-                        <CloseOutlined onClick={() => setShow(false)} />
-                    </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </>
     )
 }
 export default PresentingNotification
