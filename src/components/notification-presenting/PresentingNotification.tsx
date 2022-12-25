@@ -9,7 +9,13 @@ import { PresentationEvent } from 'service/socket/event'
 import { generatePresentationLink } from 'utils/presentation.util'
 import styles from './styles.module.css'
 
-const PresentingNotification = ({ presentationId }: { presentationId?: string }) => {
+const PresentingNotification = ({
+    presentationId,
+    groupId,
+}: {
+    presentationId?: string
+    groupId?: string
+}) => {
     const socketService = useContext(SocketContext)
     const [presentation, setPresentation] = useState<IPresentation>({} as IPresentation)
     const [presentationPath, setPresentationPath] = useState('')
@@ -66,6 +72,7 @@ const PresentingNotification = ({ presentationId }: { presentationId?: string })
                 const { url, path } = generatePresentationLink(
                     presentation.inviteCode,
                     currentSlide.type,
+                    groupId,
                 )
                 setPresentationPath(path)
                 setPresentationLink(url)

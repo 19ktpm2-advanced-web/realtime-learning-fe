@@ -12,7 +12,7 @@ import ChoosePresentType from 'components/choose-present-type'
 import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import SlideSetting from 'components/slideSetting'
-import { SlideType } from 'enums'
+import { Access, SlideType } from 'enums'
 import {
     IHeadingSlide,
     IMultipleChoiceSlide,
@@ -38,6 +38,7 @@ function PresentationDetail() {
     const [isOpenChoosePresentType, setIsOpenChoosePresentType] = useState(false)
     const [isDataChanging, setIsDataChange] = useState(false)
     const [slideTypeList, setSlideTypeList] = useState<string[]>([])
+    const [groupId, setGroupId] = useState<string>('')
     const [hasMore, setHasMore] = useState(true)
     const [isOpenNewSlideList, setIsOpenNewSlideList] = useState(false)
     const { id } = useParams<{ id: string }>()
@@ -288,6 +289,7 @@ function PresentationDetail() {
                             type="primary"
                             icon={<CaretRightFilled />}
                             onClick={() => setIsOpenChoosePresentType(true)}
+                            disabled={Object.keys(slidePreview).length === 0}
                         >
                             Present
                         </Button>
@@ -395,6 +397,7 @@ function PresentationDetail() {
                                     slide={slidePreview}
                                     code={presentation?.inviteCode ?? ''}
                                     isFullScreen={handleFullScreen.active}
+                                    groupId={groupId}
                                 />
                             </FullScreen>
                         ) : (
@@ -440,7 +443,15 @@ function PresentationDetail() {
                     setIsOpen={setIsOpenChoosePresentType}
                     presentation={presentation}
                     slide={slidePreview}
-                    handleFullScreen={handleFullScreen}
+                    onSuccess={async (access, presentTo): Promise<void> => {
+                        if (access === Access.ONLY_GROUP) {
+                            setGroupId(presentTo)
+                        } else {
+                            setGroupId('')
+                        }
+                        console.log('Full screen')
+                        await handleFullScreen.enter()
+                    }}
                 />
             </div>
         </div>

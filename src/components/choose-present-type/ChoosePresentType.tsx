@@ -1,9 +1,8 @@
-import { Checkbox, Modal, Radio } from 'antd'
+import { Modal, Select, Switch } from 'antd'
 import { failureModal } from 'components/modals'
 import { Access } from 'enums'
 import { IGroup, IPresentation, ISlide } from 'interfaces'
 import { useEffect, useState } from 'react'
-import { FullScreenHandle } from 'react-full-screen'
 import instance from 'service/axiosPrivate'
 import styles from './styles.module.css'
 
@@ -12,17 +11,17 @@ const ChoosePresentType = ({
     slide,
     isOpen,
     setIsOpen,
-    handleFullScreen,
+    onSuccess,
 }: {
     presentation: IPresentation
     slide: ISlide
     isOpen: boolean
     setIsOpen: (isOpen: boolean) => void
-    handleFullScreen: FullScreenHandle
+    onSuccess: (access: Access, presentTo: string) => Promise<void>
 }) => {
     const [presentAccess, setPresentAccess] = useState<Access>(Access.PUBLIC)
-    const [presentTo, setPresentTo] = useState<string[]>([])
-    const [groupList, setGroupList] = useState<IGroup[]>([])
+    const [presentTo, setPresentTo] = useState<string>('')
+    const [groupId, setGroupList] = useState<IGroup[]>([])
     const fetchGroupList = async () => {
         try {
             const resultJoined = await instance.get('/group/groupJoined')
@@ -60,12 +59,12 @@ const ChoosePresentType = ({
             slideId: slide.id,
             isPresenting: true,
             access: presentAccess, // Public / Only group / Only me
-            presentTo, // Group id list
+            presentTo, // Group id
         }
         try {
             const res = await instance.post('/presentation/slide/update-present-status', payload)
             if (res?.status === 200) {
-                handleFullScreen.enter()
+                await onSuccess(presentAccess, presentTo)
             } else {
                 failureModal('Cannot presenting this slide', res.statusText)
             }
@@ -81,45 +80,29 @@ const ChoosePresentType = ({
             onOk={handlePresentClick}
             open={isOpen}
         >
-            <div className={styles.presentAccessWrapper}>
-                <div className={styles.presentAccessItem}>
-                    <Radio
-                        checked={presentAccess === Access.PUBLIC}
-                        onChange={() => setPresentAccess(Access.PUBLIC)}
-                    >
-                        Public
-                    </Radio>
+            <div className={styles.container}>
+                <div className={styles.accessWrapper}>
+                    <span className={styles.accessTitle}>
+                        {presentAccess === Access.PUBLIC ? 'Present Public' : 'Present In Group'}
+                    </span>
+                    <Switch
+                        onChange={(checked) =>
+                            setPresentAccess(!checked ? Access.PUBLIC : Access.ONLY_GROUP)
+                        }
+                        defaultChecked={presentAccess !== Access.PUBLIC}
+                    />
                 </div>
-                <div className={styles.presentAccessItem}>
-                    <Radio
-                        checked={presentAccess === Access.ONLY_GROUP}
-                        onChange={() => setPresentAccess(Access.ONLY_GROUP)}
+                {presentAccess === Access.ONLY_GROUP && groupId.length > 0 && (
+                    <Select
+                        placeholder="Choose group to present"
+                        onChange={(value) => setPresentTo(value)}
+                        style={{ width: '100%' }}
                     >
-                        Only group
-                    </Radio>
-                </div>
-                {presentAccess === Access.ONLY_GROUP &&
-                    groupList.length > 0 &&
-                    groupList.map((group: IGroup) => {
-                        return (
-                            <div className={styles.presentAccessItem}>
-                                <Checkbox
-                                    checked={presentTo.includes(group.id)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setPresentTo((prev) => [...prev, group.id])
-                                        } else {
-                                            setPresentTo((prev) =>
-                                                prev.filter((groupId) => groupId !== group.id),
-                                            )
-                                        }
-                                    }}
-                                >
-                                    {group.name}
-                                </Checkbox>
-                            </div>
-                        )
-                    })}
+                        {groupId.map((group: IGroup) => {
+                            return <Select.Option value={group.id}>{group.name}</Select.Option>
+                        })}
+                    </Select>
+                )}
             </div>
         </Modal>
     )

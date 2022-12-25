@@ -62,7 +62,7 @@ function GroupGeneral({ groupId }: { groupId?: String }) {
     })
     return (
         <div className={styles.wrapper}>
-            <PresentingNotification presentationId={group?.presenting ?? ''} />
+            <PresentingNotification presentationId={group?.presenting ?? ''} groupId={group?.id} />
             <div className={styles.bannerWrapper}>
                 <Image preview={false} className={styles.banner} src={group?.background} />
                 {permission.includes(Privilege.EDITING) && (
