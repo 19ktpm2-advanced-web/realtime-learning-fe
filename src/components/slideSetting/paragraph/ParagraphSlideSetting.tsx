@@ -9,7 +9,6 @@ function ParagraphSlideSetting({
     slide: IParagraphSlide
     updateSlide: (slide: IParagraphSlide) => void
 }) {
-    console.log(slide)
     return (
         <div className={styles.settingContentWrapper}>
             <label className={styles.settingLabel}>Heading</label>
