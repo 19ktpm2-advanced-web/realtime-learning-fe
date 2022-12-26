@@ -47,3 +47,9 @@
 .mark-as-answered-text {
     cursor: pointer;
 }
+.like-button {
+    cursor: pointer;
+}
+.like-button:hover {
+    color: rgb(0, 85, 255);
+}

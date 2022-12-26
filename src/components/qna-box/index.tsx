@@ -15,111 +15,21 @@ import publicInstance from '../../service/axiosPublic'
 import privateInstance from '../../service/axiosPrivate'
 import styles from './style.module.css'
 import { CheckOutlined, CloseOutlined, LikeOutlined } from '@ant-design/icons'
+import { log } from 'console'
 
 const PAGE_SIZE = 20
-const sampleQuestionList: IQnAQuestion[] = [
-    // generate samplequestionlist data type IQnAQuestion
-    //  {
-    //      id: '1',
-    //      question: 'How to use this app?',
-    //      isAnswered: true,
-    //      likeCount: 0,
-    //  },
-    //  {
-    //      id: '2',
-    //      question: 'what is the best way to use this app?',
-    //      isAnswered: false,
-    //      likeCount: 34,
-    //  },
-    //  {
-    //      id: '3',
-    //      question: 'random string',
-    //      isAnswered: false,
-    //      likeCount: 10,
-    //  },
-    //  {
-    //      id: '4',
-    //      question: 'Guideline',
-    //      isAnswered: true,
-    //      likeCount: 234,
-    //  },
-    //  {
-    //      id: '5',
-    //      question: 'what is the best way to use this app?',
-    //      isAnswered: false,
-    //      likeCount: 34,
-    //  },
-    //  {
-    //      id: '6',
-    //      question: 'random string',
-    //      isAnswered: false,
-    //      likeCount: 10,
-    //  },
-    //  {
-    //      id: '7',
-    //      question: 'Guideline',
-    //      isAnswered: true,
-    //      likeCount: 234,
-    //  },
-    //  {
-    //      id: '8',
-    //      question: 'How do I change my account settings?',
-    //      isAnswered: false,
-    //      likeCount: 0,
-    //      },
-    //      {
-    //      id: '9',
-    //      question: 'What are the different features of this app?',
-    //      isAnswered: true,
-    //      likeCount: 15,
-    //      },
-    //      {
-    //      id: '10',
-    //      question: 'How do I troubleshoot an issue with the app?',
-    //      isAnswered: false,
-    //      likeCount: 2,
-    //      },
-    //      {
-    //      id: '11',
-    //      question: 'What are the system requirements for using this app?',
-    //      isAnswered: true,
-    //      likeCount: 25,
-    //      },
-    //      {
-    //      id: '12',
-    //      question: 'Is there a user manual or documentation available for this app?',
-    //      isAnswered: true,
-    //      likeCount: 7,
-    //      },
-    //      {
-    //      id: '13',
-    //      question: 'Is there a way to customize the appearance of the app?',
-    //      isAnswered: false,
-    //      likeCount: 0,
-    //      },
-    //      {
-    //      id: '14',
-    //      question: 'Are there any discounts or promotions currently available for this app?',
-    //      isAnswered: false,
-    //      likeCount: 0,
-    //      },
-    //      {
-    //      id: '15',
-    //      question: 'Is this app available in different languages?',
-    //      isAnswered: true,
-    //      likeCount: 19,
-    //      }
-]
 function QnA({
     isOpen,
     handleVisible,
     presentationCode,
     comingQuestion,
+    isHideInput,
 }: {
     isOpen: boolean
     handleVisible: (isVisible: boolean) => void
     presentationCode: string
     comingQuestion: IQnAQuestion | null
+    isHideInput: boolean
 }) {
     const [questionList, setQuestionList] = useState<IQnAQuestion[]>([])
     const [hashMore, setHasMore] = useState(true)
@@ -130,8 +40,15 @@ function QnA({
                 `/presentation/qna/get-question-list/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
             )
             if (res?.status === 200) {
+                console.log('res', res.data)
                 res.data.reverse()
-                setQuestionList((prev) => [...res.data, ...prev])
+                setQuestionList((prev) => [
+                    ...res.data.filter(
+                        (question: IQnAQuestion) =>
+                            !prev.find((prevQuestion) => prevQuestion.id === question.id),
+                    ),
+                    ...prev,
+                ])
                 if (res.data.length <= 0) {
                     setHasMore(false)
                 }
@@ -144,28 +61,81 @@ function QnA({
     }
     const handleOnclickMarkAsAnsweredOrUnanswered = async (id: string) => {
         try {
-            // const res = await privateInstance.post(`/presentation/chat/messages/${id}/answer`)
-            if (true) {
-                setQuestionList((prev) => {
-                    const index = prev.findIndex((question) => question.id === id)
-                    prev[index]['isAnswered'] = !prev[index]['isAnswered']
-                    return [...prev]
-                })
+            const newQuestionList = questionList.map((item) => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        isAnswered: !item.isAnswered,
+                    }
+                }
+                return item
+            })
+
+            const res = await publicInstance.put(
+                `/presentation/qna/update-question/${presentationCode}`,
+                newQuestionList.find((item) => item.id === id),
+            )
+            if (res?.status === 200) {
+                setQuestionList(newQuestionList)
             } else {
-                failureModal('Something is wrong')
+                failureModal('Something is wrong', res.statusText)
             }
         } catch (error) {
             failureModal('Something is wrong', error.response && error.response.data)
         }
     }
+    const handleOnclickLikeButton = async (id: string) => {
+        try {
+            const newQuestionList = questionList.map((item) => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        likeCount: item.likeCount + 1,
+                    }
+                }
+                return item
+            })
+            const res = await publicInstance.put(
+                `/presentation/qna/update-question/${presentationCode}`,
+                newQuestionList.find((item) => item.id === id),
+            )
+            if (res?.status === 200) {
+                setQuestionList(newQuestionList)
+            } else {
+                failureModal('Something is wrong', res.statusText)
+            }
+        } catch (error) {
+            failureModal('Something is wrong', error.response && error.response.data)
+        }
+    }
+
     useEffect(() => {
+        console.log('comingQuestion', comingQuestion)
         if (!comingQuestion) {
             fetchMessages(1)
-            // setQuestionList(sampleQuestionList)
         } else {
-            // setQuestionList((prev) => [...prev, questionList])
-            setQuestionList((prev) => [...prev, comingQuestion])
-            setHasMore(true)
+            // Check if comingQuestion already exists in the questionList
+            if (!questionList.find((item) => item.id === comingQuestion.id)) {
+                setQuestionList((prev) => [...prev, comingQuestion])
+                setHasMore(true)
+            } else {
+                // If comingQuestion does exist in the questionList, check if it has been updated
+                const currentQuestion = questionList.find((item) => item.id === comingQuestion.id)
+                if (JSON.stringify(currentQuestion) !== JSON.stringify(comingQuestion)) {
+                    const newQuestionList = questionList.map((item) => {
+                        if (item.id === comingQuestion.id) {
+                            return {
+                                ...item,
+                                likeCount: comingQuestion.likeCount,
+                                isAnswered: comingQuestion.isAnswered,
+                            }
+                        }
+                        return item
+                    })
+                    setQuestionList(newQuestionList)
+                    setHasMore(true)
+                }
+            }
         }
     }, [comingQuestion])
     const { mutate } = useMutation((addMessageData) => {
@@ -270,7 +240,12 @@ function QnA({
                                                             </span>
                                                         }
                                                     />
-                                                    <div>
+                                                    <div
+                                                        className={styles['like-button']}
+                                                        onClick={() => {
+                                                            handleOnclickLikeButton(item.id)
+                                                        }}
+                                                    >
                                                         <LikeOutlined /> {item.likeCount}
                                                     </div>
                                                 </List.Item>
@@ -285,13 +260,12 @@ function QnA({
                     })}
                 />
             </div>
-
-            <Form onFinish={handleSubmit} className={styles.form} form={form}>
+            <Form onFinish={handleSubmit} className={styles.form} form={form} hidden={isHideInput}>
                 <Form.Item name="question" noStyle>
                     <div className={styles['chat-area']}>
                         <TextArea
                             className={styles['chat-input']}
-                            placeholder="Type here..."
+                            placeholder="Type your question here..."
                             autoSize={false}
                         />
                     </div>

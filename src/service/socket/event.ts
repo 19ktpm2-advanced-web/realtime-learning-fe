@@ -10,4 +10,5 @@ export enum ChatEvent {
 }
 export enum QnAEvent {
     NEW_QNA_QUESTION = 'new-qna-question',
+    UPDATE_QNA_QUESTION = 'update-qna-question',
 }

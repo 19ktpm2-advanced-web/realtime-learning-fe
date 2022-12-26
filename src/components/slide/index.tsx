@@ -75,7 +75,7 @@ function Slide({
         socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
-
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleIncomingQuestion)
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -136,6 +136,7 @@ function Slide({
                     handleVisible={setQnAIsOpen}
                     presentationCode={code}
                     comingQuestion={comingQuestion}
+                    isHideInput
                 />
             </div>
         </>

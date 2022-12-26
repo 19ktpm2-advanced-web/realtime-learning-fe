@@ -86,6 +86,7 @@ function AnswerForm() {
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleIncomingQuestion)
 
         return () => {
             // before the component is destroyed
@@ -161,6 +162,7 @@ function AnswerForm() {
                             handleVisible={setqnaIsOpen}
                             presentationCode={presentationCode}
                             comingQuestion={comingQuestion}
+                            isHideInput={false}
                         />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
