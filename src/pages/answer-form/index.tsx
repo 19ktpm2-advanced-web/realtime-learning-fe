@@ -17,6 +17,7 @@ import MessageNotification from 'components/message-notification'
 import styles from './styles.module.css'
 import QnA from '../../components/qna-box'
 import { IQnAQuestion } from '../../interfaces/qnaQuestion'
+import QuestionNotification from 'components/question-notification'
 
 function AnswerForm() {
     const navigate = useNavigate()
@@ -33,6 +34,7 @@ function AnswerForm() {
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [qnaIsOpen, setqnaIsOpen] = useState(false)
     const [showNotification, setShowNotification] = useState(false)
+    const [showQuestionNotification, setShowQuestionNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
     const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
 
@@ -42,7 +44,12 @@ function AnswerForm() {
     }
 
     const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
-        setShowNotification(true)
+        setShowQuestionNotification(true)
+        setComingQuestion(newQuestion)
+    }
+
+    const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(false)
         setComingQuestion(newQuestion)
     }
 
@@ -86,7 +93,7 @@ function AnswerForm() {
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
-        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleIncomingQuestion)
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
 
         return () => {
             // before the component is destroyed
@@ -129,7 +136,7 @@ function AnswerForm() {
     return (
         <div className={styles.container}>
             <MessageNotification visible={showNotification} message={comingMessage} />
-
+            <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             {isLoading ? (
                 <LoadingSpin />
             ) : (
@@ -162,7 +169,7 @@ function AnswerForm() {
                             handleVisible={setqnaIsOpen}
                             presentationCode={presentationCode}
                             comingQuestion={comingQuestion}
-                            isHideInput={false}
+                            isPresenterRole={false}
                         />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>

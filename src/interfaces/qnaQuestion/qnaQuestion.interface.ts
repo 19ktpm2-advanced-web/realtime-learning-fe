@@ -3,4 +3,6 @@ export interface IQnAQuestion {
     question: string
     likeCount: number
     isAnswered: boolean
+    isLiked: boolean
+    date?: Date
 }

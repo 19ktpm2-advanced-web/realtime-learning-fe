@@ -2,9 +2,8 @@ import { useEffect, useState, memo, useContext } from 'react'
 import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
 import { IOption, ISlide } from 'interfaces'
-
 import { Link } from 'react-router-dom'
-import { IMessage } from '../../interfaces/message'
+import QuestionNotification from '../question-notification'
 import { SocketContext } from '../../service'
 import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
@@ -15,6 +14,8 @@ import { failureModal } from '../modals'
 import styles from './style.module.css'
 import QnA from '../qna-box'
 import { IQnAQuestion } from '../../interfaces/qnaQuestion'
+
+import { IMessage } from '../../interfaces/message'
 
 function Slide({
     slide,
@@ -31,6 +32,7 @@ function Slide({
     const [QnAIsOpen, setQnAIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
+    const [showQuestionNotification, setShowQuestionNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
     const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
     useEffect(() => {
@@ -54,7 +56,11 @@ function Slide({
     }
 
     const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
-        setShowNotification(true)
+        setShowQuestionNotification(true)
+        setComingQuestion(newQuestion)
+    }
+    const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(false)
         setComingQuestion(newQuestion)
     }
 
@@ -75,7 +81,7 @@ function Slide({
         socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
-        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleIncomingQuestion)
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -87,6 +93,7 @@ function Slide({
     return (
         <>
             <MessageNotification visible={showNotification} message={comingMessage} />
+            <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
                     {slide.optionList && slide.optionList.length > 0 && isFullScreen && (
@@ -136,7 +143,7 @@ function Slide({
                     handleVisible={setQnAIsOpen}
                     presentationCode={code}
                     comingQuestion={comingQuestion}
-                    isHideInput
+                    isPresenterRole
                 />
             </div>
         </>

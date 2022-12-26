@@ -14,7 +14,7 @@ import { IQnAQuestion } from '../../interfaces/qnaQuestion'
 import publicInstance from '../../service/axiosPublic'
 import privateInstance from '../../service/axiosPrivate'
 import styles from './style.module.css'
-import { CheckOutlined, CloseOutlined, LikeOutlined } from '@ant-design/icons'
+import { CheckOutlined, CloseOutlined, LikeFilled, LikeOutlined } from '@ant-design/icons'
 import { log } from 'console'
 
 const PAGE_SIZE = 20
@@ -23,13 +23,13 @@ function QnA({
     handleVisible,
     presentationCode,
     comingQuestion,
-    isHideInput,
+    isPresenterRole,
 }: {
     isOpen: boolean
     handleVisible: (isVisible: boolean) => void
     presentationCode: string
     comingQuestion: IQnAQuestion | null
-    isHideInput: boolean
+    isPresenterRole: boolean
 }) {
     const [questionList, setQuestionList] = useState<IQnAQuestion[]>([])
     const [hashMore, setHasMore] = useState(true)
@@ -87,19 +87,24 @@ function QnA({
     const handleOnclickLikeButton = async (id: string) => {
         try {
             const newQuestionList = questionList.map((item) => {
+                if (item.isLiked === undefined) {
+                    item.isLiked = false
+                }
                 if (item.id === id) {
                     return {
                         ...item,
-                        likeCount: item.likeCount + 1,
+                        likeCount: item.isLiked ? item.likeCount - 1 : item.likeCount + 1,
+                        isLiked: !item.isLiked,
                     }
                 }
                 return item
             })
+            setQuestionList(newQuestionList)
             const res = await publicInstance.put(
                 `/presentation/qna/update-question/${presentationCode}`,
                 newQuestionList.find((item) => item.id === id),
             )
-            if (res?.status === 200) {
+            if (res.status === 200) {
                 setQuestionList(newQuestionList)
             } else {
                 failureModal('Something is wrong', res.statusText)
@@ -197,11 +202,11 @@ function QnA({
                                         pageStart={0}
                                         loadMore={fetchMessages}
                                         hasMore={hashMore}
-                                        loader={
-                                            <div className="loader" key={0}>
-                                                Loading ...
-                                            </div>
-                                        }
+                                        // loader={
+                                        //     <div className="loader" key={0}>
+                                        //         Loading ...
+                                        //     </div>
+                                        // }
                                         useWindow={false}
                                         isReverse
                                         threshold={0}
@@ -225,6 +230,7 @@ function QnA({
                                                         }
                                                         description={
                                                             <span
+                                                                hidden={!isPresenterRole}
                                                                 className={
                                                                     styles['mark-as-answered-text']
                                                                 }
@@ -243,10 +249,18 @@ function QnA({
                                                     <div
                                                         className={styles['like-button']}
                                                         onClick={() => {
-                                                            handleOnclickLikeButton(item.id)
+                                                            // only listening when isPresenterRole is true
+                                                            if (!isPresenterRole) {
+                                                                handleOnclickLikeButton(item.id)
+                                                            }
                                                         }}
                                                     >
-                                                        <LikeOutlined /> {item.likeCount}
+                                                        {!isPresenterRole && item.isLiked ? (
+                                                            <LikeFilled />
+                                                        ) : (
+                                                            <LikeOutlined />
+                                                        )}{' '}
+                                                        {item.likeCount}
                                                     </div>
                                                 </List.Item>
                                             )}
@@ -260,25 +274,31 @@ function QnA({
                     })}
                 />
             </div>
-            <Form onFinish={handleSubmit} className={styles.form} form={form} hidden={isHideInput}>
-                <Form.Item name="question" noStyle>
-                    <div className={styles['chat-area']}>
-                        <TextArea
-                            className={styles['chat-input']}
-                            placeholder="Type your question here..."
-                            autoSize={false}
-                        />
-                    </div>
-                </Form.Item>
 
-                <Form.Item noStyle>
-                    <div className={styles['submit-btn-wrapper']}>
-                        <Button className={styles['submit-btn']} type="primary" htmlType="submit">
-                            Send
-                        </Button>
-                    </div>
-                </Form.Item>
-            </Form>
+            {!isPresenterRole && (
+                <Form onFinish={handleSubmit} className={styles.form} form={form}>
+                    <Form.Item name="question" noStyle>
+                        <div className={styles['chat-area']}>
+                            <TextArea
+                                className={styles['chat-input']}
+                                placeholder="Type your question here..."
+                                autoSize={false}
+                            />
+                        </div>
+                    </Form.Item>
+                    <Form.Item noStyle>
+                        <div className={styles['submit-btn-wrapper']}>
+                            <Button
+                                className={styles['submit-btn']}
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Send
+                            </Button>
+                        </div>
+                    </Form.Item>
+                </Form>
+            )}
         </Modal>
     )
 }
