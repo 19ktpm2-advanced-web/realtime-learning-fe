@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { MessageOutlined } from '@ant-design/icons'
+import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Form, Radio } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
@@ -12,9 +12,12 @@ import { IMultipleChoiceSlide } from '../../interfaces'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import publicInstance from '../../service/axiosPublic'
-import { ChatEvent, PresentationEvent } from '../../service/socket/event'
+import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import MessageNotification from 'components/message-notification'
 import styles from './styles.module.css'
+import QnA from '../../components/qna-box'
+import { IQnAQuestion } from '../../interfaces/qnaQuestion'
+import QuestionNotification from 'components/question-notification'
 
 function AnswerForm() {
     const navigate = useNavigate()
@@ -29,12 +32,25 @@ function AnswerForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [qnaIsOpen, setqnaIsOpen] = useState(false)
     const [showNotification, setShowNotification] = useState(false)
+    const [showQuestionNotification, setShowQuestionNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
+    const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
         setComingMessage(newMessage)
+    }
+
+    const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(true)
+        setComingQuestion(newQuestion)
+    }
+
+    const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(false)
+        setComingQuestion(newQuestion)
     }
 
     useEffect(() => {
@@ -75,6 +91,9 @@ function AnswerForm() {
         })
 
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
+
+        socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
 
         return () => {
             // before the component is destroyed
@@ -117,6 +136,7 @@ function AnswerForm() {
     return (
         <div className={styles.container}>
             <MessageNotification visible={showNotification} message={comingMessage} />
+            <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             {isLoading ? (
                 <LoadingSpin />
             ) : (
@@ -133,6 +153,10 @@ function AnswerForm() {
                                 className={styles['message-icon']}
                                 onClick={() => setChatBoxIsOpen(true)}
                             />
+                            <QuestionCircleOutlined
+                                className={styles['message-icon']}
+                                onClick={() => setqnaIsOpen(true)}
+                            />
                         </div>
                         <ChatBox
                             isOpen={chatBoxIsOpen}
@@ -140,13 +164,20 @@ function AnswerForm() {
                             presentationCode={presentationCode}
                             comingMessage={comingMessage}
                         />
+                        <QnA
+                            isOpen={qnaIsOpen}
+                            handleVisible={setqnaIsOpen}
+                            presentationCode={presentationCode}
+                            comingQuestion={comingQuestion}
+                            isPresenterRole={false}
+                        />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
                                 <h1>Thanks for answering</h1>
                             </div>
                         ) : (
                             <>
-                                <div className={styles['question-wrapper']}>
+                                <div className={styles['qnaQuestion-wrapper']}>
                                     <h2>{slide.text}</h2>
                                 </div>
                                 <Form

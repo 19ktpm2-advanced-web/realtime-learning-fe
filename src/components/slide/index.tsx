@@ -1,18 +1,21 @@
 import { useEffect, useState, memo, useContext } from 'react'
-import { MessageOutlined } from '@ant-design/icons'
+import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
 import { ISlide } from 'interfaces'
-
 import { Link } from 'react-router-dom'
-import { IMessage } from '../../interfaces/message'
+import QuestionNotification from '../question-notification'
 import { SocketContext } from '../../service'
-import { ChatEvent, PresentationEvent } from '../../service/socket/event'
+import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
 import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
 import SlideContent from '../slideContent'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
+import QnA from '../qna-box'
+import { IQnAQuestion } from '../../interfaces/qnaQuestion'
+
+import { IMessage } from '../../interfaces/message'
 
 function Slide({
     slide,
@@ -31,11 +34,14 @@ function Slide({
 }) {
     const socketService = useContext(SocketContext)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
+    const [QnAIsOpen, setQnAIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
+    const [showQuestionNotification, setShowQuestionNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
     const [presentationPath, setPresentationPath] = useState('')
     const [presentationLink, setPresentationLink] = useState('')
+    const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
     useEffect(() => {
         if (chatBoxIsOpen) {
             setUnReadMessages(0)
@@ -45,6 +51,15 @@ function Slide({
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
         setComingMessage(newMessage)
+    }
+
+    const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(true)
+        setComingQuestion(newQuestion)
+    }
+    const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
+        setShowQuestionNotification(false)
+        setComingQuestion(newQuestion)
     }
 
     useEffect(() => {
@@ -69,6 +84,8 @@ function Slide({
             }
         })
 
+        socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
+        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -88,6 +105,7 @@ function Slide({
     return (
         <>
             <MessageNotification visible={showNotification} message={comingMessage} />
+            <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
                     {isFullScreen && (
@@ -108,12 +126,27 @@ function Slide({
                             >
                                 <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
                             </Badge>
+                            <Badge
+                                count={unReadMessages}
+                                color="#1857cf"
+                                className={styles.messageIcon}
+                                size="small"
+                            >
+                                <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
+                            </Badge>
                         </div>
                         <ChatBox
                             isOpen={chatBoxIsOpen}
                             handleVisible={setChatBoxIsOpen}
                             presentationCode={code}
                             comingMessage={comingMessage}
+                        />
+                        <QnA
+                            isOpen={QnAIsOpen}
+                            handleVisible={setQnAIsOpen}
+                            presentationCode={code}
+                            comingQuestion={comingQuestion}
+                            isPresenterRole
                         />
                     </>
                 )}
