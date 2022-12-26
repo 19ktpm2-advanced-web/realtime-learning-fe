@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
     ArrowLeftOutlined,
     CaretRightFilled,
@@ -161,7 +162,6 @@ function PresentationDetail() {
                 default:
                     break
             }
-            console.log('data', data)
             try {
                 const result = await instance.put(`/presentation/slide/edit/${slidePreview.id}`, {
                     presentationId: presentation.id,
@@ -195,7 +195,7 @@ function PresentationDetail() {
             isPresenting: true,
         }
         mutate(payload, {
-            onSuccess: (res) => {
+            onSuccess: async (res) => {
                 if (res?.status === 200) {
                     handleFullScreen.enter()
                 } else {
@@ -249,21 +249,19 @@ function PresentationDetail() {
     }
 
     const handleFullScreenChange = (state: boolean) => {
-        if (!state) {
-            const payload: any = {
-                presentationId: presentation.id,
-                slideId: slidePreview.id,
-                isPresenting: false,
-            }
-            mutate(payload, {
-                onSuccess: (res) => {
-                    if (res?.status !== 200) failureModal('Something is wrong', res.statusText)
-                },
-                onError: (error: any) => {
-                    failureModal('Something is wrong', error.response && error.response.data)
-                },
-            })
+        const payload: any = {
+            presentationId: presentation.id,
+            slideId: slidePreview.id,
+            isPresenting: state,
         }
+        mutate(payload, {
+            onSuccess: (res) => {
+                if (res?.status !== 200) failureModal('Something is wrong', res.statusText)
+            },
+            onError: (error: any) => {
+                failureModal('Something is wrong', error.response && error.response.data)
+            },
+        })
     }
     return (
         <div className={styles.container}>
