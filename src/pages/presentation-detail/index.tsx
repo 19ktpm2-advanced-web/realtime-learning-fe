@@ -447,7 +447,7 @@ function PresentationDetail() {
                         } else {
                             setGroupId('')
                         }
-                        console.log('Full screen')
+                        console.log('index', slideList.indexOf(slidePreview));
                         await handleFullScreen.enter()
                     }}
                 />

@@ -1,10 +1,13 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import Slide from 'components/slide'
 import privateInstance from 'service/axiosPrivate'
 import publicInstance from 'service/axiosPublic'
 import LoadingSpin from '../../components/loading-spin'
-import { IMultipleChoiceSlide } from '../../interfaces'
+import { IHeadingSlide, IMultipleChoiceSlide, IParagraphSlide, ISlide } from '../../interfaces'
+import AnswerForm from 'pages/answer-form'
+import { SlideType } from 'enums'
 
 function Present() {
     const navigate = useNavigate()
@@ -15,7 +18,7 @@ function Present() {
         presentationCode: string
         groupId?: string
     } = useLoaderData() as any
-    const [slide, setSlide] = useState<IMultipleChoiceSlide>({})
+    const [slide, setSlide] = useState<IMultipleChoiceSlide | IParagraphSlide | IHeadingSlide>({})
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
@@ -36,7 +39,6 @@ function Present() {
                         navigate('/404')
                     })
             } else {
-                console.log('Private', groupId)
                 privateInstance
                     .get(`/presentation/slide/get/${presentationCode}/${groupId}`)
                     .then((res) => {
@@ -59,15 +61,21 @@ function Present() {
     return isLoading ? (
         <LoadingSpin />
     ) : (
-        <Slide
-            slide={slide}
-            code={presentationCode}
-            isFullScreen
-            groupId={groupId}
-            handleEndPresent={() => {
-                navigate('/404')
-            }}
-        />
+        <>
+            {slide.type === SlideType.MULTIPLE_CHOICE ? (
+                <AnswerForm />
+            ) : (
+                <Slide
+                    slide={slide}
+                    code={presentationCode}
+                    isFullScreen
+                    groupId={groupId}
+                    handleEndPresent={() => {
+                        navigate('/404')
+                    }}
+                />
+            )}
+        </>
     )
 }
 
