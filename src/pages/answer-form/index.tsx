@@ -19,7 +19,7 @@ import QnA from '../../components/qna-box'
 import { IQnAQuestion } from '../../interfaces/qnaQuestion'
 import QuestionNotification from 'components/question-notification'
 
-function AnswerForm() {
+function AnswerForm({ multipleChoiceSlide }: { multipleChoiceSlide: IMultipleChoiceSlide }) {
     const navigate = useNavigate()
     const [form] = Form.useForm()
     const socketService = useContext(SocketContext)
@@ -52,23 +52,11 @@ function AnswerForm() {
         setShowQuestionNotification(false)
         setComingQuestion(newQuestion)
     }
-
     useEffect(() => {
-        setIsLoading(true)
-        publicInstance
-            .get(`/presentation/slide/get/${presentationCode}`)
-            .then((res) => {
-                setIsLoading(false)
-                if (res?.status === 200) {
-                    setSlide(res.data)
-                } else {
-                    navigate('/404')
-                }
-            })
-            .catch((error) => {
-                navigate('/404')
-            })
-    }, [])
+        if (multipleChoiceSlide) {
+            setSlide(multipleChoiceSlide)
+        }
+    }, [multipleChoiceSlide])
 
     useEffect(() => {
         try {

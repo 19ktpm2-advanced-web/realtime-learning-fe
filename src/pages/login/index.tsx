@@ -88,7 +88,7 @@ function Login() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="formWrapper">
-            <p className="title">Welcome To Authentication App</p>
+            <p className="title">Welcome To Real-Time Learning System</p>
             <div className="inputWrapper">
                 <Controller
                     name="email"

@@ -63,7 +63,7 @@ function Present() {
     ) : (
         <>
             {slide.type === SlideType.MULTIPLE_CHOICE ? (
-                <AnswerForm />
+                <AnswerForm multipleChoiceSlide={slide as IMultipleChoiceSlide} />
             ) : (
                 <Slide
                     slide={slide}
