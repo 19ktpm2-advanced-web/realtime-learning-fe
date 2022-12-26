@@ -87,7 +87,7 @@ const CollaboratorsList = ({ presentationId }: { presentationId: string }) => {
 
                 if ((res.data.length === 1 && data.length === 0) || res.data.length > 1)
                     setData([...data, ...res.data])
-                    
+
                 setLoading(false)
             } else {
                 setLoading(false)

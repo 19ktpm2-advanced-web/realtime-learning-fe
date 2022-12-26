@@ -19,11 +19,15 @@ function Slide({
     code,
     isFullScreen,
     visibleChat = true,
+    groupId,
+    handleEndPresent,
 }: {
     slide: ISlide
     code: string
     isFullScreen: boolean
     visibleChat?: boolean
+    groupId?: string
+    handleEndPresent?: () => void
 }) {
     const socketService = useContext(SocketContext)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
@@ -59,6 +63,12 @@ function Slide({
         })
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
 
+        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
+            if (handleEndPresent) {
+                handleEndPresent()
+            }
+        })
+
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -69,11 +79,11 @@ function Slide({
 
     useEffect(() => {
         if (code) {
-            const { url, path } = generatePresentationLink(code, slide.type)
+            const { url, path } = generatePresentationLink(code, slide.type, groupId)
             setPresentationPath(path)
             setPresentationLink(url)
         }
-    }, [code])
+    }, [code, groupId])
 
     return (
         <>

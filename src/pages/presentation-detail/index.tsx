@@ -9,10 +9,11 @@ import {
     PlusOutlined,
 } from '@ant-design/icons'
 import { Button, Card, Divider, Empty, Form, Input, Modal, Popover, Select, Tabs } from 'antd'
+import ChoosePresentType from 'components/choose-present-type'
 import { failureModal, successModal } from 'components/modals'
 import Slide from 'components/slide'
 import SlideSetting from 'components/slideSetting'
-import { SlideType } from 'enums'
+import { Access, SlideType } from 'enums'
 import {
     IHeadingSlide,
     IMultipleChoiceSlide,
@@ -35,8 +36,10 @@ function PresentationDetail() {
     const [presentation, setPresentation] = useState<IPresentation>({})
     const [slideList, setSlideList] = useState<ISlide[]>([])
     const [slidePreview, setSlidePreview] = useState<ISlide>({})
+    const [isOpenChoosePresentType, setIsOpenChoosePresentType] = useState(false)
     const [isDataChanging, setIsDataChange] = useState(false)
     const [slideTypeList, setSlideTypeList] = useState<string[]>([])
+    const [groupId, setGroupId] = useState<string>('')
     const [hasMore, setHasMore] = useState(true)
     const [isOpenNewSlideList, setIsOpenNewSlideList] = useState(false)
     const { id } = useParams<{ id: string }>()
@@ -188,26 +191,6 @@ function PresentationDetail() {
         return instance.post('/presentation/slide/update-present-status', startPresentingData)
     })
 
-    const handlePresentClick = async () => {
-        const payload: any = {
-            presentationId: presentation.id,
-            slideId: slidePreview.id,
-            isPresenting: true,
-        }
-        mutate(payload, {
-            onSuccess: async (res) => {
-                if (res?.status === 200) {
-                    handleFullScreen.enter()
-                } else {
-                    failureModal('Cannot load slide to present', res.statusText)
-                }
-            },
-            onError: (error: any) => {
-                failureModal('Something is wrong', error.response && error.response.data)
-            },
-        })
-    }
-
     const { mutate: deleteSlideMutate } = useMutation(
         ({ presentationId, slideId }: { presentationId: string; slideId: string }) => {
             return instance.delete(`/presentation/slide/delete/${presentationId}&${slideId}`)
@@ -303,7 +286,8 @@ function PresentationDetail() {
                             className={styles.presentBtn}
                             type="primary"
                             icon={<CaretRightFilled />}
-                            onClick={handlePresentClick}
+                            onClick={() => setIsOpenChoosePresentType(true)}
+                            disabled={Object.keys(slidePreview).length === 0}
                         >
                             Present
                         </Button>
@@ -411,6 +395,7 @@ function PresentationDetail() {
                                     slide={slidePreview}
                                     code={presentation?.inviteCode ?? ''}
                                     isFullScreen={handleFullScreen.active}
+                                    groupId={groupId}
                                 />
                             </FullScreen>
                         ) : (
@@ -451,6 +436,21 @@ function PresentationDetail() {
                         </div>
                     </div>
                 )}
+                <ChoosePresentType
+                    isOpen={isOpenChoosePresentType}
+                    setIsOpen={setIsOpenChoosePresentType}
+                    presentation={presentation}
+                    slide={slidePreview}
+                    onSuccess={async (access, presentTo): Promise<void> => {
+                        if (access === Access.ONLY_GROUP) {
+                            setGroupId(presentTo)
+                        } else {
+                            setGroupId('')
+                        }
+                        console.log('Full screen')
+                        await handleFullScreen.enter()
+                    }}
+                />
             </div>
         </div>
     )
