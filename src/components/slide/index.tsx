@@ -1,15 +1,15 @@
 import { useEffect, useState, memo, useContext } from 'react'
 import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Badge } from 'antd'
-import { IOption, ISlide } from 'interfaces'
+import { ISlide } from 'interfaces'
 import { Link } from 'react-router-dom'
 import QuestionNotification from '../question-notification'
 import { SocketContext } from '../../service'
 import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
 import { generatePresentationLink } from '../../utils/presentation.util'
-import AnswerChart from '../answer-chart'
 import ChatBox from '../chat-box'
 import MessageNotification from '../message-notification'
+import SlideContent from '../slideContent'
 import { failureModal } from '../modals'
 import styles from './style.module.css'
 import QnA from '../qna-box'
@@ -21,34 +21,32 @@ function Slide({
     slide,
     code,
     isFullScreen,
+    visibleChat = true,
+    groupId,
+    handleEndPresent,
 }: {
     slide: ISlide
     code: string
     isFullScreen: boolean
+    visibleChat?: boolean
+    groupId?: string
+    handleEndPresent?: () => void
 }) {
     const socketService = useContext(SocketContext)
-    const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
     const [QnAIsOpen, setQnAIsOpen] = useState(false)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [showNotification, setShowNotification] = useState(false)
     const [showQuestionNotification, setShowQuestionNotification] = useState(false)
     const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
+    const [presentationPath, setPresentationPath] = useState('')
+    const [presentationLink, setPresentationLink] = useState('')
     const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
     useEffect(() => {
         if (chatBoxIsOpen) {
             setUnReadMessages(0)
         }
     }, [chatBoxIsOpen])
-    useEffect(() => {
-        if (slide?.optionList) {
-            setOptionData(slide.optionList)
-        }
-    }, [slide])
-
-    const handleUpdateResults = (result: { slide: ISlide }) => {
-        setOptionData(result.slide.optionList || [])
-    }
 
     const handleIncomingMessage = (newMessage: IMessage) => {
         setShowNotification(true)
@@ -78,8 +76,14 @@ function Slide({
         socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
             roomId: code,
         })
-        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
         socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
+
+        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
+            if (handleEndPresent) {
+                handleEndPresent()
+            }
+        })
+
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
         socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
         return () => {
@@ -90,61 +94,62 @@ function Slide({
         }
     }, [socketService.socket])
 
+    useEffect(() => {
+        if (code) {
+            const { url, path } = generatePresentationLink(code, slide.type, groupId)
+            setPresentationPath(path)
+            setPresentationLink(url)
+        }
+    }, [code, groupId])
+
     return (
         <>
             <MessageNotification visible={showNotification} message={comingMessage} />
             <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             <div className={styles.slideContainer}>
                 <div className={styles.invitationWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && isFullScreen && (
+                    {isFullScreen && (
                         <p>
-                            Share link:{' '}
-                            <Link to={`/answer-form/${code}`}>
-                                {generatePresentationLink(code)}
-                            </Link>
+                            Share link: <Link to={presentationPath}>{presentationLink}</Link>
                         </p>
                     )}
                 </div>
-                <div className={styles.questionWrapper}>
-                    <h2>{slide.text}</h2>
-                </div>
-                <div className={styles.chartWrapper}>
-                    {slide.optionList && slide.optionList.length > 0 && (
-                        <AnswerChart options={optionData} />
-                    )}
-                </div>
-                <div className={styles.footer}>
-                    <Badge
-                        count={unReadMessages}
-                        color="#1857cf"
-                        className={styles.messageIcon}
-                        size="small"
-                    >
-                        <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
-                    </Badge>
-                    <Badge
-                        count={unReadMessages}
-                        color="#1857cf"
-                        className={styles.messageIcon}
-                        size="small"
-                    >
-                        <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
-                    </Badge>
-                </div>
-                <ChatBox
-                    isOpen={chatBoxIsOpen}
-                    handleVisible={setChatBoxIsOpen}
-                    presentationCode={code}
-                    comingMessage={comingMessage}
-                />
-
-                <QnA
-                    isOpen={QnAIsOpen}
-                    handleVisible={setQnAIsOpen}
-                    presentationCode={code}
-                    comingQuestion={comingQuestion}
-                    isPresenterRole
-                />
+                <SlideContent slide={slide} />
+                {visibleChat && (
+                    <>
+                        <div className={styles.footer}>
+                            <Badge
+                                count={unReadMessages}
+                                color="#1857cf"
+                                className={styles.messageIcon}
+                                size="small"
+                            >
+                                <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
+                            </Badge>
+                            <Badge
+                                count={unReadMessages}
+                                color="#1857cf"
+                                className={styles.messageIcon}
+                                size="small"
+                            >
+                                <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
+                            </Badge>
+                        </div>
+                        <ChatBox
+                            isOpen={chatBoxIsOpen}
+                            handleVisible={setChatBoxIsOpen}
+                            presentationCode={code}
+                            comingMessage={comingMessage}
+                        />
+                        <QnA
+                            isOpen={QnAIsOpen}
+                            handleVisible={setQnAIsOpen}
+                            presentationCode={code}
+                            comingQuestion={comingQuestion}
+                            isPresenterRole
+                        />
+                    </>
+                )}
             </div>
         </>
     )

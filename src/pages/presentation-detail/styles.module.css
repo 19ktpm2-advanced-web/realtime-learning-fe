@@ -98,6 +98,12 @@
     border-radius: 3px;
     height: 100%;
 }
+.cancelBtn {
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 3px;
+    height: 100%;
+}
 
 /* CONTENT */
 .contentWrapper {
@@ -297,4 +303,26 @@
 /* FORM ITEM */
 .formItem {
     margin: 0px;
+}
+
+/* POPUP SLIDE TYPES LIST */
+.slideTypeListContainer {
+    margin: 0;
+    max-height: 80vh;
+    border-radius: 3px;
+}
+.slideTypeListWrapper {
+    width: 412px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    justify-content: space-around;
+}
+.slideTypeItem {
+    height: 80px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.slideTypeItem:hover {
+    border: 0.8px solid rgb(25, 108, 255);
 }

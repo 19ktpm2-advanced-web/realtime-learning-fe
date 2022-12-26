@@ -1,12 +1,18 @@
 /* eslint-disable */
 import { useState } from 'react'
-import { DeleteOutlined, EllipsisOutlined, ExclamationCircleFilled } from '@ant-design/icons'
+import {
+    DeleteOutlined,
+    EllipsisOutlined,
+    ExclamationCircleFilled,
+    ShareAltOutlined,
+} from '@ant-design/icons'
 import { Dropdown, MenuProps, Modal, Table } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { IPresentation } from '../../interfaces'
 import instance from '../../service/axiosPrivate'
 import { useMutation } from 'react-query'
 import { failureModal, successModal } from '../modals'
+import InviteCollaboratorsModal from '../invite-collaborators-modal'
 
 const PresentationList = ({
     presentations,
@@ -17,6 +23,7 @@ const PresentationList = ({
 }) => {
     const navigate = useNavigate()
     const [presentationOnFocusId, setPresentationOnFocusId] = useState('')
+    const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false)
     const { confirm } = Modal
 
     const showDeleteConfirm = () => {
@@ -60,12 +67,22 @@ const PresentationList = ({
 
     const handleMenuClick: MenuProps['onClick'] = (e) => {
         e.domEvent.stopPropagation()
-        if (e.key === 'delete') {
-            showDeleteConfirm()
+        switch (e.key) {
+            case 'invite-collab':
+                setIsInvitationModalOpen(true)
+                break
+            case 'delete':
+                showDeleteConfirm()
+                break
         }
     }
 
     const items: MenuProps['items'] = [
+        {
+            label: 'Collaborators',
+            key: 'invite-collab',
+            icon: <ShareAltOutlined />,
+        },
         {
             label: 'Delete',
             key: 'delete',
@@ -112,20 +129,28 @@ const PresentationList = ({
     ]
 
     return (
-        <Table
-            dataSource={presentations}
-            columns={columns}
-            onRow={(record) => {
-                return {
-                    onClick: (e) => {
-                        navigate(`/presentation/${record.id}`)
-                    },
-                    onFocus: (e) => {
-                        setPresentationOnFocusId(record.id || '')
-                    },
-                }
-            }}
-        />
+        <>
+            <Table
+                dataSource={presentations}
+                columns={columns}
+                onRow={(record) => {
+                    return {
+                        onClick: (e) => {
+                            navigate(`/presentation/${record.id}`)
+                        },
+                        onFocus: (e) => {
+                            setPresentationOnFocusId(record.id || '')
+                        },
+                    }
+                }}
+            />
+            <InviteCollaboratorsModal
+                isModalOpen={isInvitationModalOpen}
+                handleOk={() => setIsInvitationModalOpen(false)}
+                handleCancel={() => setIsInvitationModalOpen(false)}
+                presentationId={presentationOnFocusId}
+            />
+        </>
     )
 }
 export default PresentationList

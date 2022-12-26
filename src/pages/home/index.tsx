@@ -8,22 +8,35 @@ import { IInvitation, IUser } from '../../interfaces'
 import JoinGroup from '../join-group'
 import InvitationModal from './invitation.modal'
 import InvitationType from '../../enums/invitation.enum'
+import PresentationInvitationModal from './presentation-invitation-modal'
 
 export default function Home() {
     const navigate = useNavigate()
     const [profile, setProfile] = useState<IUser>()
     // Get invitationId from loader if any
-    const loader = useLoaderData()
+    const loader: any = useLoaderData()
     // Get invitationId if redirect from login
     const { state } = useLocation()
-    const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false)
-    const [invitation, setInvitation] = useState<IInvitation>()
-    const invitationId = (state && state.invitationId) || loader
+    const [isGroupInvitationModalOpen, setIsGroupInvitationModalOpen] = useState(false)
+    const [groupInvitation, setGroupInvitation] = useState<IInvitation>()
+    const [isPresentationInvitationModalOpen, setIsPresentationInvitationModalOpen] =
+        useState(false)
+    const [presentationInvitation, setPresentationInvitation] = useState<IInvitation>()
+
+    const groupInvitationId =
+        (state && state.groupInvitationId) ||
+        (loader && loader.invitationType === InvitationType.GROUP_INVITATION && loader.invitationId)
+
+    const presentationInvitationId =
+        (state && state.presentationInvitationId) ||
+        (loader &&
+            loader.invitationType === InvitationType.PRESENTATION_INVITATION &&
+            loader.invitationId)
 
     useEffect(() => {
         if (!localStorage.getItem('session')) {
             navigate('/login', {
-                state: { invitationId },
+                state: { groupInvitationId, presentationInvitationId },
             })
         }
     }, [localStorage.getItem('session')])
@@ -40,8 +53,8 @@ export default function Home() {
     })
 
     useEffect(() => {
-        if (invitationId && profile) {
-            instance.get(`/invitation/${invitationId}`).then((res) => {
+        if (groupInvitationId && profile) {
+            instance.get(`/invitation/${groupInvitationId}`).then((res) => {
                 if (res?.status === 200) {
                     const {
                         invitation,
@@ -52,16 +65,35 @@ export default function Home() {
                         isMemberOfGroup: boolean
                     } = res.data
 
-                    if (isMemberOfGroup) navigate(`/group/${invitation.group.id}`)
+                    if (isMemberOfGroup) navigate(`/group/${invitation.group?.id}`)
                     else if (invitation) {
                         if (
                             invitation.type === InvitationType.EMAIL_INVITATION &&
                             invitation.inviteeEmail !== profile.email
                         )
                             return
-                        setInvitation(invitation)
-                        setIsInvitationModalOpen(true)
+                        setGroupInvitation(invitation)
+                        setIsGroupInvitationModalOpen(true)
                     }
+                }
+            })
+        }
+    }, [profile])
+
+    useEffect(() => {
+        if (presentationInvitationId && profile) {
+            instance.get(`/invitation/presentation/${presentationInvitationId}`).then((res) => {
+                if (res?.status === 200) {
+                    const invitation: IInvitation = res.data
+
+                    if (
+                        invitation &&
+                        invitation.type === InvitationType.EMAIL_INVITATION &&
+                        invitation.inviteeEmail !== profile.email
+                    )
+                        return
+                    setPresentationInvitation(invitation)
+                    setIsPresentationInvitationModalOpen(true)
                 }
             })
         }
@@ -71,10 +103,16 @@ export default function Home() {
         <>
             <JoinGroup />
             <InvitationModal
-                isModalOpen={isInvitationModalOpen}
-                handleOk={() => setIsInvitationModalOpen(false)}
-                handleCancel={() => setIsInvitationModalOpen(false)}
-                data={invitation}
+                isModalOpen={isGroupInvitationModalOpen}
+                handleOk={() => setIsGroupInvitationModalOpen(false)}
+                handleCancel={() => setIsGroupInvitationModalOpen(false)}
+                data={groupInvitation}
+            />
+            <PresentationInvitationModal
+                isModalOpen={isPresentationInvitationModalOpen}
+                handleOk={() => setIsPresentationInvitationModalOpen(false)}
+                handleCancel={() => setIsPresentationInvitationModalOpen(false)}
+                data={presentationInvitation}
             />
         </>
     )

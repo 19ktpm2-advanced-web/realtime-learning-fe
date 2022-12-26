@@ -50,7 +50,8 @@ function InvitationModal({
             width={300}
         >
             <p>
-                You are invited to join <b>{data?.group.name}</b> by <b>{data?.inviter.fullName}</b>
+                You are invited to join <b>{data?.group?.name}</b> by{' '}
+                <b>{data?.inviter.fullName}</b>
             </p>
         </Modal>
     )

@@ -8,7 +8,7 @@ import AnswerChart from '../../components/answer-chart'
 import ChatBox from '../../components/chat-box'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
-import { ISlide } from '../../interfaces'
+import { IMultipleChoiceSlide } from '../../interfaces'
 import { IMessage } from '../../interfaces/message'
 import { SocketContext } from '../../service'
 import publicInstance from '../../service/axiosPublic'
@@ -28,7 +28,7 @@ function AnswerForm() {
     }: {
         presentationCode: string
     } = useLoaderData() as any
-    const [slide, setSlide] = useState<ISlide>({})
+    const [slide, setSlide] = useState<IMultipleChoiceSlide>({})
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
