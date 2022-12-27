@@ -6,12 +6,41 @@
     max-width: 62.5rem;
     margin-top: 1rem;
 }
+.title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.userWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+}
+.userContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.userName {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.userEmail {
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
 .controlWrapper {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 .controlButton {
     border-radius: 0.5rem;
