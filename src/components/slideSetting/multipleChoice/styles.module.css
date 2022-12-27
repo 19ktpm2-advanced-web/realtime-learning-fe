@@ -12,6 +12,13 @@
     border-color: rgb(183, 186, 194);
     padding: 8px;
 }
+.optionItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
 .inputOption {
     border-color: rgb(183, 186, 194);
     margin-bottom: 8px;
