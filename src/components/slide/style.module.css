@@ -27,10 +27,21 @@ p {
 .footer {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .messageIcon {
     font-size: 2.5em;
     margin-right: 0.5em;
+}
+
+.arrowWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+}
+
+.arrow {
+    font-size: 2.5em;
 }

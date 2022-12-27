@@ -40,7 +40,6 @@ function QnA({
                 `/presentation/qna/get-question-list/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
             )
             if (res?.status === 200) {
-                console.log('res', res.data)
                 res.data.reverse()
                 setQuestionList((prev) => [
                     ...res.data.filter(
@@ -115,7 +114,6 @@ function QnA({
     }
 
     useEffect(() => {
-        console.log('comingQuestion', comingQuestion)
         if (!comingQuestion) {
             fetchMessages(1)
         } else {
