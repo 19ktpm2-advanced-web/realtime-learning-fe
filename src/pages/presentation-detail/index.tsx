@@ -42,11 +42,14 @@ function PresentationDetail() {
     const [groupId, setGroupId] = useState<string>('')
     const [hasMore, setHasMore] = useState(true)
     const [isOpenNewSlideList, setIsOpenNewSlideList] = useState(false)
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(-1)
     const { id } = useParams<{ id: string }>()
     const [presentationForm] = Form.useForm()
     const { confirm } = Modal
     const updateSlidePreview = (slide: ISlide) => {
         setIsDataChange(true)
+        const slideIndex = slideList.indexOf(slide)
+        setCurrentSlideIndex(slideIndex)
         setSlidePreview(slide)
     }
     useEffect(() => {
@@ -206,6 +209,7 @@ function PresentationDetail() {
             onSuccess: (res) => {
                 if (res?.status === 200) {
                     setSlidePreview({})
+                    setCurrentSlideIndex(-1)
                     setSlideList((prev) => prev.filter((slide) => slide.id !== slidePreview.id))
                     successModal('Slide deleted successfully')
                 } else {
@@ -246,6 +250,52 @@ function PresentationDetail() {
             },
         })
     }
+
+    useEffect(() => {
+        if (handleFullScreen.active) {
+            try {
+                const payload: any = {
+                    presentationId: presentation.id,
+                    slideId: slidePreview.id,
+                    isPresenting: true,
+                }
+                ;(async () => {
+                    const res = await instance.post(
+                        '/presentation/slide/update-present-status',
+                        payload,
+                    )
+                    if (res?.status !== 200)
+                        failureModal('Cannot presenting this slide', res.statusText)
+                })()
+            } catch (e) {
+                failureModal(e)
+            }
+        }
+    }, [currentSlideIndex])
+
+    const handlePresentingSlideChanged = (moveToNextSlide: boolean) => {
+        if (moveToNextSlide && currentSlideIndex + 1 < slideList.length) {
+            setSlidePreview(slideList[currentSlideIndex + 1])
+            setCurrentSlideIndex((prev) => {
+                return prev + 1
+            })
+        } else if (!moveToNextSlide && currentSlideIndex - 1 >= 0) {
+            setSlidePreview(slideList[currentSlideIndex - 1])
+            setCurrentSlideIndex((prev) => {
+                return prev - 1
+            })
+        }
+    }
+
+    const handleUpdateResults = (result: { slide: IMultipleChoiceSlide }) => {
+        const slideChanged = slideList.find((slide) => slide.id === result.slide.id)
+        if (slideChanged !== undefined) {
+            const slideChangedIndex = slideList.indexOf(slideChanged)
+            setSlidePreview(result.slide)
+            setCurrentSlideIndex(slideChangedIndex)
+        }
+    }
+
     return (
         <div className={styles.container}>
             <Form
@@ -365,7 +415,10 @@ function PresentationDetail() {
                                     slidePreview.id === slide.id ? styles.active : ''
                                 }`}
                                 key={index}
-                                onClick={() => setSlidePreview(slide)}
+                                onClick={() => {
+                                    setSlidePreview(slide)
+                                    setCurrentSlideIndex(index)
+                                }}
                             >
                                 <div className={styles.slideIndex}>
                                     {index + 1}
@@ -377,6 +430,7 @@ function PresentationDetail() {
                                         code={presentation?.inviteCode ?? ''}
                                         isFullScreen={handleFullScreen.active}
                                         visibleChat={false}
+                                        handleUpdateResults={handleUpdateResults}
                                     />
                                 </div>
                             </div>
@@ -396,6 +450,10 @@ function PresentationDetail() {
                                     code={presentation?.inviteCode ?? ''}
                                     isFullScreen={handleFullScreen.active}
                                     groupId={groupId}
+                                    onPresentingSlideChanged={handlePresentingSlideChanged}
+                                    isFirstSlide={currentSlideIndex === 0}
+                                    isLastSlide={currentSlideIndex === slideList.length - 1}
+                                    handleUpdateResults={handleUpdateResults}
                                 />
                             </FullScreen>
                         ) : (
@@ -447,7 +505,6 @@ function PresentationDetail() {
                         } else {
                             setGroupId('')
                         }
-                        console.log('index', slideList.indexOf(slidePreview));
                         await handleFullScreen.enter()
                     }}
                 />

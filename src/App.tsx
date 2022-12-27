@@ -36,17 +36,17 @@ const router = createBrowserRouter([
         element: <Activation />,
         errorElement: <ErrorPage />,
     },
-    {
-        path: '/answer-form/:presentationCode/:groupId',
-        element: <AnswerForm />,
-        loader: ({ params }) => {
-            return {
-                presentationCode: params.presentationCode,
-                groupId: params.groupId,
-            }
-        },
-        errorElement: <ErrorPage />,
-    },
+    // {
+    //     path: '/answer-form/:presentationCode/:groupId',
+    //     element: <AnswerForm />,
+    //     loader: ({ params }) => {
+    //         return {
+    //             presentationCode: params.presentationCode,
+    //             groupId: params.groupId,
+    //         }
+    //     },
+    //     errorElement: <ErrorPage />,
+    // },
     {
         path: '/present/:presentationCode',
         element: <Present />,

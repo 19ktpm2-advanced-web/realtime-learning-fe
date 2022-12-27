@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import Slide from 'components/slide'
 import privateInstance from 'service/axiosPrivate'
@@ -20,6 +20,7 @@ function Present() {
     } = useLoaderData() as any
     const [slide, setSlide] = useState<IMultipleChoiceSlide | IParagraphSlide | IHeadingSlide>({})
     const [isLoading, setIsLoading] = useState(false)
+    const [presentingSlideChanged, setPresentingSlideChanged] = useState(false)
 
     useEffect(() => {
         if (presentationCode) {
@@ -43,7 +44,6 @@ function Present() {
                     .get(`/presentation/slide/get/${presentationCode}/${groupId}`)
                     .then((res) => {
                         setIsLoading(false)
-                        console.log('res', res)
                         if (res?.status === 200) {
                             setSlide(res.data)
                         } else {
@@ -51,19 +51,29 @@ function Present() {
                         }
                     })
                     .catch((error) => {
-                        console.log('error', error)
                         navigate('/404')
                     })
             }
         }
-    }, [presentationCode, groupId])
+    }, [presentationCode, groupId, presentingSlideChanged])
+
+    const handlePresentingSlideChanged = () => {
+        setPresentingSlideChanged(!presentingSlideChanged)
+    }
+    const handleUpdateResults = (results: any) => {
+        setSlide(results.slide)
+    }
 
     return isLoading ? (
         <LoadingSpin />
     ) : (
         <>
             {slide.type === SlideType.MULTIPLE_CHOICE ? (
-                <AnswerForm />
+                <AnswerForm
+                    slide={slide}
+                    handlePresentingSlideChanged={handlePresentingSlideChanged}
+                    handleUpdateResults={handleUpdateResults}
+                />
             ) : (
                 <Slide
                     slide={slide}
@@ -73,6 +83,7 @@ function Present() {
                     handleEndPresent={() => {
                         navigate('/404')
                     }}
+                    handlePresentingSlideChanged={handlePresentingSlideChanged}
                 />
             )}
         </>
