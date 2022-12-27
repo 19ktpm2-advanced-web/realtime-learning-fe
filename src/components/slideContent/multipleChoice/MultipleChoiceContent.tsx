@@ -12,7 +12,6 @@ function MultipleChoiceContent({ slide }: { slide: IMultipleChoiceSlide }) {
         }
     }, [slide])
 
-
     return (
         <>
             <div className={styles.questionWrapper}>

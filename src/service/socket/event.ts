@@ -4,7 +4,7 @@ export enum PresentationEvent {
     DISCONNECT = 'disconnect',
     END_PRESENTING = 'end-presenting',
     NEW_PRESENTING_IN_GROUP = 'new-presenting-in-group',
-    PRESENTING_SLIDE_CHANGED= 'presenting-slide-changed'
+    PRESENTING_SLIDE_CHANGED = 'presenting-slide-changed',
 }
 
 export enum ChatEvent {

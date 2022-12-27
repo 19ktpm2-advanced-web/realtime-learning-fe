@@ -1,4 +1,4 @@
-import { Modal, Select, Switch } from 'antd'
+import { Modal, Radio, Select } from 'antd'
 import { failureModal } from 'components/modals'
 import { Access, Privilege } from 'enums'
 import { IGroup, IPresentation, ISlide } from 'interfaces'
@@ -21,7 +21,7 @@ const ChoosePresentType = ({
 }) => {
     const [presentAccess, setPresentAccess] = useState<Access>(Access.PUBLIC)
     const [presentTo, setPresentTo] = useState<string>('')
-    const [groupId, setGroupList] = useState<IGroup[]>([])
+    const [groupList, setGroupList] = useState<IGroup[]>([])
     const fetchGroupList = async () => {
         try {
             const res = await instance.post('/group/groupHasPrivilege', {
@@ -73,24 +73,24 @@ const ChoosePresentType = ({
         >
             <div className={styles.container}>
                 <div className={styles.accessWrapper}>
-                    <span className={styles.accessTitle}>
-                        {presentAccess === Access.PUBLIC ? 'Present Public' : 'Present In Group'}
-                    </span>
-                    <Switch
-                        disabled={groupId.length === 0}
-                        onChange={(checked) =>
-                            setPresentAccess(!checked ? Access.PUBLIC : Access.ONLY_GROUP)
-                        }
-                        defaultChecked={presentAccess !== Access.PUBLIC}
-                    />
+                    <Radio.Group
+                        onChange={(e) => setPresentAccess(e.target.value)}
+                        value={presentAccess}
+                        buttonStyle="solid"
+                    >
+                        <Radio value={Access.PUBLIC}>Public</Radio>
+                        <Radio value={Access.ONLY_GROUP} disabled={groupList.length === 0}>
+                            Only group
+                        </Radio>
+                    </Radio.Group>
                 </div>
-                {presentAccess === Access.ONLY_GROUP && groupId.length > 0 && (
+                {presentAccess === Access.ONLY_GROUP && groupList.length > 0 && (
                     <Select
                         placeholder="Choose group to present"
                         onChange={(value) => setPresentTo(value)}
                         style={{ width: '100%' }}
                     >
-                        {groupId.map((group: IGroup) => {
+                        {groupList.map((group: IGroup) => {
                             return <Select.Option value={group.id}>{group.name}</Select.Option>
                         })}
                     </Select>

@@ -72,12 +72,12 @@ function Slide({
     }
 
     const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
-        console.log('newQuestion: ', newQuestion);
+        console.log('newQuestion: ', newQuestion)
         setShowQuestionNotification(true)
         setComingQuestion(newQuestion)
     }
     const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
-        console.log('updateQuestion: ', newQuestion);
+        console.log('updateQuestion: ', newQuestion)
         setShowQuestionNotification(false)
         setComingQuestion(newQuestion)
     }

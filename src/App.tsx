@@ -15,7 +15,7 @@ import NavBar from './components/navBar'
 import Presentation from 'pages/presentation'
 import PresentationDetail from 'pages/presentation-detail'
 import { SocketContext, socketService } from './service'
-import AnswerForm from './pages/answer-form'
+// import AnswerForm from './pages/answer-form'
 import InvitationType from './enums/invitation.enum'
 import Present from 'pages/present'
 const router = createBrowserRouter([
