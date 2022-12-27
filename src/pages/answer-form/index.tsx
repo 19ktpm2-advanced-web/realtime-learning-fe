@@ -1,100 +1,33 @@
 /* eslint-disable */
-import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Form, Radio } from 'antd'
-import { useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation } from 'react-query'
 import { useLoaderData, useNavigate } from 'react-router-dom'
-import AnswerChart from '../../components/answer-chart'
-import ChatBox from '../../components/chat-box'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
-import { IMultipleChoiceSlide } from '../../interfaces'
-import { IMessage } from '../../interfaces/message'
-import { SocketContext } from '../../service'
+import { IMultipleChoiceSlide, IOption } from '../../interfaces'
 import publicInstance from '../../service/axiosPublic'
-import { ChatEvent, PresentationEvent, QnAEvent } from '../../service/socket/event'
-import MessageNotification from 'components/message-notification'
 import styles from './styles.module.css'
-import QnA from '../../components/qna-box'
-import { IQnAQuestion } from '../../interfaces/qnaQuestion'
-import QuestionNotification from 'components/question-notification'
+import Slide from 'components/slide'
 
-function AnswerForm({ multipleChoiceSlide }: { multipleChoiceSlide: IMultipleChoiceSlide }) {
+function AnswerForm({
+    slide,
+    handleUpdateResults,
+    handlePresentingSlideChanged,
+}: {
+    slide: IMultipleChoiceSlide
+    handleUpdateResults: (result: any) => void
+    handlePresentingSlideChanged: () => void
+}) {
     const navigate = useNavigate()
     const [form] = Form.useForm()
-    const socketService = useContext(SocketContext)
     const {
         presentationCode,
     }: {
         presentationCode: string
     } = useLoaderData() as any
-    const [slide, setSlide] = useState<IMultipleChoiceSlide>({})
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
-    const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
-    const [qnaIsOpen, setqnaIsOpen] = useState(false)
-    const [showNotification, setShowNotification] = useState(false)
-    const [showQuestionNotification, setShowQuestionNotification] = useState(false)
-    const [comingMessage, setComingMessage] = useState<IMessage | null>(null)
-    const [comingQuestion, setComingQuestion] = useState<IQnAQuestion | null>(null)
-
-    const handleIncomingMessage = (newMessage: IMessage) => {
-        setShowNotification(true)
-        setComingMessage(newMessage)
-    }
-
-    const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
-        setShowQuestionNotification(true)
-        setComingQuestion(newQuestion)
-    }
-
-    const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
-        setShowQuestionNotification(false)
-        setComingQuestion(newQuestion)
-    }
-    useEffect(() => {
-        if (multipleChoiceSlide) {
-            setSlide(multipleChoiceSlide)
-        }
-    }, [multipleChoiceSlide])
-
-    useEffect(() => {
-        try {
-            socketService.establishConnection()
-        } catch (error) {
-            failureModal(
-                'Something is wrong with the socket! Please try to reload the page.',
-                error,
-            )
-        }
-
-        // Each user watching the same presentation will join the same room
-        socketService.socket.emit(PresentationEvent.JOIN_ROOM, {
-            roomId: presentationCode,
-        })
-        socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
-
-        socketService.socket.on(PresentationEvent.END_PRESENTING, () => {
-            navigate('/404')
-        })
-
-        socketService.socket.on(ChatEvent.NEW_CHAT_MESSAGE, handleIncomingMessage)
-
-        socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
-        socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
-
-        return () => {
-            // before the component is destroyed
-            // unbind all event handlers used in this component
-            socketService.socket.removeAllListeners()
-            socketService.disconnect()
-        }
-    }, [socketService.socket])
-
-    const handleUpdateResults = (results: any) => {
-        setSlide(results.slide)
-    }
-
     const { mutate } = useMutation((updateAnswerData) => {
         return publicInstance.post('/presentation/slide/update-answer', updateAnswerData)
     })
@@ -104,7 +37,7 @@ function AnswerForm({ multipleChoiceSlide }: { multipleChoiceSlide: IMultipleCho
             optionId: data.answer,
             presentationCode,
         }
-        setIsLoading(true)
+        // setIsLoading(true)
         mutate(payload, {
             onSuccess: (res) => {
                 if (res?.status === 200) {
@@ -112,10 +45,9 @@ function AnswerForm({ multipleChoiceSlide }: { multipleChoiceSlide: IMultipleCho
                 } else {
                     failureModal('Something is wrong', res.statusText)
                 }
-                setIsLoading(false)
             },
             onError: (error: any) => {
-                setIsLoading(false)
+                // setIsLoading(false)
                 failureModal('Something is wrong', error.response && error.response.data)
             },
         })
@@ -123,42 +55,28 @@ function AnswerForm({ multipleChoiceSlide }: { multipleChoiceSlide: IMultipleCho
 
     return (
         <div className={styles.container}>
-            <MessageNotification visible={showNotification} message={comingMessage} />
-            <QuestionNotification visible={showQuestionNotification} question={comingQuestion} />
             {isLoading ? (
                 <LoadingSpin />
             ) : (
                 <>
                     <div className={styles['answer-chart']}>
-                        <AnswerChart options={slide.optionList || []} />
+                        <Slide
+                            slide={slide}
+                            code={presentationCode}
+                            isFullScreen={false}
+                            groupId={''}
+                            handleEndPresent={() => {
+                                navigate('/404')
+                            }}
+                            handleUpdateResults={handleUpdateResults}
+                            handlePresentingSlideChanged={handlePresentingSlideChanged}
+                            isPresenterRole={false}
+                        />
                     </div>
 
                     <Divider type="vertical" style={{ height: '100%' }} />
 
                     <div className={styles['form-wrapper']}>
-                        <div className={styles['header']}>
-                            <MessageOutlined
-                                className={styles['message-icon']}
-                                onClick={() => setChatBoxIsOpen(true)}
-                            />
-                            <QuestionCircleOutlined
-                                className={styles['message-icon']}
-                                onClick={() => setqnaIsOpen(true)}
-                            />
-                        </div>
-                        <ChatBox
-                            isOpen={chatBoxIsOpen}
-                            handleVisible={setChatBoxIsOpen}
-                            presentationCode={presentationCode}
-                            comingMessage={comingMessage}
-                        />
-                        <QnA
-                            isOpen={qnaIsOpen}
-                            handleVisible={setqnaIsOpen}
-                            presentationCode={presentationCode}
-                            comingQuestion={comingQuestion}
-                            isPresenterRole={false}
-                        />
                         {hasAnswered ? (
                             <div className={styles['thanks-for-answering']}>
                                 <h1>Thanks for answering</h1>

@@ -1,7 +1,13 @@
+/* eslint-disable */
 import { useEffect, useState, memo, useContext } from 'react'
-import { MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import {
+    ArrowLeftOutlined,
+    ArrowRightOutlined,
+    MessageOutlined,
+    QuestionCircleOutlined,
+} from '@ant-design/icons'
 import { Badge } from 'antd'
-import { ISlide } from 'interfaces'
+import { IMultipleChoiceSlide, ISlide } from 'interfaces'
 import { Link } from 'react-router-dom'
 import QuestionNotification from '../question-notification'
 import { SocketContext } from '../../service'
@@ -24,6 +30,12 @@ function Slide({
     visibleChat = true,
     groupId,
     handleEndPresent,
+    onPresentingSlideChanged,
+    isFirstSlide,
+    isLastSlide,
+    handlePresentingSlideChanged,
+    handleUpdateResults,
+    isPresenterRole = true,
 }: {
     slide: ISlide
     code: string
@@ -31,6 +43,12 @@ function Slide({
     visibleChat?: boolean
     groupId?: string
     handleEndPresent?: () => void
+    onPresentingSlideChanged?: (moveToNextSlide: boolean) => void
+    isFirstSlide?: boolean
+    isLastSlide?: boolean
+    handlePresentingSlideChanged?: () => void
+    handleUpdateResults?: (result: { slide: IMultipleChoiceSlide }) => void
+    isPresenterRole?: boolean
 }) {
     const socketService = useContext(SocketContext)
     const [chatBoxIsOpen, setChatBoxIsOpen] = useState(false)
@@ -54,10 +72,12 @@ function Slide({
     }
 
     const handleIncomingQuestion = (newQuestion: IQnAQuestion) => {
+        console.log('newQuestion: ', newQuestion)
         setShowQuestionNotification(true)
         setComingQuestion(newQuestion)
     }
     const handleUpdateQuestion = (newQuestion: IQnAQuestion) => {
+        console.log('updateQuestion: ', newQuestion)
         setShowQuestionNotification(false)
         setComingQuestion(newQuestion)
     }
@@ -86,6 +106,16 @@ function Slide({
 
         socketService.socket.on(QnAEvent.NEW_QNA_QUESTION, handleIncomingQuestion)
         socketService.socket.on(QnAEvent.UPDATE_QNA_QUESTION, handleUpdateQuestion)
+        if (handlePresentingSlideChanged)
+            socketService.socket.on(
+                PresentationEvent.PRESENTING_SLIDE_CHANGED,
+                handlePresentingSlideChanged,
+            )
+
+        if (handleUpdateResults) {
+            socketService.socket.on(PresentationEvent.UPDATE_RESULTS, handleUpdateResults)
+        }
+
         return () => {
             // before the component is destroyed
             // unbind all event handlers used in this component
@@ -118,22 +148,40 @@ function Slide({
                 {visibleChat && (
                     <>
                         <div className={styles.footer}>
-                            <Badge
-                                count={unReadMessages}
-                                color="#1857cf"
-                                className={styles.messageIcon}
-                                size="small"
-                            >
-                                <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
-                            </Badge>
-                            <Badge
-                                count={unReadMessages}
-                                color="#1857cf"
-                                className={styles.messageIcon}
-                                size="small"
-                            >
-                                <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
-                            </Badge>
+                            {onPresentingSlideChanged ? (
+                                <div className={styles.arrowWrapper}>
+                                    <ArrowLeftOutlined
+                                        className={styles.arrow}
+                                        onClick={() => onPresentingSlideChanged(false)}
+                                        disabled={isFirstSlide}
+                                        style={isFirstSlide ? { color: '#a9a7a7' } : {}}
+                                    />
+                                    <ArrowRightOutlined
+                                        className={styles.arrow}
+                                        onClick={() => onPresentingSlideChanged(true)}
+                                        disabled={isLastSlide}
+                                        style={isLastSlide ? { color: '#a9a7a7' } : {}}
+                                    />
+                                </div>
+                            ) : null}
+                            <div>
+                                <Badge
+                                    count={unReadMessages}
+                                    color="#1857cf"
+                                    className={styles.messageIcon}
+                                    size="small"
+                                >
+                                    <MessageOutlined onClick={() => setChatBoxIsOpen(true)} />
+                                </Badge>
+                                <Badge
+                                    count={unReadMessages}
+                                    color="#1857cf"
+                                    className={styles.messageIcon}
+                                    size="small"
+                                >
+                                    <QuestionCircleOutlined onClick={() => setQnAIsOpen(true)} />
+                                </Badge>
+                            </div>
                         </div>
                         <ChatBox
                             isOpen={chatBoxIsOpen}
@@ -146,7 +194,7 @@ function Slide({
                             handleVisible={setQnAIsOpen}
                             presentationCode={code}
                             comingQuestion={comingQuestion}
-                            isPresenterRole
+                            isPresenterRole={isPresenterRole}
                         />
                     </>
                 )}
