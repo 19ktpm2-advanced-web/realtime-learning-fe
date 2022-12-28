@@ -183,12 +183,14 @@ function Slide({
                                 </Badge>
                             </div>
                         </div>
-                        <ChatBox
-                            isOpen={chatBoxIsOpen}
-                            handleVisible={setChatBoxIsOpen}
-                            presentationCode={code}
-                            comingMessage={comingMessage}
-                        />
+                        {chatBoxIsOpen && (
+                            <ChatBox
+                                isOpen={chatBoxIsOpen}
+                                handleVisible={setChatBoxIsOpen}
+                                presentationCode={code}
+                                comingMessage={comingMessage}
+                            />
+                        )}
                         <QnA
                             isOpen={QnAIsOpen}
                             handleVisible={setQnAIsOpen}

@@ -1,6 +1,6 @@
 import { Button, Form, Modal } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MessageBox } from 'react-chat-elements'
 import InfiniteScroll from 'react-infinite-scroller'
 import { failureModal } from 'components/modals'
@@ -24,18 +24,26 @@ function ChatBox({
     presentationCode: string
     comingMessage: IMessage | null
 }) {
+    const [loadHistory, setLoadHistory] = useState(false)
+    const bottomRef = useRef<HTMLDivElement>(null)
     const [messages, setMessages] = useState<IMessage[]>([])
     const [hashMore, setHasMore] = useState(true)
     const [form] = Form.useForm()
     const fetchMessages = async (pageNumber: number) => {
-        console.log('Fetch message', pageNumber)
+        console.log('fetching messages', pageNumber)
         try {
             const res = await publicInstance.get(
                 `/presentation/chat/messages/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
             )
             if (res?.status === 200) {
                 res.data.reverse()
-                setMessages((prev) => [...res.data, ...prev])
+                if (pageNumber === 1) {
+                    setMessages(res.data)
+                    setLoadHistory(false)
+                } else {
+                    setMessages((prev) => [...res.data, ...prev])
+                    setLoadHistory(true)
+                }
                 if (res.data.length <= 0) {
                     setHasMore(false)
                 }
@@ -50,10 +58,17 @@ function ChatBox({
         if (!comingMessage) {
             fetchMessages(1)
         } else {
+            setLoadHistory(false)
             setMessages((prev) => [...prev, comingMessage])
             setHasMore(true)
         }
     }, [comingMessage])
+    useEffect(() => {
+        if (!loadHistory && bottomRef !== null) {
+            // @ts-ignore
+            bottomRef?.current?.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [messages, loadHistory, bottomRef])
     const { mutate } = useMutation((addMessageData) => {
         const profile = localStorage.getItem('profile')
         if (!profile) {
@@ -87,6 +102,9 @@ function ChatBox({
                 height: '80vh',
                 maxWidth: '100%',
             }}
+            afterClose={() => {
+                bottomRef?.current?.scrollIntoView({ behavior: 'smooth' })
+            }}
         >
             <div className={styles['message-list-wrapper']}>
                 <InfiniteScroll
@@ -101,7 +119,7 @@ function ChatBox({
                     useWindow={false}
                     isReverse
                 >
-                    {messages.map((message) => {
+                    {messages.map((message, index) => {
                         return (
                             <MessageBox
                                 /* @ts-ignore */
@@ -110,10 +128,12 @@ function ChatBox({
                                 text={message.text}
                                 type="text"
                                 date={message.date}
+                                key={index}
                             />
                         )
                     })}
                 </InfiniteScroll>
+                <div ref={bottomRef} />
             </div>
             <Form onFinish={handleSubmit} className={styles.form} form={form}>
                 <Form.Item name="message" noStyle>
