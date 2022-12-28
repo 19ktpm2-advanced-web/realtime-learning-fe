@@ -124,6 +124,11 @@ function Login() {
                 />
                 <span className="message">{errors?.password?.message}</span>
             </div>
+            <br />
+            <Link to="/forgot-password" state={state}>
+                Forgot your password?
+            </Link>
+            <br />
             <div className="btnWrapper">
                 <Spin spinning={isLoading}>
                     <button type="submit" className="button">
