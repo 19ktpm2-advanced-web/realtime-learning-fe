@@ -18,6 +18,7 @@ import { SocketContext, socketService } from './service'
 // import AnswerForm from './pages/answer-form'
 import InvitationType from './enums/invitation.enum'
 import Present from 'pages/present'
+import ForgotPassword from 'pages/forgot-password'
 const router = createBrowserRouter([
     {
         path: '/404',
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
     {
         path: '/register',
         element: <Register />,
+    },
+    {
+        path: '/forgot-password',
+        element: <ForgotPassword />,
     },
     {
         path: '/verify-email/:emailToken',
