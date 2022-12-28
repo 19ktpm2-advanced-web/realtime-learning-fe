@@ -1,6 +1,6 @@
 import { Button, Form, Modal } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MessageBox } from 'react-chat-elements'
 import InfiniteScroll from 'react-infinite-scroller'
 import { failureModal } from 'components/modals'
@@ -24,6 +24,7 @@ function ChatBox({
     presentationCode: string
     comingMessage: IMessage | null
 }) {
+    const bottomRef = useRef(null)
     const [messages, setMessages] = useState<IMessage[]>([])
     const [hashMore, setHasMore] = useState(true)
     const [form] = Form.useForm()
@@ -53,7 +54,13 @@ function ChatBox({
             setMessages((prev) => [...prev, comingMessage])
             setHasMore(true)
         }
-    }, [comingMessage])
+    }, [comingMessage, bottomRef])
+    useEffect(() => {
+        if (bottomRef.current) {
+            // @ts-ignore
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [messages])
     const { mutate } = useMutation((addMessageData) => {
         const profile = localStorage.getItem('profile')
         if (!profile) {
@@ -114,6 +121,7 @@ function ChatBox({
                         )
                     })}
                 </InfiniteScroll>
+                <div ref={bottomRef} />
             </div>
             <Form onFinish={handleSubmit} className={styles.form} form={form}>
                 <Form.Item name="message" noStyle>
