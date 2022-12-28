@@ -1,7 +1,8 @@
-import { Avatar, Button, List } from 'antd'
+import { Avatar, Button, Table } from 'antd'
 import { failureModal } from 'components/modals'
 import { Privilege, Role } from 'enums'
 import { IGroup } from 'interfaces'
+import { IRole } from 'interfaces/role'
 import { IMember } from 'interfaces/user/user.interface'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
@@ -90,57 +91,73 @@ function GroupMember({ groupId }: { groupId?: String }) {
     }, [permission])
     return (
         <div className={styles.wrapper}>
-            <List
-                header={<h2>All Members</h2>}
-                itemLayout="horizontal"
+            <label className={styles.title}>All Members</label>
+            <Table
+                columns={[
+                    {
+                        title: 'User',
+                        key: 'fullName',
+                        render: (record: IMember) => (
+                            <div className={styles.userWrapper}>
+                                <Avatar src={record.avatar} size={30} />
+                                <div className={styles.userContainer}>
+                                    <div className={styles.userName}>{record.fullName}</div>
+                                    <div className={styles.userEmail}>{record.email}</div>
+                                </div>
+                            </div>
+                        ),
+                    },
+                    {
+                        title: 'Role',
+                        dataIndex: 'role',
+                        key: 'role',
+                        render: (role: IRole) => <div>{role.name}</div>,
+                    },
+                    {
+                        title: '',
+                        key: 'action',
+                        render: (record: IMember) => (
+                            <div className={styles.controlWrapper}>
+                                {showGrant && record?.role?.name === Role.MEMBER && (
+                                    <Button
+                                        type="primary"
+                                        className={styles.controlButton}
+                                        onClick={() => {
+                                            grantRole(record.id)
+                                        }}
+                                    >
+                                        Grant
+                                    </Button>
+                                )}
+                                {showRevoke && record?.role?.name === Role.CO_ADMINISTRATOR && (
+                                    <Button
+                                        type="primary"
+                                        danger
+                                        className={styles.controlButton}
+                                        onClick={() => {
+                                            revokeRole(record.id)
+                                        }}
+                                    >
+                                        Revoke
+                                    </Button>
+                                )}
+                                {showKickOut && record?.role?.name === Role.MEMBER && (
+                                    <Button
+                                        type="primary"
+                                        danger
+                                        className={styles.controlButton}
+                                        onClick={() => {
+                                            kickOut(record.id)
+                                        }}
+                                    >
+                                        Kick out
+                                    </Button>
+                                )}
+                            </div>
+                        ),
+                    },
+                ]}
                 dataSource={members}
-                renderItem={(member: IMember) => (
-                    <List.Item>
-                        <List.Item.Meta
-                            avatar={<Avatar src={member.avatar} />}
-                            title={member?.fullName}
-                            description={`${member?.email}`}
-                        />
-                        <List.Item.Meta title={member.role.name} />
-                        <div className={styles.controlWrapper}>
-                            {showGrant && member.role.name === Role.MEMBER && (
-                                <Button
-                                    type="primary"
-                                    className={styles.controlButton}
-                                    onClick={() => {
-                                        grantRole(member.id)
-                                    }}
-                                >
-                                    Grant
-                                </Button>
-                            )}
-                            {showRevoke && member.role.name === Role.CO_ADMINISTRATOR && (
-                                <Button
-                                    type="primary"
-                                    danger
-                                    className={styles.controlButton}
-                                    onClick={() => {
-                                        revokeRole(member.id)
-                                    }}
-                                >
-                                    Revoke
-                                </Button>
-                            )}
-                            {showKickOut && member.role.name === Role.MEMBER && (
-                                <Button
-                                    type="primary"
-                                    danger
-                                    className={styles.controlButton}
-                                    onClick={() => {
-                                        kickOut(member.id)
-                                    }}
-                                >
-                                    Kick Out
-                                </Button>
-                            )}
-                        </div>
-                    </List.Item>
-                )}
             />
         </div>
     )
