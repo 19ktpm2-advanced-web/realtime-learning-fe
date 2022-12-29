@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-18.04
     env: 
       SKIP_PREFLIGHT_CHECK: true
-      DATABASE: ${{ secrets.DATABASE }} 
       PORT: ${{secrets.PORT}}
     steps:
       - uses: actions/checkout@v2
