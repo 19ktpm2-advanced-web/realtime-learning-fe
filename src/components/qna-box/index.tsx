@@ -171,14 +171,14 @@ function QnA({
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 padding: 0,
-                height: '80vh',
+                height: '78vh',
                 maxWidth: '100%',
             }}
         >
             <div className={styles['message-list-wrapper']}>
                 <Tabs
                     centered
-                    tabPosition="bottom"
+                    tabPosition="top"
                     items={['Question', 'Answered'].map((text, i) => {
                         const id = String(i + 1)
                         const isAnswered = text === 'Answered'
@@ -248,7 +248,10 @@ function QnA({
                                                         className={styles['like-button']}
                                                         onClick={() => {
                                                             // only listening when isPresenterRole is true
-                                                            if (!isPresenterRole) {
+                                                            if (
+                                                                !isPresenterRole &&
+                                                                !item.isAnswered
+                                                            ) {
                                                                 handleOnclickLikeButton(item.id)
                                                             }
                                                         }}

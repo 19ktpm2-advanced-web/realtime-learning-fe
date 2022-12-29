@@ -39,7 +39,7 @@ function ForgotPassword() {
                         'Please check your email for the reset password',
                     )
                     navigate('/login', {
-                        state
+                        state,
                     })
                 } else failureModal('Reset password failed', res.message)
             },
@@ -48,7 +48,7 @@ function ForgotPassword() {
             },
         })
     }
-    
+
     const { mutate, isLoading } = useMutation((forgotPasswordFormData) => {
         return instance.post('/auth/forgot-password', forgotPasswordFormData)
     })
@@ -80,7 +80,7 @@ function ForgotPassword() {
                 </Spin>
                 {/* eslint-disable-next-line no-use-before-define */}
             </div>
-            <br/>
+            <br />
             <Link to="/login" state={state} type="submit">
                 Back to login
             </Link>
