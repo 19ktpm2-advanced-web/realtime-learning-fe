@@ -12,9 +12,6 @@ function QuestionNotification({
 }): JSX.Element {
     useEffect(() => {
         if (visible && question) {
-            const profileJSON = localStorage.getItem('profile')
-            const profile = profileJSON ? JSON.parse(profileJSON) : null
-            if (profile && profile.fullName) return
             toast(
                 <div>
                     <div>New question</div>
