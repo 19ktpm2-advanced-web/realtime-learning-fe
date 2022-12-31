@@ -4,7 +4,15 @@ import { IMultipleChoiceSlide } from 'interfaces/slide'
 import { useEffect, useState } from 'react'
 import styles from './styles.module.css'
 
-function MultipleChoiceContent({ slide }: { slide: IMultipleChoiceSlide }) {
+function MultipleChoiceContent({
+    slide,
+    presentationCode,
+    groupId,
+}: {
+    slide: IMultipleChoiceSlide
+    presentationCode: string
+    groupId: string
+}) {
     const [optionData, setOptionData] = useState<IOption[]>(slide?.optionList ?? [])
     useEffect(() => {
         if (slide?.optionList) {
@@ -19,7 +27,12 @@ function MultipleChoiceContent({ slide }: { slide: IMultipleChoiceSlide }) {
             </div>
             <div className={styles.chartWrapper}>
                 {slide.optionList && slide.optionList.length > 0 && (
-                    <AnswerChart options={optionData} />
+                    <AnswerChart
+                        slideId={slide.id || ''}
+                        options={optionData}
+                        presentationCode={presentationCode}
+                        groupId={groupId || ''}
+                    />
                 )}
             </div>
         </>

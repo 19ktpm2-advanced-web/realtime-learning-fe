@@ -144,7 +144,7 @@ function Slide({
                         </p>
                     )}
                 </div>
-                <SlideContent slide={slide} />
+                <SlideContent slide={slide} presentationCode={code} groupId={groupId || ''} />
                 {visibleChat && (
                     <>
                         <div className={styles.footer}>

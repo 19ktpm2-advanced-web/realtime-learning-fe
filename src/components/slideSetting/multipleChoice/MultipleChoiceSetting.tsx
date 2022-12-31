@@ -77,6 +77,7 @@ function MultipleChoiceSetting({
                         newOptions.push({
                             answer: '',
                             votes: 0,
+                            answerInfos: [],
                         })
                         updateSlide({
                             ...slide,
