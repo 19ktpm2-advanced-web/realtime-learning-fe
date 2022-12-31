@@ -35,28 +35,31 @@ function QnA({
     const [hashMore, setHasMore] = useState(true)
     const [form] = Form.useForm()
     const fetchMessages = async (pageNumber: number) => {
-        try {
-            const res = await publicInstance.get(
-                `/presentation/qna/get-question-list/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
-            )
-            if (res?.status === 200) {
-                res.data.reverse()
-                setQuestionList((prev) => [
-                    ...res.data.filter(
-                        (question: IQnAQuestion) =>
-                            !prev.find((prevQuestion) => prevQuestion.id === question.id),
-                    ),
-                    ...prev,
-                ])
-                if (res.data.length <= 0) {
-                    setHasMore(false)
+        if (presentationCode) {
+            try {
+                const res = await publicInstance.get(
+                    `/presentation/qna/get-question-list/${presentationCode}?page=${pageNumber}&pageSize=${PAGE_SIZE}`,
+                )
+                if (res?.status === 200) {
+                    res.data.reverse()
+                    setQuestionList((prev) => [
+                        ...res.data.filter(
+                            (question: IQnAQuestion) =>
+                                !prev.find((prevQuestion) => prevQuestion.id === question.id),
+                        ),
+                        ...prev,
+                    ])
+                    if (res.data.length <= 0) {
+                        setHasMore(false)
+                    }
+                } else {
+                    failureModal('Something is wrong', res.statusText)
                 }
-            } else {
-                failureModal('Something is wrong', res.statusText)
+            } catch (error) {
+                failureModal('Something is wrong', error.response && error.response.data)
             }
-        } catch (error) {
-            failureModal('Something is wrong', error.response && error.response.data)
         }
+        
     }
     const handleOnclickMarkAsAnsweredOrUnanswered = async (id: string) => {
         try {

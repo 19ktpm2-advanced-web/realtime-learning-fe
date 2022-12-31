@@ -70,9 +70,9 @@ function Present() {
         <>
             {slide.type === SlideType.MULTIPLE_CHOICE ? (
                 <AnswerForm
-                    slide={slide}
-                    handlePresentingSlideChanged={handlePresentingSlideChanged}
-                    handleUpdateResults={handleUpdateResults}
+                        slide={slide}
+                        handlePresentingSlideChanged={handlePresentingSlideChanged}
+                        handleUpdateResults={handleUpdateResults}
                 />
             ) : (
                 <Slide

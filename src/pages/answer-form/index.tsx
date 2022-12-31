@@ -1,12 +1,13 @@
 /* eslint-disable */
 import { Button, Card, Divider, Form, Radio } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import LoadingSpin from '../../components/loading-spin'
 import { failureModal } from '../../components/modals'
-import { IMultipleChoiceSlide, IOption } from '../../interfaces'
+import { IMultipleChoiceSlide, IOption, IUser } from '../../interfaces'
 import publicInstance from '../../service/axiosPublic'
+import privateInstance from '../../service/axiosPrivate'
 import styles from './styles.module.css'
 import Slide from 'components/slide'
 
@@ -20,22 +21,31 @@ function AnswerForm({
     handlePresentingSlideChanged: () => void
 }) {
     const navigate = useNavigate()
+    const profile: IUser = JSON.parse(localStorage.getItem('profile') || '{}')
     const [form] = Form.useForm()
-    const {
-        presentationCode,
-    }: {
-        presentationCode: string
-    } = useLoaderData() as any
+    const [presentationCode, setPresentationCode] = useState('')
+    const [groupId, setGroupId] = useState('')
+    const loader = useLoaderData() as any
     const [isLoading, setIsLoading] = useState(false)
     const [hasAnswered, setHasAnswered] = useState(false)
     const { mutate } = useMutation((updateAnswerData) => {
+        if (profile.id && groupId)
+            return privateInstance.post('/presentation/slide/update-group-answer', updateAnswerData)
         return publicInstance.post('/presentation/slide/update-answer', updateAnswerData)
     })
+
+    useEffect(() => {
+        if (loader) {
+            if (loader.presentationCode) setPresentationCode(loader.presentationCode)
+            if (loader.groupId) setGroupId(loader.groupId)
+        }
+    }, [loader])
 
     const handleSubmit = (data: any) => {
         const payload: any = {
             optionId: data.answer,
             presentationCode,
+            groupId,
         }
         // setIsLoading(true)
         mutate(payload, {
@@ -64,7 +74,7 @@ function AnswerForm({
                             slide={slide}
                             code={presentationCode}
                             isFullScreen={false}
-                            groupId={''}
+                            groupId={groupId}
                             handleEndPresent={() => {
                                 navigate('/404')
                             }}
