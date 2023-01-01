@@ -108,6 +108,7 @@ function PresentationDetail() {
         if (result.status === 200) {
             const newSlide = result.data[result.data.length - 1]
             setSlideList((prev) => [...prev, newSlide])
+            setIsOpenNewSlideList(false)
         } else {
             failureModal('Create slide failed', result.data.message)
         }
@@ -368,6 +369,7 @@ function PresentationDetail() {
                         onOpenChange={(open: boolean) => {
                             setIsOpenNewSlideList(open)
                         }}
+                        open={isOpenNewSlideList}
                     >
                         <Button
                             className={!isOpenNewSlideList ? styles.newSlideBtn : styles.cancelBtn}
