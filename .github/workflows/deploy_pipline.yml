@@ -28,7 +28,7 @@ jobs:
         # if: ${{ github.event_name == 'push'  && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: realtime-learning-fe
+          image: ndthi/realtime-learning-fe
           registry: docker.io
           dockerfile: dockerfile
           username: ${{ env.DOCKER_USERNAME }}
