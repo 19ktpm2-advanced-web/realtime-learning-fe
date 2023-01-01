@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import instance from '../../service/axiosPrivate'
 import styles from './styles.module.css'
 import { PresentationFilterOptions } from 'enums'
+import LoadingSpin from 'components/loading-spin'
 
 const presentationFilterOptions = [
     {
@@ -61,14 +62,13 @@ function Presentation() {
             const result = await instance.post('/presentation/create', newPresentation)
             if (result.status === 200) {
                 setPresentations([...presentations, result.data])
-                setLoading(false)
                 setIsVisibleModal(false)
                 navigate(`/presentation/${result.data.id}`)
             } else {
                 failureModal('Create presentation failed', result.data.message)
-                setLoading(false)
                 setIsVisibleModal(false)
             }
+            setLoading(false)
         } catch (error) {
             failureModal('Create presentation failed', error.response && error.response.data)
             setLoading(false)
@@ -147,10 +147,15 @@ function Presentation() {
                 />
             </div>
 
-            <PresentationList
-                presentations={presentations}
-                onPresentationDeleted={onPresentationDeleted}
-            />
+            {loading ? (
+                <LoadingSpin />
+            ) : (
+                <PresentationList
+                    presentations={presentations}
+                    onPresentationDeleted={onPresentationDeleted}
+                />
+            )}
+
             <Modal
                 visible={isVisibleModal}
                 okText="Create Presentation"
@@ -172,7 +177,6 @@ function Presentation() {
                         <Input placeholder="Enter presentation name here ..." />
                     </Form.Item>
                 </Form>
-                <ProgressBar loading={loading} />
             </Modal>
         </div>
     )

@@ -13,14 +13,16 @@ import './index.css'
 
 function Profile() {
     const navigate = useNavigate()
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [profile, setProfile] = useState<IUser>()
     const [form] = Form.useForm()
 
     useQuery(['profile'], async () => {
+        setIsLoading(true)
         try {
             const res = await instance.get('/user/profile')
 
+            setIsLoading(false)
             setProfile({
                 ...res.data,
                 dateOfBirth: dayjs(res.data.dateOfBirth),
@@ -29,7 +31,6 @@ function Profile() {
                 ...res.data,
                 dateOfBirth: dayjs(res.data.dateOfBirth),
             })
-            setIsLoading(false)
             return res.data
         } catch (error) {
             failureModal('Failed to get profile')
@@ -49,12 +50,12 @@ function Profile() {
         setIsLoading(true)
         mutate(data, {
             onSuccess: (res) => {
+                setIsLoading(false)
                 if (res?.status === 200) {
                     successModal('Update profile successfully')
                 } else {
                     failureModal('Update profile failed', res.statusText)
                 }
-                setIsLoading(false)
             },
             onError: (error: any) => {
                 setIsLoading(false)
