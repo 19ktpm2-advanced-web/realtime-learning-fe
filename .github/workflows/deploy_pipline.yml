@@ -25,7 +25,7 @@ jobs:
         run: npm install 
      
       - name: Build & push Docker image
-        if: ${{ github.event_name == 'push'  && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        # if: ${{ github.event_name == 'push'  && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: realtime-learning-fe
