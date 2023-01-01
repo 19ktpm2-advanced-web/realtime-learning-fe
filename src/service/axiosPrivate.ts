@@ -15,6 +15,7 @@ instance.interceptors.request.use(
         const session = JSON.parse(localStorage.getItem('session') || '')
 
         if (session?.accessToken) {
+            // @ts-ignore
             config.headers = {
                 ...config.headers,
                 authorization: `Bearer ${session?.accessToken}`,
