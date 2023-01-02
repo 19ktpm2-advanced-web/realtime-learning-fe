@@ -23,12 +23,12 @@ jobs:
         run: npm install 
      
       - name: Build & push Docker image
-        if: ${{ github.event_name == 'push'  && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        # if: ${{ github.event_name == 'push'  && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: realtime-learning-fe
+          image: ndthi/realtime-learning-fe
           registry: docker.io
           dockerfile: dockerfile
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
           tags: latest
