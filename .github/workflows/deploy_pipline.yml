@@ -32,3 +32,4 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
           tags: latest
+          build-args: REACT_APP_API_BASE_URL=https://realtime-learning-be.azurewebsites.net/ REACT_APP_BASE_URL==https://realtime-learning.azurewebsites.net/ REACT_APP_CLIENT_ID=965958523455-e4kagn05kspaneb4bjli6fnbufhf8fe5.apps.googleusercontent.com REACT_APP_SERVER_SOCKET_URL=https://realtime-learning-be.azurewebsites.net/
